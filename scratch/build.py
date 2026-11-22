@@ -9,7 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 from .audit import audit
-from .geometry import checked
+from .geometry import checked, clip, edges
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -46,29 +46,40 @@ def render(scene, variants, file):
     im.save(file)
 
 
-def generate(seed, pairs, out, replay=None):
+def generate(seed, pairs, out, replay=None, diagnostic=None):
     rng = random.Random(seed)
     images = out/'images'
     images.mkdir(parents=True,exist_ok=True)
     rows=[]
     visibility_index = 0
     layout_rng = random.Random(f"{seed}:visibility-v3")
+    assignment_rng = random.Random(f'{seed}:label-assignment')
+    label_orders = {}
+    for index, task in enumerate(('blocker','repair'), 1):
+        count = sum((i//3)%3 == index for i in range(pairs))
+        label_orders[task] = [bool(i%2) for i in range(count)]
+        assignment_rng.shuffle(label_orders[task])
     for i in range(pairs):
-        dx = rng.randint(-5,5)
-        y = rng.randint(16,24)
         difficulty = ('easy','medium','hard')[i%3]
-        clutter = dict(list({'C':(10+dx,4,13+dx,7),'D':(82+dx,4,85+dx,7)}.items())[:i%3])
-        width=(13,9,6)[i%3]
-        mirror=(50+dx-width+rng.randint(-2,2),50+dx+width+rng.randint(-2,2))
-        height=rng.randint(6,9)
-        # Place one obstacle on the incoming ray and one clear of it.
-        middle = round(50 - 30*(height+2)/y)+dx
-        a = (middle-4,height,middle+4,height+4)
-        # Keep obstacle height fixed across the pair. Use either side of the
-        # incoming ray, clear of the outgoing ray and the small clutter box.
-        clear_x = rng.choice((15, 46)) + dx
-        b = (clear_x,height,clear_x+8,height+4)
         kind=('visibility','blocker','repair')[(i//3)%3]
+        if kind != 'visibility':
+            shift = rng.randint(-4, 4)
+            height = rng.randint(7, 9)
+            cameras = [(rng.randint(15, 19)+shift, 22), (rng.randint(39, 43)+shift, 22)]
+            target = (rng.randint(80, 84)+shift, 22)
+            mirror = (42+shift, 70+shift)
+            labels = ['B','A'] if label_orders[kind].pop() else ['A','B']
+            reverse_panels = bool(rng.randrange(2))
+            obstacles = {}
+            for label, (camera_x, _) in zip(labels, cameras):
+                bounce = (camera_x + target[0]) / 2
+                x = round(bounce + (camera_x-bounce)*(height+2)/22)
+                obstacles[label] = (x-3, height, x+3, height+4)
+            if kind == 'blocker' and i%3:
+                obstacles['C'] = (70+shift, 2, 76+shift, 20)
+            if i%3 == 2:
+                obstacles['D' if kind=='blocker' else 'C'] = (6+shift,4,9+shift,8)
+            obstacles = dict(sorted(obstacles.items()))
         if kind == 'visibility':
             if visibility_index % 2 == 0:
                 center = 50 + layout_rng.randint(-5, 5)
@@ -88,10 +99,11 @@ def generate(seed, pairs, out, replay=None):
                 positions.reverse()
             visible_camera = (center+camera_x-50,y_visible)
             visible_target = (2*center-visible_camera[0],y_visible)
+        reverse_choices = bool(rng.randrange(2))
         for j in range(2):
-            blocks={'A':a if j==0 else b,'B':b if j==0 else a,**clutter}
-            scene={'camera':(20+dx,y),'target':(80+dx,y),'mirror':mirror,'blocks':blocks}
             variants=[]
+            if kind != 'visibility':
+                scene={'camera':cameras[j], 'target':target, 'mirror':mirror, 'blocks':obstacles}
             if kind=='visibility':
                 scene = dict(camera=visible_camera, target=visible_target,
                              mirror=(center-half_width,center+half_width),
@@ -102,32 +114,42 @@ def generate(seed, pairs, out, replay=None):
                 options=['Visible','Blocked']
                 correct=options[not checked(scene)[0]]
             elif kind=='blocker':
-                incoming = a if j == 0 else b
-                outgoing = (100+2*dx-a[2],a[1],100+2*dx-a[0],a[3])
-                blocks={'A':incoming,'B':outgoing,**clutter}
-                scene['blocks']=blocks
                 prompt='Which obstacle would the ray from the camera encounter first along the mirror path?'
-                options=list(blocks)
+                options=list(obstacles)
                 hits=checked(scene)[1]
-                if hits != (['A','B'] if j == 0 else ['B']):
-                    raise ValueError(f'Unexpected blockers: {hits}')
-                correct=hits[0]
+                correct=labels[j]
+                if correct not in hits or labels[1-j] in hits:
+                    raise ValueError(f'Unexpected blocker configuration: {hits}')
+                # In dense cases C lies on the outgoing leg; the designated
+                # blocker is on the incoming leg and is always met first.
+                if 'C' in hits:
+                    bounce = (checked(scene)[2],0)
+                    if any(intersect(scene['camera'],bounce,obstacles['C']) for intersect in (clip,edges)):
+                        raise ValueError('Secondary obstacle must be after the mirror')
+                without_c = {**scene, 'blocks':{name:box for name,box in obstacles.items() if name != 'C'}}
+                if checked(without_c)[1] != [correct]:
+                    raise ValueError('Unexpected incoming obstacle')
             else:
                 prompt='Which replacement scene restores visibility through the mirror?'
                 options=['Move obstacle A','Move obstacle B']
-                for name,block in zip(options,('A','B')):
-                    changed={**blocks,block:(87+dx,10,90+dx,13)}
+                if reverse_panels:
+                    options.reverse()
+                for name in options:
+                    block = name[-1]
+                    changed={**obstacles,block:(91,8,95,12)}
                     variants.append((name,{**scene,'blocks':changed}))
                 answers=[name for name,variant in variants if checked(variant)[0]]
                 if len(answers)!=1:
                     raise ValueError(f'Expected one valid repair: {answers}')
                 correct=answers[0]
-            if rng.randrange(2):
+            if reverse_choices:
                 options.reverse()
             case_id=f'{i:04d}-{j}'
             image=images/f'{case_id}.png'
             render(scene,variants,image)
             visible, blockers, x=checked(scene)
+            if diagnostic is not None:
+                diagnostic[case_id] = dict(obstacles=scene['blocks'], panel_order=[name for name,_ in variants])
             if replay is not None and i == 0:
                 replay.append(dict(id=case_id, scene=scene, visible=visible, bounce=float(x)))
             rows.append(dict(id=case_id,pair=i,type=kind,difficulty=difficulty,
@@ -153,11 +175,12 @@ def main():
     for source in (ROOT/'site').iterdir():
         shutil.copyfile(source,args.out/source.name)
     replay=[]
-    rows=generate(args.seed,args.pairs,args.out,replay)
+    diagnostic={}
+    rows=generate(args.seed,args.pairs,args.out,replay,diagnostic)
     payload=json.dumps(dict(seed=args.seed,cases=rows),sort_keys=True,indent=2)
     (args.out/'cases.json').write_text(payload)
     (args.out/'replay.json').write_text(json.dumps(replay, indent=2)+'\n')
-    (args.out/'validity-audit.json').write_text(json.dumps(audit(rows, args.out, payload.encode()), indent=2)+'\n')
+    (args.out/'validity-audit.json').write_text(json.dumps(audit(rows, args.out, payload.encode(), diagnostic), indent=2)+'\n')
     print(f'{len(rows)} synthetic cases; manifest SHA256 {hashlib.sha256(payload.encode()).hexdigest()}')
 
 

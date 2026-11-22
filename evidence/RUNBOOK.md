@@ -1,6 +1,6 @@
 # Evidence runbook
 
-Use the frozen Docker v3 manifest throughout. Each report must bind to its SHA-256.
+Use the frozen Docker v4 manifest throughout. Each report must bind to its SHA-256.
 
 1. **Shortcut diagnostic.** Open Evidence → Download diagnostic. Each visibility fold holds out both camera layouts and their paired images. Interval rules are fit on the remaining groups. Exact coordinate lookup uses the training majority for ties and unseen positions. The audit covers only the movable obstacle's position. It is neither a test of all visual shortcuts nor a model result.
 2. **Blind review.** Give the same answer-free packet to two different reviewers. Ask each to complete the CSV independently and note ambiguous diagrams. Keep the coordinator key offline. Run the command below once both are back. Retain disagreements and notes. Adjudicate before final model requests. If any cases or labels change, create a new manifest and regenerate the packet; previous scores no longer attach to it.
@@ -9,17 +9,17 @@ Use the frozen Docker v3 manifest throughout. Each report must bind to its SHA-2
 
 ```sh
 .venv/bin/python -m scratch.review --require-complete \
-  --dataset runs/frozen-200-v3/cases.json \
-  --key runs/judge-review-72-v3-private-key.json \
+  --dataset runs/frozen-200-v4/cases.json \
+  --key runs/judge-review-72-v4-private-key.json \
   runs/reviewer-a.csv runs/reviewer-b.csv > runs/human-review.json
 
 # Repeat with the available exact model ID and both modes for each provider.
-.venv/bin/python -m scratch.evaluate --dataset runs/frozen-200-v3/cases.json \
+.venv/bin/python -m scratch.evaluate --dataset runs/frozen-200-v4/cases.json \
   --provider gemini --model YOUR_MODEL_ID --mode vision \
   --max-requests 200 --record runs/gemini-vision.jsonl
 
 # Explicitly name the completed official logs. Do not include smoke logs.
-.venv/bin/python -m scratch.publish_reports --dataset runs/frozen-200-v3/cases.json \
+.venv/bin/python -m scratch.publish_reports --dataset runs/frozen-200-v4/cases.json \
   --out site/model-reports.json runs/gemini-vision.jsonl runs/gemini-question-only.jsonl \
   runs/claude-vision.jsonl runs/claude-question-only.jsonl \
   runs/third-model-vision.jsonl runs/third-model-question-only.jsonl
@@ -32,3 +32,22 @@ cp evidence/physical-template.csv runs/physical.csv
 ## Finalist demo
 
 Play the synthetic transition. Ask judges to commit both predictions, then reveal the ray. Show a real model mistake only after the benchmark runs and use a physical camera frame only once captured. Label synthetic, human, model and physical evidence separately.
+
+### Run all six batches
+
+The default run uses up to 1,200 provider requests. Start after the review and adjudication. Omit `--execute` to check credentials and see the request count without sending anything.
+
+```sh
+.venv/bin/python -m scratch.model_matrix --dataset runs/frozen-200-v4/cases.json \
+  --gemini YOUR_GEMINI_ID --claude YOUR_CLAUDE_ID --groq YOUR_GROQ_VISION_ID \
+  --out runs/official-v4 --execute
+```
+
+### Prepare the first physical session
+
+The capture card and a CSV with six expected labels can be regenerated with:
+```sh
+.venv/bin/python -m scratch.camera_plan --replay runs/frozen-200-v4/replay.json --out runs/tabletop-v4
+```
+
+Use capture 01 and 02 for the stage example. Do not claim a camera outcome until the corresponding frame has been recorded and checked.

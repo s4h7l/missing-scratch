@@ -1,6 +1,7 @@
 """Measure the best in-sample position-only rules on rendered visibility diagrams."""
 from collections import Counter
 import hashlib
+import json
 
 from PIL import Image
 
@@ -45,7 +46,38 @@ def held_out_rules(records):
     return dict(groups=len(groups), **result)
 
 
-def audit(cases, folder, manifest_bytes):
+def categorical_checks(cases, features):
+    result = {}
+    for task in ('blocker', 'repair'):
+        rows = [case for case in cases if case['type'] == task]
+        groups = {case['layout_group'] for case in rows}
+        rules = {
+            'labeled_obstacles_only': lambda case: json.dumps(features[case['id']]['obstacles'], sort_keys=True),
+            'answer_option_order_only': lambda case: tuple(case['options']),
+            'camera_side_only': lambda case: case['trace']['camera'][0] < case['trace']['bounce'][0] - 20,
+        }
+        if task == 'repair':
+            rules['image_panel_order_only'] = lambda case: tuple(features[case['id']]['panel_order'])
+        scores = {}
+        for name, feature in rules.items():
+            correct = 0
+            for group in groups:
+                training = [c for c in rows if c['layout_group'] != group]
+                majority = Counter(c['answer'] for c in training)
+                if not majority:
+                    continue
+                for case in rows:
+                    if case['layout_group'] != group:
+                        continue
+                    counts = Counter(c['answer'] for c in training if feature(c) == feature(case)) or majority
+                    prediction = min(counts, key=lambda answer: (-counts[answer], answer))
+                    correct += prediction == case['answer']
+            scores[name] = correct
+        result[task] = dict(held_out_groups=len(groups), total=len(rows), correct=scores)
+    return result
+
+
+def audit(cases, folder, manifest_bytes, features=None):
     records = []
     for case in cases:
         if case['type'] != 'visibility':
@@ -64,4 +96,5 @@ def audit(cases, folder, manifest_bytes):
     return dict(dataset=hashlib.sha256(manifest_bytes).hexdigest(), total=len(points),
                 horizontal_interval_correct=best_rule(points,0),
                 vertical_interval_correct=best_rule(points,1),
-                coordinate_lookup_correct=ceiling, held_out=held_out_rules(records))
+                coordinate_lookup_correct=ceiling, held_out=held_out_rules(records),
+                other_tasks=categorical_checks(cases, features) if features else {})

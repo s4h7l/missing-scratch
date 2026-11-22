@@ -15,6 +15,15 @@ function route() {
   currentPage = page;
 }
 
+const judgeQuestions = {
+  visibility: ['Can the camera see the target in the mirror?',
+    'Look for a clear route from the camera to the mirror and from the mirror to the target.'],
+  blocker: ['Which obstacle does the reflected path meet first?',
+    'Follow the route from the camera toward the mirror first, then toward the target. Choose the first obstacle along that route.'],
+  repair: ['Which move makes the target visible again?',
+    'Compare the two alternative panels below the base scene. Choose the move that leaves both parts of the reflected path clear.'],
+};
+
 function showCase() {
   const item = state.items[state.index];
   if (!item) return;
@@ -27,7 +36,10 @@ function showCase() {
   by('prev').disabled = state.index === 0;
   by('next').disabled = state.index === state.items.length - 1;
   by('meta').textContent = 'SCENE ' + (item.id.endsWith('-0') ? 'A' : 'B') + ' · ' + item.difficulty;
-  by('prompt').textContent = item.question;
+  const [question,guide] = judgeQuestions[item.type] ?? [item.question,''];
+  by('prompt').textContent = question;
+  by('question-guide').textContent = guide;
+  by('exact-question').textContent = item.question;
   by('choices').replaceChildren();
 
   for (const option of item.options) {
@@ -45,8 +57,9 @@ function showCase() {
   }
 
   by('record').disabled = true;
-  by('record').textContent = recorded === undefined ? 'Record finding' : 'Finding recorded';
+  by('record').textContent = recorded === undefined ? 'Lock prediction' : 'Prediction locked';
   by('pair').disabled = false;
+  by('pair').textContent = item.id.endsWith('-0') ? 'Open Scene B ↗' : 'Open Scene A ↗';
   by('toggle-ray').disabled = true;
   by('toggle-ray').textContent = 'Hide ray path';
   by('result').textContent = '';
@@ -57,7 +70,7 @@ function showCase() {
   const paired = state.cases.find(other => other.pair === item.pair && other.id !== item.id);
   const pairedFinding = state.findings.get(paired.id);
   if (pairedFinding === undefined) {
-    by('result').textContent = 'Finding recorded. Inspect the paired scene to unlock the geometry.';
+    by('result').textContent = 'Prediction locked. Open the paired scene and answer it to reveal the geometry.';
     return;
   }
   by('toggle-ray').disabled = false;
@@ -83,12 +96,12 @@ function move(step) {
 }
 
 // Clip a segment against the obstacle rectangle in the planner coordinate space.
-function intersects([x, y], [u, v], [left, top, right, bottom]) {
+function segmentEntry([x, y], [u, v], [left, top, right, bottom]) {
   let enter = 0;
   let exit = 1;
   for (const [start, delta, min, max] of [[x, u - x, left, right], [y, v - y, top, bottom]]) {
     if (delta === 0) {
-      if (start < min || start > max) return false;
+      if (start < min || start > max) return null;
       continue;
     }
     const a = (min - start) / delta;
@@ -96,17 +109,32 @@ function intersects([x, y], [u, v], [left, top, right, bottom]) {
     enter = Math.max(enter, Math.min(a, b));
     exit = Math.min(exit, Math.max(a, b));
   }
-  return enter <= exit;
+  return enter <= exit ? enter : null;
 }
 
-const defaults = { camera: 135, mirror: 335, block: 225 };
+const defaults = { camera: 135, mirror: 335, block: 225, target: 555 };
 let trialActive = false;
 let trialPrediction = null;
+let savedLayout;
+const practiceCases = {
+  blocked: defaults,
+  clear: {...defaults, block: 85},
+  miss: {...defaults, mirror: 150, block: 85},
+};
+const layoutValues = () => Object.fromEntries(Object.keys(defaults).map(key => [key, by(key).valueAsNumber]));
+function applyLayout(values) {
+  for (const [key,value] of Object.entries(values)) by(key).value = value;
+  simulate();
+}
 
 function setTrial(active) {
   trialActive = active;
   trialPrediction = null;
   by('trial-actions').hidden = !active;
+  by('exit-trial').hidden = !active;
+  by('layout-controls').hidden = active;
+  by('generate-trial').hidden = active;
+  by('generate-trial').textContent = 'Start prediction challenge';
   by('trial-result').hidden = true;
   for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
   for (const key of Object.keys(defaults)) by(key).disabled = active;
@@ -116,32 +144,38 @@ function simulate() {
   const mirror = by('mirror').valueAsNumber;
   const block = by('block').valueAsNumber;
   const source = [camera, 95];
-  const target = [555, 119];
+  const target = [by('target').valueAsNumber, 119];
   const plane = 314;
   const reflection = [camera + (target[0] - camera) * (plane - source[1]) / (2 * plane - source[1] - target[1]), plane];
   const inside = Math.abs(reflection[0] - mirror) <= 89;
   const obstacle = [block, 174, block + 52, 216];
-  const blocked = inside && (intersects(source, reflection, obstacle) || intersects(reflection, target, obstacle));
-  by('sim-camera').setAttribute('cx', camera);
-  by('sim-camera-label').setAttribute('x', camera - 24);
-  by('sim-mirror').setAttribute('x1', mirror - 89);
-  by('sim-mirror').setAttribute('x2', mirror + 89);
-  by('sim-mirror-label').setAttribute('x', mirror - 23);
-  by('sim-block').setAttribute('x', block);
-  by('sim-block-label').setAttribute('x', block - 2);
-  by('sim-ray').setAttribute('points', [source, reflection, target].map(point => point.join(',')).join(' '));
-  by('sim-ray').setAttribute('stroke', inside && !blocked ? '#85f1df' : '#f7aa70');
+  const firstHit = segmentEntry(source, reflection, obstacle);
+  const secondHit = inside ? segmentEntry(reflection, target, obstacle) : null;
+  const blocked = inside && (firstHit !== null || secondHit !== null);
   const awaiting = trialActive && trialPrediction === null;
-  by('sim-ray').toggleAttribute('hidden', awaiting);
-  const status = awaiting ? 'Can the camera see the target?' : !inside ? 'Mirror misses the sightline' : blocked ? 'Coverage obstructed' : 'Target covered';
+  const stopAt = (a, b, t) => a.map((value, axis) => value + (b[axis] - value) * t);
+  const ray = firstHit !== null ? [source, stopAt(source, reflection, firstHit)] :
+    !inside ? [source, reflection] : [source, reflection,
+      secondHit === null ? target : stopAt(reflection, target, secondHit)];
+  window.opticsBench.draw({source, target, mirror, plane, obstacle, ray, reflection,
+    clear: inside && !blocked, awaiting, locked: trialActive});
+  by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Free exploration';
+  const status = awaiting ? 'Will the target appear in the mirror?' : !inside ? 'Mirror misses the sightline' : blocked ? 'Coverage obstructed' : 'Target covered';
   if (by('coverage').textContent !== status) by('coverage').textContent = status;
-  by('coverage-detail').textContent = awaiting ? 'Record a prediction to reveal the path.' : !inside ? 'The reflection point lies outside the mirror span.' :
+  by('coverage').dataset.outcome = awaiting ? 'predict' : inside && !blocked ? 'clear' : 'blocked';
+  by('coverage-detail').textContent = awaiting ? 'The layout is locked. Rotate the view if you like, then pick an answer to reveal the ray.' : !inside ? 'The reflection point lies outside the mirror span.' :
     blocked ? 'The ideal reflected path crosses the obstacle.' : 'The reflection point falls on the mirror and both path segments are clear.';
   for (const key of Object.keys(defaults)) by(key + '-value').value = by(key).value;
+  if (!trialActive) by('bench-case').value = Object.entries(practiceCases).find(([,values]) =>
+    Object.entries(values).every(([key,value]) => by(key).valueAsNumber === value))?.[0] ?? 'custom';
   if (trialPrediction !== null) {
     const expected = inside && !blocked ? 'visible' : 'blocked';
     const result = by('trial-result');
-    result.textContent = (trialPrediction === expected ? 'Prediction matches. ' : 'Reference outcome: ') + expected + '.';
+    result.textContent = (trialPrediction === expected ? 'Correct. ' : 'Your prediction: ' + trialPrediction + '. ') +
+      'Reference outcome: ' + expected + '.';
+    by('trial-actions').hidden = true;
+    by('generate-trial').textContent = 'Try another layout';
+    by('generate-trial').hidden = false;
     result.hidden = false;
   }
 }
@@ -178,11 +212,13 @@ window.addEventListener('hashchange', route);
 route();
 for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
 by('generate-trial').addEventListener('click', () => {
+  if (!trialActive) savedLayout = layoutValues();
   setTrial(true);
   const camera = 100 + Math.floor(Math.random() * 101);
   // Keep the reflection within the mirror; place the obstacle on or away from the incoming ray.
   const bounce = camera + (555 - camera) * 219 / 414;
   by('camera').value = camera;
+  by('target').value = defaults.target;
   by('mirror').value = Math.round(bounce) + Math.floor(Math.random() * 49) - 24;
   by('block').value = Math.random() < 0.5 ? 75 + Math.floor(Math.random() * 21) :
     Math.round(camera + (bounce - camera) * 100 / 219 - 26);
@@ -194,14 +230,23 @@ for (const button of document.querySelectorAll('[data-trial-answer]')) {
     trialPrediction = button.dataset.trialAnswer;
     for (const answer of document.querySelectorAll('[data-trial-answer]')) answer.disabled = true;
     simulate();
-    by('generate-trial').focus();
+    by('coverage').focus({preventScroll:true});
   });
 }
+by('exit-trial').addEventListener('click', () => {
+  setTrial(false);
+  applyLayout(savedLayout ?? defaults);
+  by('generate-trial').focus({preventScroll:true});
+});
 by('reset').addEventListener('click', () => {
   setTrial(false);
-  for (const [key, value] of Object.entries(defaults)) by(key).value = value;
-  simulate();
+  applyLayout(defaults);
 });
+by('bench-case').addEventListener('change', event => {
+  const values = practiceCases[event.target.value];
+  if (values) applyLayout(values);
+});
+window.opticsBench.bind(simulate);
 simulate();
 
 fetch('cases.json').then(response => {
@@ -341,6 +386,14 @@ async function loadAudit(raw) {
       (audit.held_out ? ' With whole layout groups held out, the same three methods scored ' +
         [audit.held_out.horizontal, audit.held_out.vertical, audit.held_out.coordinate_lookup].join(', ') +
         ' out of ' + audit.held_out.total + ' across ' + audit.held_out.groups + ' groups.' : '');
+    for (const [name, result] of Object.entries(audit.other_tasks ?? {})) {
+      const row = document.createElement('p');
+      row.textContent = (name === 'blocker' ? 'Obstruction' : 'Repair') + ': ' +
+        Object.entries(result.correct).map(([rule,correct]) =>
+          rule.replaceAll('_',' ') + ' ' + correct + '/' + result.total).join(' · ') +
+        ' on held-out pairs.';
+      by('shortcut-audit').after(row);
+    }
   } catch {
     display.textContent = 'No shortcut diagnostic could be verified for this dataset.';
   }

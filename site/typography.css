@@ -1,0 +1,100 @@
+/* Project-wide type roles and semantic contrast. Loaded after the layout rules. */
+:root {
+  --ink: #233348;
+  --muted: #4d5e70;
+  --line: #dce4e9;
+  --blue: #205e57;
+  --blue-dark: #174a45;
+  --paper: #fcfdfd;
+  --heading: #172b39;
+  --small: .875rem;
+  --body-size: 1rem;
+}
+
+body { font-size: var(--body-size); line-height: 1.55; }
+h1, h2, h3 { color: var(--heading); text-wrap: balance; }
+p { line-height: 1.6; }
+.brand, .product-nav a, .header-action { font-weight: 580; letter-spacing: 0; }
+.product-nav a { color: var(--muted); }
+.product-nav a[aria-current] { background: #e9f3f1; color: var(--blue-dark); }
+.header-action { background: var(--blue-dark); border-color: var(--blue-dark); }
+.header-action:hover { background: #1b5b54; }
+
+.landing .hero h1 {
+  font-size: clamp(2.9rem, 7vw, 5.85rem);
+  font-weight: 560;
+  line-height: 1.04;
+  letter-spacing: -.055em;
+}
+.landing .hero h1 em { color: var(--blue); }
+.page-title { font-size: clamp(2.15rem, 4.5vw, 4rem); font-weight: 570; line-height: 1.12; letter-spacing: -.045em; }
+.story-head h2 { font-size: clamp(1.75rem, 3.4vw, 3.15rem); font-weight: 565; letter-spacing: -.038em; line-height: 1.13; }
+.lead, .landing .hero .lead, .story-head > p:not(.eyebrow) { color: var(--muted); font-size: clamp(1rem, 1.6vw, 1.125rem); line-height: 1.55; }
+.eyebrow, .product-label {
+  font-family: inherit;
+  font-size: var(--small);
+  font-weight: 620;
+  letter-spacing: .015em;
+  text-transform: none;
+  color: var(--blue-dark);
+}
+.eyebrow.muted, .product-label { color: var(--muted); }
+.landing-stats strong, .stats strong { color: var(--heading); font-weight: 600; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.feature h2, .story .feature h3, .inspector h2, .table-panel h2, .evidence-row h2, .evidence-proof h2 {
+  color: var(--heading);
+  font-size: clamp(1.15rem, 1.7vw, 1.43rem);
+  line-height: 1.25;
+  font-weight: 610;
+  letter-spacing: -.024em;
+}
+
+button, select, .primary, .secondary { font-weight: 580; }
+.primary { background: var(--blue-dark); border-color: var(--blue-dark); color: #fff; }
+.primary:not(:disabled):hover { background: #1c5d56; border-color: #1c5d56; }
+.detail, .hint, .feature p { color: var(--muted); font-size: .9375rem; line-height: 1.55; }
+.simulator-heading .page-title { font-size: clamp(1.7rem, 3vw, 2.45rem); font-weight: 590; }
+.simulator-heading .secondary, .bench-nav label, .bench-buttons button, #bench-view { font-size: var(--small); }
+.bench-buttons button { min-height: 42px; }
+.bench-buttons button[aria-pressed=true], .choices button[aria-pressed=true] { border-color: #6e9c96; background: #e8f3f1; color: #174a45; }
+.bar, .bench-legend, .monitor-title { font-family: inherit; font-size: var(--small); font-weight: 580; letter-spacing: .015em; }
+.bar span { color: #c7d5e1; }
+.bench-legend { color: var(--muted); }
+.bench-nav label, .slider { color: var(--heading); font-weight: 560; }
+.bench-nav output, .slider output { color: var(--muted); font-variant-numeric: tabular-nums; }
+.bench-inspector #coverage[data-outcome="clear"] { color: #18574d; }
+.bench-inspector #coverage[data-outcome="blocked"] { color: #823d21; }
+.finding { font-weight: 600; }
+.evidence-proof { background: #f4f8f7; }
+thead th { color: var(--muted); font-weight: 620; }
+tbody th, .status, .text-link { font-weight: 600; }
+
+@media (max-width: 520px) {
+  .landing .hero h1 { font-size: clamp(2.55rem, 9.3vw, 3.7rem); }
+  .case-nav { gap: 6px; }
+  .case-nav button { font-size: .85rem; min-height: 42px; }
+  .simulator-heading .secondary { font-size: .875rem; }
+}
+
+.exact-prompt { margin: 10px 0 14px; font-size: .875rem; color: var(--muted); }
+.exact-prompt summary { cursor: pointer; font-weight: 580; }
+.exact-prompt p { margin: 5px 0 0; }
+#bench-fullscreen {
+  display: inline-flex; gap: 7px; align-items: center; min-height: 38px;
+  padding: 6px 11px; border-color: #566c83; background: #24374c; color: white;
+}
+#bench-fullscreen:not(:disabled):hover { background: #354d65; color: white; }
+#bench-fullscreen span { color: inherit; }
+.bench-view-tag {
+  position: absolute; left: 14px; top: 14px; z-index: 1; pointer-events:none;
+  border: 1px solid #65788f; border-radius: 99px; background: #19293c;
+  padding: 3px 9px; color:#e6eff7; font-size: .8125rem;
+}
+#simulator-page:fullscreen, #simulator-page.bench-fallback-full {
+  overflow: auto; overscroll-behavior: contain; background: #eef3f6;
+  padding: clamp(12px, 3vw, 40px);
+}
+#simulator-page.bench-fallback-full { position: fixed; inset: 0; z-index: 12; }
+.bench-fullscreen-scroll-lock { overflow: hidden; }
+#simulator-page:fullscreen .workspace, #simulator-page.bench-fallback-full .workspace {
+  max-width: 1660px; margin-inline: auto;
+}

@@ -223,3 +223,38 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .preview-stage .replay-bar { background: #192430; color: #d5e8f3; font-size: .88rem; }
 .preview-stage .replay-bar strong { color: #fff; }
 .preview-stage { padding-bottom: clamp(10px, 3.5vw, 44px); }
+
+.bench-object { cursor: grab; touch-action: none; }
+.bench-object:active { cursor: grabbing; }
+.bench-object.locked { cursor: default; }
+.sim-view .bench-label { fill: #f6faff; font: 650 15px system-ui, sans-serif; paint-order: stroke; stroke: #0e1724; stroke-width: 3px; }
+.bench-legend { gap: 8px 13px; }
+#bench-view { margin-left: auto; font: 600 .8rem system-ui, sans-serif; }
+
+#layout { touch-action: none; cursor: grab; }
+#layout:active { cursor: grabbing; }
+#layout.orbit-mode, #layout.orbit-mode .bench-object { cursor: move; }
+.bench-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; padding: 0 16px 16px; }
+.bench-nav label { display: grid; grid-template-columns: 1fr auto; gap: 5px; font-size: .85rem; }
+.bench-nav input { grid-column: 1 / -1; width: 100%; accent-color: #232323; }
+.bench-buttons, #bench-help { grid-column: 1 / -1; }
+.bench-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.bench-buttons button { min-height: 38px; padding: 6px 10px; font-size: .82rem; }
+.bench-buttons button[aria-pressed=true] { border-color: #252525; background: #efefef; }
+.bench-buttons #bench-view { margin-left: 0; }
+#bench-help { margin: 0; }
+
+.bench-inspector .primary { margin: 0; }
+.bench-inspector .tool-row { margin: 14px 0; }
+.bench-inspector #trial-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.bench-inspector #trial-actions button { text-align: left; min-height: 46px; }
+.bench-inspector .finding { padding: 10px 12px; background: #eff5f4; border-radius: 10px; }
+.bench-scope { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 12px; }
+
+body:has(#simulator-page:not([hidden])) > :is(header, footer) { display: none; }
+body:has(#simulator-page:not([hidden])) main { max-width: 1660px; padding-top: clamp(12px, 2vw, 24px); }
+.simulator-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.simulator-heading .page-title { font-size: clamp(1.65rem, 3.2vw, 2.7rem); margin: 0; }
+.simulator-heading .secondary { min-height: 0; padding: 7px 11px; font-size: .84rem; }
+#simulator-page .workspace { margin-top: 14px; }
+#simulator-page .viewport { box-shadow: 0 16px 46px #0b172318; }

@@ -29,7 +29,7 @@ Pick an image-capable model ID available in each account. The Groq [vision docum
 For a capped Groq smoke run, replace the model placeholder with a vision model ID supported by your project:
 
 ```sh
-.venv/bin/python -m scratch.evaluate --dataset runs/frozen-200-v3/cases.json \
+.venv/bin/python -m scratch.evaluate --dataset runs/frozen-200-v4/cases.json \
   --provider groq --model YOUR_GROQ_VISION_MODEL --mode vision \
   --max-requests 2 --record runs/groq-smoke.jsonl
 ```

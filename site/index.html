@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><script src="app.js" defer></script><script src="replay.js" defer></script>
+<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><link rel="stylesheet" href="typography.css"><script src="bench.js" defer></script><script src="app.js" defer></script><script src="replay.js" defer></script>
 </head>
 <body>
 <header class="header"><div class="header-inner">
@@ -17,12 +17,12 @@
 <div class="hero"><div class="hero-copy">
 <p class="product-label">Missing Scratch</p>
 <h1>See the <em>blind spot.</em></h1>
-<p class="lead">Can a vision model tell when one moved obstacle hides a target?</p>
-<div class="actions"><a class="primary" href="#inspection">Try a scored pair ↗</a><a class="secondary" href="#evidence">Inspect the evidence</a></div>
+<p class="lead">Can a vision model tell when moving one obstacle hides the target?</p>
+<div class="actions"><a class="primary" href="#simulator">Open optical bench ↗</a><a class="secondary" href="#inspection">Try a scored pair</a></div>
 </div>
 <div class="preview-stage" id="motion">
 <div class="panel replay-panel">
-<div class="replay-bar"><span>Top-down view</span><strong id="motion-outcome" role="status">Loading scene…</strong></div>
+<div class="replay-bar"><span>Bench preview</span><strong id="motion-outcome" role="status">Loading scene…</strong></div>
 <canvas id="motion-canvas" width="800" height="310" role="img" aria-label="Synthetic top-down optical scene"></canvas>
 <div class="replay-controls">
 <button class="primary" id="motion-play" disabled>Play transition</button>
@@ -34,55 +34,79 @@
 </div>
 </div></div>
 <div class="landing-stats reveal"><div><strong id="landing-scenes">—</strong><span>generated scenes</span></div><div><strong id="landing-pairs">—</strong><span>matched pairs</span></div><div><strong>3</strong><span>inspection tasks</span></div><div><strong>2</strong><span>geometry methods</span></div></div>
-<section id="experiment" class="story reveal"><div class="story-head"><p class="eyebrow">01 / THE EXPERIMENT</p><h2>One change. Two answers.</h2><p>The camera, target, and mirror stay put. The model earns credit only if it gets both scenes right.</p></div>
+<section id="experiment" class="story reveal"><div class="story-head"><p class="eyebrow">The experiment</p><h2>One change. Two answers.</h2><p>The camera, target, and mirror stay put. The model earns credit only if it gets both scenes right.</p></div>
 <div class="pair-grid"><figure class="sample"><img id="landing-a" alt="Synthetic scene A"><figcaption id="landing-a-caption">Scene A</figcaption></figure><figure class="sample"><img id="landing-b" alt="Synthetic scene B"><figcaption id="landing-b-caption">Scene B</figcaption></figure></div>
 <a class="text-link" href="#inspection">Inspect the full dataset ↗</a></section>
-<section class="story reveal"><div class="story-head"><p class="eyebrow">02 / WHAT WE SCORE</p><h2>What the benchmark asks.</h2></div>
+<section class="story reveal"><div class="story-head"><p class="eyebrow">Task types</p><h2>Three inspection tasks</h2></div>
 <div class="feature-grid"><article class="panel feature"><span class="tile-icon">01</span><h3>Visibility</h3><p>Can the camera see the target through the mirror?</p></article><article class="panel feature"><span class="tile-icon">02</span><h3>Obstruction</h3><p>Which obstacle does the ideal reflected path meet first?</p></article><article class="panel feature"><span class="tile-icon">03</span><h3>Repair</h3><p>Which placement change restores the sightline?</p></article></div>
-<a class="text-link" href="#simulator">Move the scene yourself ↗</a></section>
+<a class="text-link" href="#simulator">Open the full bench ↗</a></section>
 </section>
 
 <section data-page="inspection" class="page" hidden>
-<p class="eyebrow">OPERATOR WORKBENCH</p><h1 class="page-title">Scene inspection</h1>
-<p class="lead">Record findings for both scenes in a pair to unlock the geometry and see whether you spotted the change.</p>
+<p class="eyebrow">Paired challenge</p><h1 class="page-title">Scene inspection</h1>
+<p class="lead">One change can flip the answer. Choose a prediction in each scene, then compare both with the reference.</p>
 <div class="workspace">
 <div class="panel viewport"><div class="bar"><div><i></i> Synthetic scene</div><span id="caseId">Loading…</span></div>
 <div class="diagram"><img id="scene" alt="Top-down inspection diagram with labelled camera, target, mirror and obstacles"><svg id="ray" aria-hidden="true" hidden><polyline fill="none" stroke="#eaffff" stroke-width="2" stroke-dasharray="5 4"/></svg></div>
 <div class="case-nav"><button id="prev" disabled>← Previous question</button><span id="counter" aria-live="polite"></span><button id="next" disabled>Next question →</button></div>
 </div>
-<aside class="panel inspector"><label for="kind" class="eyebrow">INSPECTION MODE</label>
+<aside class="panel inspector"><label for="kind" class="eyebrow">Task type</label>
 <select id="kind"><option value="all">All scenarios</option><option value="visibility">Coverage check</option><option value="blocker">Obstruction diagnosis</option><option value="repair">Placement adjustment</option></select>
 <p id="meta" class="eyebrow muted"></p><h2 id="prompt">Loading scenes…</h2>
-<div id="choices" class="choices" aria-label="Inspection finding"></div><button id="record" class="primary" disabled>Record finding</button>
+<p id="question-guide" class="detail"></p><details class="exact-prompt"><summary>Exact benchmark question</summary><p id="exact-question"></p></details>
+<div id="choices" class="choices" aria-label="Inspection finding"></div><button id="record" class="primary" disabled>Lock prediction</button>
 <p id="result" role="status" class="finding"></p><p id="trace" class="detail" hidden></p>
 <div class="tool-row"><button id="toggle-ray" disabled>Hide ray path</button><button id="pair" disabled>Open paired scene ↗</button></div>
 <p class="detail">Findings are kept for this browser tab. The separate blind review packet has no answer reveal.</p>
 </aside></div></section>
 
-<section data-page="simulator" class="page" hidden>
-<p class="eyebrow">LIVE SIMULATION</p><h1 class="page-title">Coverage simulator</h1>
-<p class="lead">Adjust a simple camera layout and see how a reflected sightline responds as you move each control.</p>
-<div class="workspace"><div class="panel viewport"><div class="bar"><div><i></i> Top-down planning view</div><span>SIMULATION</span></div>
-<div class="sim-view"><svg id="layout" viewBox="0 0 680 380" role="img" aria-label="Interactive simulated camera coverage">
-<defs><pattern id="sim-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M 24 0 L 0 0 0 24" fill="none" stroke="#26364c"/></pattern></defs>
-<rect width="680" height="380" fill="url(#sim-grid)"/>
-<line x1="35" x2="645" y1="314" y2="314" stroke="#486078" stroke-dasharray="5 8"/>
-<polyline id="sim-ray" fill="none" stroke="#85f1df" stroke-width="3" stroke-dasharray="8 7"/>
-<line id="sim-mirror" y1="314" y2="314" stroke="#87e9ed" stroke-width="7" stroke-linecap="round"/>
-<rect id="sim-block" y="174" width="52" height="42" rx="4" fill="#f7aa70"/>
-<circle id="sim-camera" cy="95" r="9" fill="#82c8ff"/><circle cx="555" cy="119" r="9" fill="#edf5a4"/>
-<text id="sim-camera-label" y="75">CAMERA</text><text x="529" y="99">TARGET</text><text id="sim-block-label" y="156">OBSTACLE</text><text id="sim-mirror-label" y="347">MIRROR</text>
-</svg></div><div class="legend">● Camera <span>● Target</span> <span>■ Obstacle</span> <span>━ Mirror</span></div></div>
-<aside class="panel inspector"><p class="eyebrow">LAYOUT CONTROLS</p><h2 id="coverage" aria-live="polite">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
+<section data-page="simulator" id="simulator-page" class="page" hidden>
+<div class="simulator-heading">
+<h1 class="page-title">Optical bench</h1><a class="secondary" href="#overview">← Back to overview</a>
+</div>
+<div class="workspace"><div class="panel viewport"><div class="bar"><div><i></i> Interactive optical bench</div><button id="bench-fullscreen" type="button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="fullscreen-label">Expand fullscreen</span></button></div>
+<div class="sim-view"><span class="bench-view-tag" id="bench-view-tag">3D view</span><svg id="layout" viewBox="0 0 760 410" role="img" tabindex="0" aria-label="Optical bench" aria-describedby="bench-help">
+<defs>
+<linearGradient id="bench-surface" x2="0" y2="100%"><stop stop-color="#17614f"/><stop offset="1" stop-color="#0b342d"/></linearGradient>
+<linearGradient id="bench-rail" x2="100%" y2="100%"><stop stop-color="#566275"/><stop offset="1" stop-color="#1d2736"/></linearGradient>
+<radialGradient id="bench-backdrop" cx="50%" cy="30%" r="70%"><stop stop-color="#23334a"/><stop offset="1" stop-color="#0b111c"/></radialGradient>
+<linearGradient id="mirror-finish" x2="100%" y2="100%"><stop stop-color="#e6ffff"/><stop offset=".45" stop-color="#74bbca"/><stop offset=".52" stop-color="#c6f7fc"/><stop offset="1" stop-color="#418a9d"/></linearGradient>
+</defs>
+<rect width="760" height="410" fill="url(#bench-backdrop)"/>
+<g id="bench-floor"></g>
+<g id="bench-objects"></g>
+<g id="bench-ray" pointer-events="none"></g>
+</svg></div><div class="legend bench-legend"><span>Blue: camera</span><span>Amber: obstacle</span><span>Cyan: mirror</span><span>Green: target</span></div>
+<div class="bench-nav" aria-label="Bench view controls">
+<div class="bench-buttons" role="group" aria-label="View presets and zoom">
+<button id="bench-view" type="button" aria-pressed="false">2D view</button>
+<button id="bench-orbit" type="button" aria-pressed="false">Orbit drag</button>
+<button id="bench-out" type="button" aria-label="Zoom out">−</button>
+<button id="bench-in" type="button" aria-label="Zoom in">+</button>
+<button id="bench-home" type="button">Reset view</button>
+</div>
+<label>Heading <output id="bench-heading-value"></output><input id="bench-heading" type="range" min="0" max="359" value="330"></label>
+<label>Tilt <output id="bench-tilt-value"></output><input id="bench-tilt" type="range" min="0" max="75" value="42"></label>
+<p class="detail" id="bench-help">Drag an object to move it or drag empty space to pan. Turn on Orbit drag to rotate and tilt. Arrow keys pan; + and − zoom.</p>
+</div></div>
+<aside class="panel inspector bench-inspector">
+<p id="bench-step" class="eyebrow">Free exploration</p>
+<h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
+<div class="tool-row"><button id="generate-trial" class="primary" type="button">Start prediction challenge</button><button id="exit-trial" type="button" hidden>Back to free explore</button></div>
+<div id="trial-actions" class="tool-row" role="group" aria-label="Predict target visibility" hidden><button type="button" data-trial-answer="visible">Visible through the mirror</button><button type="button" data-trial-answer="blocked">Hidden from the camera</button></div>
+<p id="trial-result" class="finding" role="status" hidden></p>
+<div id="layout-controls">
+<label for="bench-case" class="eyebrow">Practice case</label>
+<select id="bench-case"><option value="custom" disabled>Custom layout</option><option value="blocked" selected>01 · Obstructed path</option><option value="clear">02 · Clear reflection</option><option value="miss">03 · Mirror out of reach</option></select>
 <label class="slider">Camera position <output id="camera-value"></output><input id="camera" type="range" min="65" max="270" value="135"></label>
 <label class="slider">Mirror position <output id="mirror-value"></output><input id="mirror" type="range" min="150" max="510" value="335"></label>
 <label class="slider">Obstacle position <output id="block-value"></output><input id="block" type="range" min="70" max="555" value="225"></label>
-<div class="tool-row"><button id="reset">Reset layout</button><button id="generate-trial" class="primary" type="button">Generate a trial</button></div>
-<div id="trial-actions" class="tool-row" role="group" aria-label="Predict target visibility" hidden><button type="button" data-trial-answer="visible">Predict visible</button><button type="button" data-trial-answer="blocked">Predict blocked</button></div>
-<p id="trial-result" class="finding" role="status" hidden></p><p class="detail">Ideal, single-reflection model. No live CCTV feed, lens calibration, or site measurements are used.</p></aside></div></section>
+<label class="slider">Target position <output id="target-value"></output><input id="target" type="range" min="480" max="630" value="555"></label>
+<button id="reset" type="button">Reset object positions</button></div>
+<p class="detail bench-scope">This sandbox uses a top-down reflection model. Challenge results are practice feedback and are excluded from benchmark scores.</p></aside></div></section>
 
 <section data-page="benchmark" class="page" hidden>
-<p class="eyebrow">MODEL EVALUATION</p><h1 class="page-title">Benchmark</h1>
+<p class="eyebrow">Model evaluation</p><h1 class="page-title">Benchmark</h1>
 <p class="lead">A fixed set of scenes lets us measure how consistently models reason about coverage, obstructions, and repairs.</p>
 <div class="stats"><div class="panel"><strong id="scene-count">—</strong><span>Synthetic scenes</span></div><div class="panel"><strong id="pair-count">—</strong><span>Matched pairs</span></div><div class="panel"><strong>3</strong><span>Inspection tasks</span></div></div>
 <div class="panel table-panel"><h2>Recorded model reports</h2>
@@ -92,14 +116,14 @@
 <p class="detail">Only complete, error-free logs from this exact dataset are shown. Codex CLI is tracked separately as an agent evaluation.</p></div></section>
 
 <section data-page="evidence" class="page" hidden>
-<p class="eyebrow">TRACK 2 / VALIDATION</p><h1 class="page-title">Evidence</h1>
-<p class="lead">What we checked, what judges can reproduce, and what still needs measurement.</p>
+<p class="eyebrow">Track 2 · Validation</p><h1 class="page-title">Evidence</h1>
+<p class="lead">Inspect the geometry checks and see which measurements are still pending.</p>
 <div class="panel evidence-proof">
 <div><span class="status done">Synthetic geometry checked</span><h2><span id="evidence-count">—</span> cases with reference answers</h2>
 <p>Two geometry methods check each generated case. The manifest ties each answer to the exact image evaluated.</p></div>
 <div class="actions"><a class="primary" href="#inspection">Inspect a verified pair</a><a class="secondary" href="cases.json" download>Download manifest</a></div>
 </div>
-<div class="panel evidence-proof"><div><h2>Does a visual shortcut give away the answer?</h2>
+<div class="panel evidence-proof"><div><h2>Shortcut checks</h2>
 <p id="shortcut-audit" role="status">Loading the shortcut audit…</p>
 <p class="detail">Each obstacle position now appears with both outcomes across different camera layouts. This diagnostic rules out position alone on these visibility cases. It does not rule out other shortcuts.</p></div>
 <a class="text-link" href="validity-audit.json" download>Download diagnostic</a></div>

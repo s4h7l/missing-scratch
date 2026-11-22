@@ -27,3 +27,7 @@ The v2 visibility labels still separate perfectly on an in-sample interval of th
 ## v3 counterbalance
 
 Visibility pairs now occur in layout groups of two. Each group keeps two obstacle placements fixed and changes which placement intersects the ray by changing camera and target coordinates. A best-fit position-only interval and exact coordinate lookup both score 34/68 on the default dataset. This is an in-sample shortcut diagnostic for visibility, not a claim about other features, task types, or model performance. Review and evaluate v3 only. Before running models, check the other task families and test additional baselines with whole layout groups held out.
+
+## v4 obstruction and repair checks
+
+In both tasks the two cases share the labeled obstacles and answer option order. The intervention moves the camera. Repair also keeps the alternatives in the same panel order. The tested labeled-obstacle, option-order and repair panel-order rules each scored 33/66 on held-out pairs. The tested camera-side-only rule scored 38/66 for obstruction and 36/66 for repair, so residual predictive cues remain possible. This is a synthetic design diagnostic. Blind review and three real image-versus-text model comparisons are still required before final claims.
