@@ -65,3 +65,5 @@ In the Simulator, **Generate a trial** creates a fresh layout. Predict visibilit
 [Model API setup](docs/API-SETUP.md) covers Gemini, GroqCloud, Claude Platform, OpenAI, OpenRouter, and separate Codex CLI authentication.
 
 [Track 2 judging checklist and shortcut audit](evidence/JUDGING.md). The v3 freeze replaces the earlier dataset. Send reviewers the opaque-ID packet and keep the coordinator key private.
+
+[Evidence runbook](evidence/RUNBOOK.md) covers the held-out audit, review handoff, model runs, and physical check summaries.

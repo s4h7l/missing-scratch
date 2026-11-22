@@ -337,7 +337,10 @@ async function loadAudit(raw) {
     const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
     if (audit.dataset !== hex) throw new Error('Audit belongs to another dataset');
     display.textContent = 'Across ' + audit.total + ' visibility cases, the best horizontal interval, vertical interval, and exact coordinate lookup each got ' +
-      [audit.horizontal_interval_correct, audit.vertical_interval_correct, audit.coordinate_lookup_correct].join(', ') + ' answers right, respectively.';
+      [audit.horizontal_interval_correct, audit.vertical_interval_correct, audit.coordinate_lookup_correct].join(', ') + ' answers right, respectively.' +
+      (audit.held_out ? ' With whole layout groups held out, the same three methods scored ' +
+        [audit.held_out.horizontal, audit.held_out.vertical, audit.held_out.coordinate_lookup].join(', ') +
+        ' out of ' + audit.held_out.total + ' across ' + audit.held_out.groups + ' groups.' : '');
   } catch {
     display.textContent = 'No shortcut diagnostic could be verified for this dataset.';
   }
