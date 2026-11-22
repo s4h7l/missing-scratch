@@ -46,7 +46,7 @@ def render(scene, variants, file):
     im.save(file)
 
 
-def generate(seed, pairs, out):
+def generate(seed, pairs, out, replay=None):
     rng = random.Random(seed)
     images = out/'images'
     images.mkdir(parents=True,exist_ok=True)
@@ -104,6 +104,8 @@ def generate(seed, pairs, out):
             image=images/f'{case_id}.png'
             render(scene,variants,image)
             visible, blockers, x=checked(scene)
+            if replay is not None and i == 0:
+                replay.append(dict(id=case_id, scene=scene, visible=visible, bounce=float(x)))
             rows.append(dict(id=case_id,pair=i,type=kind,difficulty=difficulty,
                 question=prompt, options=options, answer=correct,
                 image=f'images/{image.name}',image_sha256=hashlib.sha256(image.read_bytes()).hexdigest(),
@@ -125,9 +127,11 @@ def main():
     args.out.mkdir(parents=True,exist_ok=True)
     for source in (ROOT/'site').iterdir():
         shutil.copyfile(source,args.out/source.name)
-    rows=generate(args.seed,args.pairs,args.out)
+    replay=[]
+    rows=generate(args.seed,args.pairs,args.out,replay)
     payload=json.dumps(dict(seed=args.seed,cases=rows),sort_keys=True,indent=2)
     (args.out/'cases.json').write_text(payload)
+    (args.out/'replay.json').write_text(json.dumps(replay, indent=2)+'\n')
     (args.out/'validity-audit.json').write_text(json.dumps(audit(rows, args.out, payload.encode()), indent=2)+'\n')
     print(f'{len(rows)} synthetic cases; manifest SHA256 {hashlib.sha256(payload.encode()).hexdigest()}')
 

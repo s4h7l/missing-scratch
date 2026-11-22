@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><script src="app.js" defer></script>
+<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><script src="app.js" defer></script><script src="replay.js" defer></script>
 </head>
 <body>
 <header class="header"><div class="header-inner">
@@ -18,23 +18,20 @@
 <p class="product-label">Missing Scratch</p>
 <h1>See the <em>blind spot.</em></h1>
 <p class="lead">Can a vision model tell when one moved obstacle hides a target?</p>
-<div class="actions"><a class="primary" href="#inspection">Start the challenge ↗</a><button class="secondary" type="button" data-scroll="experiment">How it works ↓</button></div>
+<div class="actions"><a class="secondary" href="#inspection">Start the challenge ↗</a><button class="secondary" type="button" data-scroll="experiment">How it works ↓</button></div>
 </div>
-<div class="preview-stage">
-<figure class="hero-visual hero-demo">
-<div class="monitor-title"><span class="preview-name"><i></i> Coverage preview</span><span>Synthetic benchmark</span></div>
-<div class="hero-picture hero-scene" aria-busy="true">
-<img id="hero-scene" alt="Synthetic scene A" width="680" height="248">
-<img id="hero-scene-b" alt="Synthetic scene B" width="680" height="248" hidden>
+<div class="preview-stage" id="motion">
+<div class="panel replay-panel">
+<div class="replay-bar"><span>Top-down view</span><strong id="motion-outcome" role="status">Loading scene…</strong></div>
+<canvas id="motion-canvas" width="800" height="310" role="img" aria-label="Synthetic top-down optical scene"></canvas>
+<div class="replay-controls">
+<button class="primary" id="motion-play" disabled>Play transition</button>
+<button id="motion-reset" disabled>Reset</button>
+<label for="motion-scrub">Obstacle position</label>
+<input id="motion-scrub" type="range" min="0" max="1000" value="0" disabled>
 </div>
-<figcaption class="monitor-foot hero-caption">
-<div><span id="hero-case">Loading scene…</span><b id="hero-outcome" role="status"></b></div>
-<div class="scene-control" role="group" aria-label="Compare obstacle positions">
-<button id="hero-select-a" type="button" aria-pressed="true" disabled>Scene A</button>
-<button id="hero-select-b" type="button" aria-pressed="false" disabled>Scene B</button>
-</div></figcaption>
-</figure>
-<p class="preview-hint">Switch scenes to see how one moved obstacle changes coverage.</p>
+<p id="motion-note" class="detail">The endpoints come from the frozen benchmark. Intermediate positions are an interactive explanation and are excluded from scoring.</p>
+</div>
 </div></div>
 <div class="landing-stats reveal"><div><strong id="landing-scenes">—</strong><span>generated scenes</span></div><div><strong id="landing-pairs">—</strong><span>matched pairs</span></div><div><strong>3</strong><span>inspection tasks</span></div><div><strong>2</strong><span>geometry methods</span></div></div>
 <section id="experiment" class="story reveal"><div class="story-head"><p class="eyebrow">01 / THE EXPERIMENT</p><h2>One change. Two answers.</h2><p>The camera, target, and mirror stay put. The model earns credit only if it gets both scenes right.</p></div>
@@ -110,7 +107,7 @@
 </div>
 <div class="panel evidence-proof"><div><h2>Does a visual shortcut give away the answer?</h2>
 <p id="shortcut-audit" role="status">Loading the shortcut audit…</p>
-<p class="detail">This checks one feature. Other cues may still leak answers, and human legibility remains unverified.</p></div>
+<p class="detail">The height shortcut is closed. A separate in-sample horizontal position check still separates all 68 visibility labels. Fix this before using the dataset to make claims about optical reasoning.</p></div>
 <a class="text-link" href="validity-audit.json" download>Download diagnostic</a></div>
 <div class="evidence-rows">
 <article class="panel evidence-row"><div><h2>Blind human review</h2><p>72 cases are ready. Reviewers see the same pixels and questions under anonymous IDs.</p></div><span class="status pending">Agreement pending</span></article>

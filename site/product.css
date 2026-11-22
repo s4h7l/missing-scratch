@@ -210,3 +210,16 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .evidence-row .status{flex:none}
 .evidence-row .text-link,.evidence-proof .text-link{margin-top:6px}
 @media(max-width:640px){.evidence-row{align-items:flex-start;flex-direction:column}}
+
+.replay-panel { overflow: hidden; }
+.replay-panel canvas { display: block; width: 100%; height: auto; background: #101821; }
+.replay-bar { display: flex; justify-content: space-between; gap: 12px; padding: 12px 18px; background: #f3f3f3; }
+.replay-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 16px 18px 0; }
+.replay-controls input { flex: 1 1 180px; accent-color: #262626; }
+.replay-controls label { font-size: .9rem; color: var(--muted); }
+#motion-note { margin: 10px 18px 16px; }
+
+.preview-stage .replay-panel { text-align: left; box-shadow: 0 12px 28px #16161618; }
+.preview-stage .replay-bar { background: #192430; color: #d5e8f3; font-size: .88rem; }
+.preview-stage .replay-bar strong { color: #fff; }
+.preview-stage { padding-bottom: clamp(10px, 3.5vw, 44px); }

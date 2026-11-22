@@ -218,7 +218,6 @@ fetch('cases.json').then(response => {
   by('landing-pairs').textContent = by('pair-count').textContent;
   const first = cases.find(item => item.type === 'visibility');
   const pair = cases.filter(item => item.pair === first.pair);
-  bindHero(pair);
   for (const [i, id] of ['a', 'b'].entries()) {
     by('landing-' + id).src = pair[i].image;
     by('landing-' + id + '-caption').textContent = 'Scene ' + id.toUpperCase() + ' · ' + pair[i].answer;
@@ -228,35 +227,8 @@ fetch('cases.json').then(response => {
   void loadReports(raw);
 }).catch(() => {
   by('prompt').textContent = 'The synthetic dataset could not be loaded.';
-  by('hero-case').textContent = 'Scene unavailable';
-  by('hero-scene').parentElement.setAttribute('aria-busy', 'false');
 });
 
-function bindHero(pair) {
-  const images = [by('hero-scene'), by('hero-scene-b')];
-  const buttons = [by('hero-select-a'), by('hero-select-b')];
-  function select(index) {
-    const scene = pair[index];
-    for (const [i, image] of images.entries()) {
-      image.hidden = i !== index;
-      buttons[i].setAttribute('aria-pressed', String(i === index));
-    }
-    by('hero-case').textContent = 'Scene ' + (index ? 'B' : 'A') + ' · ' + scene.id;
-    const outcome = by('hero-outcome');
-    outcome.textContent = scene.answer === 'Visible' ? 'Target visible' : 'Target blocked';
-    outcome.classList.toggle('clear', scene.answer === 'Visible');
-  }
-  for (const [i, image] of images.entries()) {
-    image.addEventListener('load', () => image.classList.add('ready'));
-    image.alt = 'Synthetic scene ' + (i ? 'B' : 'A') + ' · ' + pair[i].answer;
-    image.src = pair[i].image;
-    if (image.complete && image.naturalWidth) image.classList.add('ready');
-    buttons[i].disabled = false;
-    buttons[i].addEventListener('click', () => select(i));
-  }
-  images[0].parentElement.setAttribute('aria-busy', 'false');
-  select(0);
-}
 for (const button of document.querySelectorAll('[data-scroll]')) {
   button.addEventListener('click', () => by(button.dataset.scroll).scrollIntoView({
     behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'

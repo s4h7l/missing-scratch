@@ -19,3 +19,7 @@ Freeze and distribute the v2 manifest and images together. Do not mix with earli
 ## Finalist sequence
 
 Show one coverage-changing pair and ask judges to commit both predictions. Reveal the trace. Show one recorded model mistake and its consequence if model runs have completed. Follow with the corresponding physical frames only once captured. Keep the Evidence page one click away for the manifest and diagnostic.
+
+## Second-pass judge audit
+
+The v2 visibility labels still separate perfectly on an in-sample interval of the movable obstacle's horizontal pixel coordinate (68/68). A single horizontal threshold scores 54/68. This is a diagnostic, not a generalization estimate. Do not present v2 as proof that a model reasons about optical geometry. Before freezing a competition dataset, counterbalance obstacle positions across diverse camera and target layouts so the same obstacle coordinate occurs with both labels, then rerun shortcut controls on held-out layout groups. Reissue the review packet and model reports against the new manifest.
