@@ -12,6 +12,20 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
+CHAT_ENDPOINTS = {
+    'openai': 'https://api.openai.com/v1/chat/completions',
+    'openrouter': 'https://openrouter.ai/api/v1/chat/completions',
+    'groq': 'https://api.groq.com/openai/v1/chat/completions',
+}
+PROVIDER_KEYS = {
+    'openai': 'OPENAI_API_KEY',
+    'openrouter': 'OPENROUTER_API_KEY',
+    'groq': 'GROQ_API_KEY',
+    'gemini': 'GEMINI_API_KEY',
+    'anthropic': 'ANTHROPIC_API_KEY',
+}
+
+
 def request_model(provider, model, case, folder, mode):
     from string import ascii_uppercase
     choices = case['options']
@@ -35,11 +49,20 @@ def request_model(provider, model, case, folder, mode):
         if encoded:
             parts.append({'inline_data':{'mime_type':'image/png','data':encoded}})
         body = {'contents':[{'parts':parts}]}
+    elif provider == 'anthropic':
+        endpoint = 'https://api.anthropic.com/v1/messages'
+        headers = {'x-api-key': os.environ[PROVIDER_KEYS[provider]],
+                   'anthropic-version': '2023-06-01'}
+        content = []
+        if encoded:
+            content.append({'type': 'image', 'source': {
+                'type': 'base64', 'media_type': 'image/png', 'data': encoded}})
+        content.append({'type': 'text', 'text': prompt})
+        body = {'model': model, 'max_tokens': 512,
+                'messages': [{'role': 'user', 'content': content}]}
     else:
-        key_name, endpoint = {
-            'openai':('OPENAI_API_KEY','https://api.openai.com/v1/chat/completions'),
-            'openrouter':('OPENROUTER_API_KEY','https://openrouter.ai/api/v1/chat/completions'),
-        }[provider]
+        key_name = PROVIDER_KEYS[provider]
+        endpoint = CHAT_ENDPOINTS[provider]
         headers = {'Authorization':'Bearer '+os.environ[key_name]}
         content = [{'type':'text','text':prompt}]
         if encoded:
@@ -50,6 +73,8 @@ def request_model(provider, model, case, folder, mode):
         data = json.load(response)
     if provider == 'gemini':
         return ''.join(part.get('text','') for part in data['candidates'][0]['content']['parts'])
+    if provider == 'anthropic':
+        return ''.join(part['text'] for part in data['content'] if part['type'] == 'text')
     return data['choices'][0]['message']['content'] or ''
 
 
@@ -76,7 +101,7 @@ def metrics(cases, output):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--dataset',type=Path,default=Path('dist/cases.json'))
-    parser.add_argument('--provider',choices=['openai','gemini','openrouter'])
+    parser.add_argument('--provider',choices=sorted(PROVIDER_KEYS))
     parser.add_argument('--model')
     parser.add_argument('--mode',choices=['vision','question-only'],default='vision')
     parser.add_argument('--max-requests',type=int)
@@ -91,8 +116,7 @@ def main():
     if args.record:
         if not args.provider or not args.model or not args.max_requests or args.max_requests<1:
             parser.error('Live runs require provider, model, and a positive request cap')
-        key_name={'gemini':'GEMINI_API_KEY','openai':'OPENAI_API_KEY',
-                  'openrouter':'OPENROUTER_API_KEY'}[args.provider]
+        key_name = PROVIDER_KEYS[args.provider]
         if not os.environ.get(key_name):
             parser.error(f'Set {key_name} before starting a live run')
         cases=cases[:args.max_requests]

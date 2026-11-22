@@ -202,3 +202,11 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 #trial-actions { margin-top: 12px; }
 #trial-result { margin-bottom: 4px; }
 #sim-ray[hidden] { display: none; }
+
+.evidence-proof,.evidence-row{padding:clamp(18px,3vw,30px);display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:12px}
+.evidence-proof{background:#f6f6f6;flex-wrap:wrap}
+.evidence-proof h2,.evidence-row h2{font-size:clamp(1.18rem,2.5vw,1.58rem);font-weight:610;letter-spacing:-.03em;margin:6px 0}
+.evidence-proof p,.evidence-row p{max-width:68ch;margin:6px 0;color:var(--muted)}
+.evidence-row .status{flex:none}
+.evidence-row .text-link,.evidence-proof .text-link{margin-top:6px}
+@media(max-width:640px){.evidence-row{align-items:flex-start;flex-direction:column}}

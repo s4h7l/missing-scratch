@@ -211,6 +211,8 @@ fetch('cases.json').then(response => {
   const { cases } = JSON.parse(raw);
   state.cases = state.items = cases;
   by('scene-count').textContent = cases.length;
+  by('evidence-count').textContent = cases.length;
+  void loadAudit(raw);
   by('pair-count').textContent = new Set(cases.map(item => item.pair)).size;
   by('landing-scenes').textContent = by('scene-count').textContent;
   by('landing-pairs').textContent = by('pair-count').textContent;
@@ -282,8 +284,8 @@ addEventListener('resize', progress);
 addEventListener('hashchange', progress);
 progress();
 
-const logos = { gemini: 'gemini', openai: 'openai', openrouter: 'openrouter' };
-const lineup = ['Gemini', 'Claude', 'Qwen-VL', 'OpenAI'];
+const logos = { gemini: 'gemini', openai: 'openai', openrouter: 'openrouter', anthropic: 'claude', groq: 'groq' };
+const lineup = ['Gemini', 'Claude', 'Qwen-VL', 'OpenAI', 'Groq'];
 function brandFor(run) {
   const id = run.model.toLowerCase();
   if (id.includes('claude')) return 'claude';
@@ -320,7 +322,7 @@ async function loadReports(raw) {
     const status = report.reports.length ? report.reports.length + ' recorded model configurations on this dataset.' : 'Model evaluation pending. Scores appear here after the frozen dataset is run.';
     by('report-status').textContent = by('landing-report-status').textContent = status;
     if (!report.reports.length) {
-      for (const [i, name] of lineup.entries()) modelRow(name, ['gemini','claude','qwen','openai'][i], ['Pending','Pending','Pending']);
+      for (const [i, name] of lineup.entries()) modelRow(name, ['gemini','claude','qwen','openai','groq'][i], ['Pending','Pending','Pending']);
     }
     for (const run of report.reports) {
       const vision = run.modes.vision?.scores;
@@ -328,7 +330,7 @@ async function loadReports(raw) {
       modelRow(run.model, brandFor(run), [scoreText(vision?.overall), scoreText(baseline?.overall), scoreText(vision?.both_pair_members)]);
       const details = document.createElement('details');
       const summary = document.createElement('summary');
-      summary.textContent = run.model + ' · Task breakdown';
+      summary.textContent = run.model + ' · ' + run.provider + ' · Task breakdown';
       details.append(summary);
       for (const mode of ['vision','question-only']) {
         const scores = run.modes[mode]?.scores;
@@ -353,5 +355,22 @@ async function loadReports(raw) {
     by('report-status').textContent = by('landing-report-status').textContent = 'No reports could be verified for this dataset.';
   } finally {
     by('report-loading').hidden = true;
+  }
+}
+
+async function loadAudit(raw) {
+  const display = by('shortcut-audit');
+  try {
+    const response = await fetch('validity-audit.json');
+    if (!response.ok) throw new Error('Audit unavailable');
+    const audit = await response.json();
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+    const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+    if (audit.dataset !== hex) throw new Error('Audit belongs to another dataset');
+    display.textContent = 'On visibility cases, the best single cutoff based on obstacle height got ' +
+      audit.best_threshold_correct + ' of ' + audit.total +
+      ' right. The paired obstacle now moves sideways while staying at the same height.';
+  } catch {
+    display.textContent = 'No shortcut diagnostic could be verified for this dataset.';
   }
 }

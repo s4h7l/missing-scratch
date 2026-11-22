@@ -1,6 +1,7 @@
 """Summarize two independent blind reviews against a frozen dataset."""
 import argparse
 import csv
+import hashlib
 import json
 from pathlib import Path
 
@@ -20,8 +21,15 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('reviewers',nargs=2,type=Path)
     p.add_argument('--dataset',type=Path,default=Path('dist/cases.json'))
+    p.add_argument('--key',type=Path,help='Private coordinator key for opaque review IDs')
     args=p.parse_args()
-    cases={case['id']:case for case in json.loads(args.dataset.read_text())['cases']}
+    data=args.dataset.read_bytes()
+    cases={case['id']:case for case in json.loads(data)['cases']}
+    if args.key:
+        key=json.loads(args.key.read_text())
+        if key['dataset'] != hashlib.sha256(data).hexdigest():
+            p.error('Coordinator key belongs to another dataset')
+        cases={review_id:cases[case_id] for review_id,case_id in key['cases'].items()}
     left,right=[read_review(file,cases) for file in args.reviewers]
     report=dict(cases=len(cases),both_answered=0,reviewer_agreement=0,
                 reviewer_a_matches=0,reviewer_b_matches=0,issues=[])

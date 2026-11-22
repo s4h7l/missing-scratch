@@ -11,14 +11,14 @@ python3 -m venv .venv
 make test
 make serve
 ```
-Open http://127.0.0.1:8000. Alternatively run `docker compose up --build` on port 8000. Use only one server at a time. For official cross-machine comparisons, freeze one manifest and its PNGs from the same runtime and distribute that bundle. With Docker running, use `make freeze-docker` to export the exact served bundle, and pass `--dataset runs/frozen-200/cases.json` to blind review and evaluation commands.
+Open http://127.0.0.1:8000. Alternatively run `docker compose up --build` on port 8000. Use only one server at a time. For official cross-machine comparisons, freeze one manifest and its PNGs from the same runtime and distribute that bundle. With Docker running, use `make freeze-docker` to export the exact served bundle, and pass `--dataset runs/frozen-200-v2/cases.json` to blind review and evaluation commands.
 
 ## Reproduce
 `make build` rebuilds 200 cases from seed 42. For another destination use `.venv/bin/python -m scratch.build --seed 42 --pairs 100 --out /tmp/missing-scratch-replay`. Compare the manifest and image hashes using the same Python, Pillow and platform, or inside the same container build. The public judge site contains answer keys for the reveal. Distribute the separate blind packet for human review.
 
 ```sh
-.venv/bin/python -m scratch.blind --out runs/review-packet
-.venv/bin/python -m scratch.review runs/reviewer-a.csv runs/reviewer-b.csv
+.venv/bin/python -m scratch.blind --count 72 --out runs/review-packet
+.venv/bin/python -m scratch.review --key runs/review-packet-private-key.json runs/reviewer-a.csv runs/reviewer-b.csv
 .venv/bin/python -m scratch.evaluate --chance
 .venv/bin/python -m scratch.evaluate --replay runs/model-vision.jsonl
 ```
@@ -45,7 +45,7 @@ The ideal diagram assumes a point camera, point target, a top-down horizontal sp
 Keep credentials in your shell or secret manager. See `.env.example` for variable names. Use an image-capable Claude or Qwen model through the OpenRouter provider. Run the same cases in both modes, using distinct log files.
 
 ```sh
-.venv/bin/python -m scratch.publish_reports --dataset runs/frozen-200/cases.json \
+.venv/bin/python -m scratch.publish_reports --dataset runs/frozen-200-v2/cases.json \
   --out site/model-reports.json runs/model-vision.jsonl runs/model-text.jsonl
 docker compose up --build -d
 ```
@@ -61,3 +61,7 @@ Only aggregate, complete logs tied to the exact served manifest appear on the si
 - [Technical requirements (TRD)](docs/TRD.md)
 
 In the Simulator, **Generate a trial** creates a fresh layout. Predict visibility to grade it and reveal the ray. These practice trials are separate from fixed benchmark scores.
+
+[Model API setup](docs/API-SETUP.md) covers Gemini, GroqCloud, Claude Platform, OpenAI, OpenRouter, and separate Codex CLI authentication.
+
+[Track 2 judging checklist and shortcut audit](evidence/JUDGING.md). The v2 freeze replaces the earlier dataset. Send reviewers the opaque-ID packet and keep the coordinator key private.

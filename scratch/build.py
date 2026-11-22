@@ -8,6 +8,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
+from .audit import audit
 from .geometry import checked
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,7 +62,10 @@ def generate(seed, pairs, out):
         # Place one obstacle on the incoming ray and one clear of it.
         middle = round(50 - 30*(height+2)/y)+dx
         a = (middle-4,height,middle+4,height+4)
-        b = (middle-4,height+15,middle+4,height+19)
+        # Keep obstacle height fixed across the pair. Use either side of the
+        # incoming ray, clear of the outgoing ray and the small clutter box.
+        clear_x = rng.choice((15, 46)) + dx
+        b = (clear_x,height,clear_x+8,height+4)
         for j in range(2):
             blocks={'A':a if j==0 else b,'B':b if j==0 else a,**clutter}
             scene={'camera':(20+dx,y),'target':(80+dx,y),'mirror':mirror,'blocks':blocks}
@@ -124,6 +128,7 @@ def main():
     rows=generate(args.seed,args.pairs,args.out)
     payload=json.dumps(dict(seed=args.seed,cases=rows),sort_keys=True,indent=2)
     (args.out/'cases.json').write_text(payload)
+    (args.out/'validity-audit.json').write_text(json.dumps(audit(rows, args.out, payload.encode()), indent=2)+'\n')
     print(f'{len(rows)} synthetic cases; manifest SHA256 {hashlib.sha256(payload.encode()).hexdigest()}')
 
 

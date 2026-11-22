@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from .evaluate import metrics, selected_option
+from .evaluate import PROVIDER_KEYS, metrics, selected_option
 
 
 FAILURES = {
@@ -46,7 +46,7 @@ def report(dataset, logs):
     for path in logs:
         meta, *rows = map(json.loads, path.read_text().splitlines())
         provider, name, mode = (meta.get(key) for key in ('provider', 'model', 'mode'))
-        if (meta.get('dataset') != digest or provider not in {'gemini', 'openai', 'openrouter'}
+        if (meta.get('dataset') != digest or provider not in PROVIDER_KEYS
                 or not isinstance(name, str) or not name or mode not in {'vision', 'question-only'}
                 or [row.get('id') for row in rows] != expected
                 or any('error' in row or not isinstance(row.get('response'), str) for row in rows)):
