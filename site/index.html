@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f6f8">
+<title>Missing Scratch · Camera Coverage Lab</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+<header class="header"><div class="header-inner">
+<a class="brand" href="#overview"><span class="mark" aria-hidden="true">◈</span> Missing Scratch</a>
+<nav aria-label="Main navigation">
+<a href="#overview">Overview</a><a href="#inspection">Inspection</a><a href="#simulator">Simulator</a><a href="#benchmark">Benchmark</a><a href="#evidence">Evidence</a>
+</nav><span class="track">INNODATA / 02</span></div></header>
+<main>
+<section data-page="overview" class="page landing">
+<div class="scroll-meter" aria-hidden="true"></div>
+<div class="hero"><div class="hero-copy">
+<p class="eyebrow">INNODATA 2026 <span> / </span> VISUAL TASK FACTORY</p>
+<h1>One small move.<br><em>A blind spot.</em></h1>
+<p class="lead">A camera can miss a target when an obstacle shifts. Missing Scratch tests whether vision models notice that change.</p>
+<div class="actions"><a class="primary" href="#inspection">Try the paired challenge ↗</a><button class="secondary" type="button" data-scroll="experiment">Explore the experiment ↓</button></div>
+</div>
+<figure class="hero-visual"><div class="monitor-title"><i></i> OPTICAL TEST BENCH <span>CONCEPT ILLUSTRATION</span></div>
+<div class="hero-picture"><img src="optical-bench.jpg" alt="Concept illustration of an industrial camera and mirror on an optical test bench" fetchpriority="high" width="1280" height="960"></div>
+<figcaption class="monitor-foot"><span>CAMERA · MIRROR · TARGET</span><b>Single reflection</b></figcaption></figure></div>
+<div class="landing-stats reveal"><div><strong id="landing-scenes">—</strong><span>generated scenes</span></div><div><strong id="landing-pairs">—</strong><span>matched pairs</span></div><div><strong>3</strong><span>inspection tasks</span></div><div><strong>2</strong><span>geometry methods</span></div></div>
+<section id="experiment" class="story reveal"><div class="story-head"><p class="eyebrow">01 / THE EXPERIMENT</p><h2>Same setup.<br>A different answer.</h2><p>In this pair, the camera, target, and mirror stay put. Moving one obstacle interrupts the reflected path. A model earns pair credit only if it gets both outcomes right.</p></div>
+<div class="pair-grid"><figure class="sample"><img id="landing-a" alt="Synthetic scene A"><figcaption id="landing-a-caption">Scene A</figcaption></figure><figure class="sample"><img id="landing-b" alt="Synthetic scene B"><figcaption id="landing-b-caption">Scene B</figcaption></figure></div>
+<a class="text-link" href="#inspection">Inspect the full dataset ↗</a></section>
+<section class="story reveal"><div class="story-head"><p class="eyebrow">02 / WHAT WE SCORE</p><h2>Three decisions<br>an inspector makes.</h2></div>
+<div class="feature-grid"><article class="panel feature"><span class="tile-icon">01</span><h3>Visibility</h3><p>Can the camera see the target through the mirror?</p></article><article class="panel feature"><span class="tile-icon">02</span><h3>Obstruction</h3><p>Which obstacle does the ideal reflected path meet first?</p></article><article class="panel feature"><span class="tile-icon">03</span><h3>Repair</h3><p>Which placement change restores the sightline?</p></article></div>
+<a class="text-link" href="#simulator">Move the scene yourself ↗</a></section>
+<section class="story reveal"><div class="story-head"><p class="eyebrow">03 / THE DATA</p><h2>Make every score<br>traceable.</h2><p>Each synthetic case has a reproducible image, question, reference answer and geometry trace. The benchmark compares the same frozen inputs with and without images.</p></div>
+<div class="landing-models" aria-label="Planned model comparison">
+<span><img src="logo-gemini.svg" alt="">Gemini</span><span><img src="logo-claude.svg" alt="">Claude</span><span><img src="logo-qwen.svg" alt="">Qwen-VL</span><span><img src="logo-openai.svg" alt="">OpenAI</span></div>
+<p id="landing-report-status" class="detail">Checking for recorded benchmark reports…</p><a class="text-link" href="#benchmark">Open the model comparison ↗</a>
+</section>
+<section class="story finale reveal"><div class="story-head"><p class="eyebrow">04 / THE PROOF</p><h2>Start with geometry.<br>Check it against reality.</h2><p>Two geometry methods check the synthetic labels. Blind human review and physical camera spot checks have separate evidence records. Physical validation is pending.</p></div><a class="primary" href="#evidence">View evidence status ↗</a></section>
+</section>
+
+<section data-page="inspection" class="page" hidden>
+<p class="eyebrow">OPERATOR WORKBENCH</p><h1 class="page-title">Scene inspection</h1>
+<p class="lead">Record findings for both scenes in a pair to unlock the geometry and see whether you spotted the change.</p>
+<div class="workspace">
+<div class="panel viewport"><div class="bar"><div><i></i> Synthetic scene</div><span id="caseId">Loading…</span></div>
+<div class="diagram"><img id="scene" alt="Top-down inspection diagram with labelled camera, target, mirror and obstacles"><svg id="ray" aria-hidden="true" hidden><polyline fill="none" stroke="#eaffff" stroke-width="2" stroke-dasharray="5 4"/></svg></div>
+<div class="case-nav"><button id="prev" disabled>← Previous question</button><span id="counter" aria-live="polite"></span><button id="next" disabled>Next question →</button></div>
+</div>
+<aside class="panel inspector"><label for="kind" class="eyebrow">INSPECTION MODE</label>
+<select id="kind"><option value="all">All scenarios</option><option value="visibility">Coverage check</option><option value="blocker">Obstruction diagnosis</option><option value="repair">Placement adjustment</option></select>
+<p id="meta" class="eyebrow muted"></p><h2 id="prompt">Loading scenes…</h2>
+<div id="choices" class="choices" aria-label="Inspection finding"></div><button id="record" class="primary" disabled>Record finding</button>
+<p id="result" role="status" class="finding"></p><p id="trace" class="detail" hidden></p>
+<div class="tool-row"><button id="toggle-ray" disabled>Hide ray path</button><button id="pair" disabled>Open paired scene ↗</button></div>
+<p class="detail">Findings are kept for this browser tab. The separate blind review packet has no answer reveal.</p>
+</aside></div></section>
+
+<section data-page="simulator" class="page" hidden>
+<p class="eyebrow">LIVE SIMULATION</p><h1 class="page-title">Coverage simulator</h1>
+<p class="lead">Adjust a simple camera layout and see how a reflected sightline responds as you move each control.</p>
+<div class="workspace"><div class="panel viewport"><div class="bar"><div><i></i> Top-down planning view</div><span>SIMULATION</span></div>
+<div class="sim-view"><svg id="layout" viewBox="0 0 680 380" role="img" aria-label="Interactive simulated camera coverage">
+<defs><pattern id="sim-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M 24 0 L 0 0 0 24" fill="none" stroke="#26364c"/></pattern></defs>
+<rect width="680" height="380" fill="url(#sim-grid)"/>
+<line x1="35" x2="645" y1="314" y2="314" stroke="#486078" stroke-dasharray="5 8"/>
+<polyline id="sim-ray" fill="none" stroke="#85f1df" stroke-width="3" stroke-dasharray="8 7"/>
+<line id="sim-mirror" y1="314" y2="314" stroke="#87e9ed" stroke-width="7" stroke-linecap="round"/>
+<rect id="sim-block" y="174" width="52" height="42" rx="4" fill="#f7aa70"/>
+<circle id="sim-camera" cy="95" r="9" fill="#82c8ff"/><circle cx="555" cy="119" r="9" fill="#edf5a4"/>
+<text id="sim-camera-label" y="75">CAMERA</text><text x="529" y="99">TARGET</text><text id="sim-block-label" y="156">OBSTACLE</text><text id="sim-mirror-label" y="347">MIRROR</text>
+</svg></div><div class="legend">● Camera <span>● Target</span> <span>■ Obstacle</span> <span>━ Mirror</span></div></div>
+<aside class="panel inspector"><p class="eyebrow">LAYOUT CONTROLS</p><h2 id="coverage" aria-live="polite">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
+<label class="slider">Camera position <output id="camera-value"></output><input id="camera" type="range" min="65" max="270" value="135"></label>
+<label class="slider">Mirror position <output id="mirror-value"></output><input id="mirror" type="range" min="150" max="510" value="335"></label>
+<label class="slider">Obstacle position <output id="block-value"></output><input id="block" type="range" min="70" max="555" value="225"></label>
+<button id="reset">Reset layout</button><p class="detail">Ideal, single-reflection model. No live CCTV feed, lens calibration, or site measurements are used.</p></aside></div></section>
+
+<section data-page="benchmark" class="page" hidden>
+<p class="eyebrow">MODEL EVALUATION</p><h1 class="page-title">Benchmark</h1>
+<p class="lead">A fixed set of scenes lets us measure how consistently models reason about coverage, obstructions, and repairs.</p>
+<div class="stats"><div class="panel"><strong id="scene-count">—</strong><span>Synthetic scenes</span></div><div class="panel"><strong id="pair-count">—</strong><span>Matched pairs</span></div><div class="panel"><strong>3</strong><span>Inspection tasks</span></div></div>
+<div class="panel table-panel"><h2>Recorded model reports</h2>
+<p id="report-status" class="detail" role="status">Checking for reports…</p><div id="report-loading" class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="scroll"><table><thead><tr><th>Model</th><th>Vision</th><th>Question only</th><th>Both in pair</th></tr></thead><tbody id="model-rows"></tbody></table></div>
+<div id="report-details" class="report-details"></div>
+<p class="detail">Only complete, error-free logs from this exact dataset are shown. Codex CLI is tracked separately as an agent evaluation.</p></div></section>
+
+<section data-page="evidence" class="page" hidden>
+<p class="eyebrow">VALIDATION RECORD</p><h1 class="page-title">Evidence</h1>
+<p class="lead">Proof of geometry, human agreement, and physical camera observations are tracked separately.</p>
+<div class="feature-grid"><article class="panel feature"><span class="status done">Implemented</span><h2>Geometry checks</h2><p>Two calculations agree on the generated ideal reflection and its obstacles.</p></article><article class="panel feature"><span class="status pending">Review pending</span><h2>Blind human review</h2><p>Reviewers use the same images and prompts as the models. The packet withholds the answer key.</p></article><article class="panel feature"><span class="status pending">Capture pending</span><h2>Physical spot checks</h2><p>The planned camera study will record visible, blocked, and restored cases, including mismatches.</p></article></div>
+</section>
+</main><footer><span>Missing Scratch</span><span>Single-mirror CCTV coverage research · Synthetic prototype</span></footer>
+</body></html>

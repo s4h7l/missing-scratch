@@ -1,0 +1,19 @@
+FROM python:3.14-slim@sha256:9aaa474097d094040649f2162a627c0049b408f52138d980916788d80f04802f AS generator
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY scratch scratch
+COPY site site
+RUN python -m scratch.build
+
+FROM golang:1.26-alpine@sha256:ecb67f987aa1a57794c91d19ade7ae0209f2f0f5496aaef9e6ae85ddf92d02ab AS server
+WORKDIR /build
+COPY server/main.go .
+RUN CGO_ENABLED=0 go build -trimpath -o /playground main.go
+
+FROM scratch
+COPY --from=server /playground /playground
+COPY --from=generator /app/dist /public
+USER 65534:65534
+EXPOSE 8000
+ENTRYPOINT ["/playground"]
