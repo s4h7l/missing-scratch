@@ -113,7 +113,7 @@ def generate(seed, pairs, out):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--seed',type=int,default=42)
-    parser.add_argument('--pairs',type=int,default=45)
+    parser.add_argument('--pairs',type=int,default=100)
     parser.add_argument('--out',type=Path,default=Path('dist'))
     args=parser.parse_args()
     if not 9 <= args.pairs <= 1000:

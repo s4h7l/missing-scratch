@@ -100,6 +100,17 @@ function intersects([x, y], [u, v], [left, top, right, bottom]) {
 }
 
 const defaults = { camera: 135, mirror: 335, block: 225 };
+let trialActive = false;
+let trialPrediction = null;
+
+function setTrial(active) {
+  trialActive = active;
+  trialPrediction = null;
+  by('trial-actions').hidden = !active;
+  by('trial-result').hidden = true;
+  for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
+  for (const key of Object.keys(defaults)) by(key).disabled = active;
+}
 function simulate() {
   const camera = by('camera').valueAsNumber;
   const mirror = by('mirror').valueAsNumber;
@@ -120,11 +131,19 @@ function simulate() {
   by('sim-block-label').setAttribute('x', block - 2);
   by('sim-ray').setAttribute('points', [source, reflection, target].map(point => point.join(',')).join(' '));
   by('sim-ray').setAttribute('stroke', inside && !blocked ? '#85f1df' : '#f7aa70');
-  const status = !inside ? 'Mirror misses the sightline' : blocked ? 'Coverage obstructed' : 'Target covered';
+  const awaiting = trialActive && trialPrediction === null;
+  by('sim-ray').toggleAttribute('hidden', awaiting);
+  const status = awaiting ? 'Can the camera see the target?' : !inside ? 'Mirror misses the sightline' : blocked ? 'Coverage obstructed' : 'Target covered';
   if (by('coverage').textContent !== status) by('coverage').textContent = status;
-  by('coverage-detail').textContent = !inside ? 'The reflection point lies outside the mirror span.' :
+  by('coverage-detail').textContent = awaiting ? 'Record a prediction to reveal the path.' : !inside ? 'The reflection point lies outside the mirror span.' :
     blocked ? 'The ideal reflected path crosses the obstacle.' : 'The reflection point falls on the mirror and both path segments are clear.';
   for (const key of Object.keys(defaults)) by(key + '-value').value = by(key).value;
+  if (trialPrediction !== null) {
+    const expected = inside && !blocked ? 'visible' : 'blocked';
+    const result = by('trial-result');
+    result.textContent = (trialPrediction === expected ? 'Prediction matches. ' : 'Reference outcome: ') + expected + '.';
+    result.hidden = false;
+  }
 }
 
 function bindCases() {
@@ -158,7 +177,28 @@ function bindCases() {
 window.addEventListener('hashchange', route);
 route();
 for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
+by('generate-trial').addEventListener('click', () => {
+  setTrial(true);
+  const camera = 100 + Math.floor(Math.random() * 101);
+  // Keep the reflection within the mirror; place the obstacle on or away from the incoming ray.
+  const bounce = camera + (555 - camera) * 219 / 414;
+  by('camera').value = camera;
+  by('mirror').value = Math.round(bounce) + Math.floor(Math.random() * 49) - 24;
+  by('block').value = Math.random() < 0.5 ? 75 + Math.floor(Math.random() * 21) :
+    Math.round(camera + (bounce - camera) * 100 / 219 - 26);
+  simulate();
+  document.querySelector('[data-trial-answer]').focus();
+});
+for (const button of document.querySelectorAll('[data-trial-answer]')) {
+  button.addEventListener('click', () => {
+    trialPrediction = button.dataset.trialAnswer;
+    for (const answer of document.querySelectorAll('[data-trial-answer]')) answer.disabled = true;
+    simulate();
+    by('generate-trial').focus();
+  });
+}
 by('reset').addEventListener('click', () => {
+  setTrial(false);
   for (const [key, value] of Object.entries(defaults)) by(key).value = value;
   simulate();
 });
@@ -176,6 +216,7 @@ fetch('cases.json').then(response => {
   by('landing-pairs').textContent = by('pair-count').textContent;
   const first = cases.find(item => item.type === 'visibility');
   const pair = cases.filter(item => item.pair === first.pair);
+  bindHero(pair);
   for (const [i, id] of ['a', 'b'].entries()) {
     by('landing-' + id).src = pair[i].image;
     by('landing-' + id + '-caption').textContent = 'Scene ' + id.toUpperCase() + ' · ' + pair[i].answer;
@@ -183,14 +224,36 @@ fetch('cases.json').then(response => {
   bindCases();
   showCase();
   void loadReports(raw);
-}).catch(() => { by('prompt').textContent = 'The synthetic dataset could not be loaded.'; });
+}).catch(() => {
+  by('prompt').textContent = 'The synthetic dataset could not be loaded.';
+  by('hero-case').textContent = 'Scene unavailable';
+  by('hero-scene').parentElement.setAttribute('aria-busy', 'false');
+});
 
-const heroImage = document.querySelector('.hero-picture img');
-const revealHero = () => heroImage.classList.add('ready');
-if (heroImage.complete) revealHero();
-else {
-  heroImage.addEventListener('load', revealHero, { once: true });
-  heroImage.addEventListener('error', () => heroImage.hidden = true, { once: true });
+function bindHero(pair) {
+  const images = [by('hero-scene'), by('hero-scene-b')];
+  const buttons = [by('hero-select-a'), by('hero-select-b')];
+  function select(index) {
+    const scene = pair[index];
+    for (const [i, image] of images.entries()) {
+      image.hidden = i !== index;
+      buttons[i].setAttribute('aria-pressed', String(i === index));
+    }
+    by('hero-case').textContent = 'Scene ' + (index ? 'B' : 'A') + ' · ' + scene.id;
+    const outcome = by('hero-outcome');
+    outcome.textContent = scene.answer === 'Visible' ? 'Target visible' : 'Target blocked';
+    outcome.classList.toggle('clear', scene.answer === 'Visible');
+  }
+  for (const [i, image] of images.entries()) {
+    image.addEventListener('load', () => image.classList.add('ready'));
+    image.alt = 'Synthetic scene ' + (i ? 'B' : 'A') + ' · ' + pair[i].answer;
+    image.src = pair[i].image;
+    if (image.complete && image.naturalWidth) image.classList.add('ready');
+    buttons[i].disabled = false;
+    buttons[i].addEventListener('click', () => select(i));
+  }
+  images[0].parentElement.setAttribute('aria-busy', 'false');
+  select(0);
 }
 for (const button of document.querySelectorAll('[data-scroll]')) {
   button.addEventListener('click', () => by(button.dataset.scroll).scrollIntoView({
@@ -275,6 +338,14 @@ async function loadReports(raw) {
         p.textContent = mode + ' · ' + ['visibility','blocker','repair','both_pair_members'].map(key =>
           (key === 'both_pair_members' ? 'Pairs' : key) + ' ' + scoreText(scores[key])).join(' · ');
         details.append(p);
+        for (const finding of run.modes[mode].failures ?? []) {
+          const item = document.createElement('p');
+          item.className = 'detail';
+          const examples = finding.examples.map(example =>
+            example.case + ' (' + (example.predicted ?? 'invalid choice') + ' → expected ' + example.expected + ')').join(', ');
+          item.textContent = finding.label + ': ' + finding.count + '. ' + finding.consequence + ' Cases: ' + examples;
+          details.append(item);
+        }
       }
       by('report-details').append(details);
     }

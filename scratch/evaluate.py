@@ -53,13 +53,17 @@ def request_model(provider, model, case, folder, mode):
     return data['choices'][0]['message']['content'] or ''
 
 
+def selected_option(case, reply):
+    text = reply.get('response', '').strip().upper()
+    allowed = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[:len(case['options'])]
+    return case['options'][allowed.index(text)] if len(text) == 1 and text in allowed else None
+
+
 def metrics(cases, output):
     counts=defaultdict(lambda: [0,0])
     pairs=defaultdict(list)
     for case,reply in zip(cases,output):
-        text=reply.get('response','').strip().upper()
-        allowed='ABCDEFGHIJKLMNOPQRSTUVWXYZ'[:len(case['options'])]
-        correct=len(text)==1 and text in allowed and case['options'][allowed.index(text)]==case['answer']
+        correct = selected_option(case, reply) == case['answer']
         for label in ('overall',case['type'],case['difficulty'],case['type']+'/'+case['difficulty']):
             counts[label][0] += int(correct)
             counts[label][1] += 1
