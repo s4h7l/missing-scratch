@@ -51,6 +51,8 @@ def generate(seed, pairs, out, replay=None):
     images = out/'images'
     images.mkdir(parents=True,exist_ok=True)
     rows=[]
+    visibility_index = 0
+    layout_rng = random.Random(f"{seed}:visibility-v3")
     for i in range(pairs):
         dx = rng.randint(-5,5)
         y = rng.randint(16,24)
@@ -66,14 +68,36 @@ def generate(seed, pairs, out, replay=None):
         # incoming ray, clear of the outgoing ray and the small clutter box.
         clear_x = rng.choice((15, 46)) + dx
         b = (clear_x,height,clear_x+8,height+4)
+        kind=('visibility','blocker','repair')[(i//3)%3]
+        if kind == 'visibility':
+            if visibility_index % 2 == 0:
+                center = 50 + layout_rng.randint(-5, 5)
+                y_visible = layout_rng.randint(21, 24)
+                low = layout_rng.randint(15, 20)
+                high = layout_rng.randint(39, 43)
+                height_visible = layout_rng.randint(7, 9)
+                half_width = layout_rng.randint(6, 11)
+            camera_x = low if visibility_index % 2 == 0 else high
+            visibility_index += 1
+            # Both absolute rectangles occur once blocked and once clear across a layout group.
+            positions = []
+            for offset in (low, high):
+                x = center + round((offset - 50) * (height_visible + 2) / y_visible)
+                positions.append((x-3,height_visible,x+3,height_visible+4))
+            if camera_x == high:
+                positions.reverse()
+            visible_camera = (center+camera_x-50,y_visible)
+            visible_target = (2*center-visible_camera[0],y_visible)
         for j in range(2):
             blocks={'A':a if j==0 else b,'B':b if j==0 else a,**clutter}
             scene={'camera':(20+dx,y),'target':(80+dx,y),'mirror':mirror,'blocks':blocks}
-            kind=('visibility','blocker','repair')[(i//3)%3]
             variants=[]
             if kind=='visibility':
-                blocks={'A':a if j==0 else b, 'B':(84+dx,11,88+dx,15), **clutter}
-                scene['blocks']=blocks
+                scene = dict(camera=visible_camera, target=visible_target,
+                             mirror=(center-half_width,center+half_width),
+                             blocks={'A':positions[j], 'B':(86,11,90,15)})
+                if checked(scene)[0] != (j == 1):
+                    raise ValueError('Counterbalanced visibility case disagrees with design')
                 prompt='Can the camera see the marked target through the mirror?'
                 options=['Visible','Blocked']
                 correct=options[not checked(scene)[0]]
@@ -108,6 +132,7 @@ def generate(seed, pairs, out, replay=None):
                 replay.append(dict(id=case_id, scene=scene, visible=visible, bounce=float(x)))
             rows.append(dict(id=case_id,pair=i,type=kind,difficulty=difficulty,
                 question=prompt, options=options, answer=correct,
+                layout_group=(f'visibility-{(visibility_index-1)//2:03d}' if kind=='visibility' else f'{kind}-{i:03d}'),
                 image=f'images/{image.name}',image_sha256=hashlib.sha256(image.read_bytes()).hexdigest(),
                 trace=dict(camera=scene['camera'],target=scene['target'],bounce=[float(x),0],
                            visible=visible,blockers=blockers)))

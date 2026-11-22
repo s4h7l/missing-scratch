@@ -23,3 +23,7 @@ Show one coverage-changing pair and ask judges to commit both predictions. Revea
 ## Second-pass judge audit
 
 The v2 visibility labels still separate perfectly on an in-sample interval of the movable obstacle's horizontal pixel coordinate (68/68). A single horizontal threshold scores 54/68. This is a diagnostic, not a generalization estimate. Do not present v2 as proof that a model reasons about optical geometry. Before freezing a competition dataset, counterbalance obstacle positions across diverse camera and target layouts so the same obstacle coordinate occurs with both labels, then rerun shortcut controls on held-out layout groups. Reissue the review packet and model reports against the new manifest.
+
+## v3 counterbalance
+
+Visibility pairs now occur in layout groups of two. Each group keeps two obstacle placements fixed and changes which placement intersects the ray by changing camera and target coordinates. A best-fit position-only interval and exact coordinate lookup both score 34/68 on the default dataset. This is an in-sample shortcut diagnostic for visibility, not a claim about other features, task types, or model performance. Review and evaluate v3 only. Before running models, check the other task families and test additional baselines with whole layout groups held out.

@@ -18,7 +18,7 @@
 <p class="product-label">Missing Scratch</p>
 <h1>See the <em>blind spot.</em></h1>
 <p class="lead">Can a vision model tell when one moved obstacle hides a target?</p>
-<div class="actions"><a class="secondary" href="#inspection">Start the challenge ↗</a><button class="secondary" type="button" data-scroll="experiment">How it works ↓</button></div>
+<div class="actions"><a class="primary" href="#inspection">Try a scored pair ↗</a><a class="secondary" href="#evidence">Inspect the evidence</a></div>
 </div>
 <div class="preview-stage" id="motion">
 <div class="panel replay-panel">
@@ -40,12 +40,6 @@
 <section class="story reveal"><div class="story-head"><p class="eyebrow">02 / WHAT WE SCORE</p><h2>What the benchmark asks.</h2></div>
 <div class="feature-grid"><article class="panel feature"><span class="tile-icon">01</span><h3>Visibility</h3><p>Can the camera see the target through the mirror?</p></article><article class="panel feature"><span class="tile-icon">02</span><h3>Obstruction</h3><p>Which obstacle does the ideal reflected path meet first?</p></article><article class="panel feature"><span class="tile-icon">03</span><h3>Repair</h3><p>Which placement change restores the sightline?</p></article></div>
 <a class="text-link" href="#simulator">Move the scene yourself ↗</a></section>
-<section class="story reveal"><div class="story-head"><p class="eyebrow">03 / THE DATA</p><h2>See how models compare.</h2><p>Each synthetic case has a reproducible image, question, reference answer and geometry trace. The benchmark compares the same frozen inputs with and without images.</p></div>
-<div class="landing-models" aria-label="Planned model comparison">
-<span><img src="logo-gemini.svg" alt="">Gemini</span><span><img src="logo-claude.svg" alt="">Claude</span><span><img src="logo-qwen.svg" alt="">Qwen-VL</span><span><img src="logo-openai.svg" alt="">OpenAI</span><span><img src="logo-groq.svg" alt="">Groq</span></div>
-<p id="landing-report-status" class="detail">Checking for recorded benchmark reports…</p><a class="text-link" href="#benchmark">Open the model comparison ↗</a>
-</section>
-<section class="story finale reveal"><div class="story-head"><p class="eyebrow">04 / THE PROOF</p><h2>How we verify answers.</h2><p>Two geometry methods check the synthetic labels. Blind human review and physical camera spot checks have separate evidence records. Physical validation is pending.</p></div><a class="primary" href="#evidence">View evidence status ↗</a></section>
 </section>
 
 <section data-page="inspection" class="page" hidden>
@@ -93,7 +87,7 @@
 <div class="stats"><div class="panel"><strong id="scene-count">—</strong><span>Synthetic scenes</span></div><div class="panel"><strong id="pair-count">—</strong><span>Matched pairs</span></div><div class="panel"><strong>3</strong><span>Inspection tasks</span></div></div>
 <div class="panel table-panel"><h2>Recorded model reports</h2>
 <p id="report-status" class="detail" role="status">Checking for reports…</p><div id="report-loading" class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
-<div class="scroll"><table><thead><tr><th>Model</th><th>Vision</th><th>Question only</th><th>Both in pair</th></tr></thead><tbody id="model-rows"></tbody></table></div>
+<div class="scroll" id="score-table" hidden><table><thead><tr><th>Model</th><th>Vision</th><th>Question only</th><th>Both in pair</th></tr></thead><tbody id="model-rows"></tbody></table></div>
 <div id="report-details" class="report-details"></div>
 <p class="detail">Only complete, error-free logs from this exact dataset are shown. Codex CLI is tracked separately as an agent evaluation.</p></div></section>
 
@@ -107,10 +101,10 @@
 </div>
 <div class="panel evidence-proof"><div><h2>Does a visual shortcut give away the answer?</h2>
 <p id="shortcut-audit" role="status">Loading the shortcut audit…</p>
-<p class="detail">The height shortcut is closed. A separate in-sample horizontal position check still separates all 68 visibility labels. Fix this before using the dataset to make claims about optical reasoning.</p></div>
+<p class="detail">Each obstacle position now appears with both outcomes across different camera layouts. This diagnostic rules out position alone on these visibility cases. It does not rule out other shortcuts.</p></div>
 <a class="text-link" href="validity-audit.json" download>Download diagnostic</a></div>
 <div class="evidence-rows">
-<article class="panel evidence-row"><div><h2>Blind human review</h2><p>72 cases are ready. Reviewers see the same pixels and questions under anonymous IDs.</p></div><span class="status pending">Agreement pending</span></article>
+<article class="panel evidence-row"><div><h2>Blind human review</h2><p>A 72-case packet uses the exact model inputs under anonymous IDs. Agreement has not been measured.</p></div><span class="status pending">Agreement pending</span></article>
 <article class="panel evidence-row"><div><h2>Model comparison</h2><p>Run vision and question-only baselines on the same manifest. Report per-task and pair scores.</p><a class="text-link" href="#benchmark">Open benchmark results ↗</a></div><span class="status pending">Live runs pending</span></article>
 <article class="panel evidence-row"><div><h2>Physical spot checks</h2><p>Record 5–10 camera cases and compare observed coverage with the geometry. Include mismatches.</p></div><span class="status pending">Capture pending</span></article>
 </div>

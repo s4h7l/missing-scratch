@@ -6,7 +6,7 @@ test:
 serve: build
 	$(PYTHON) -m http.server 8000 --bind 127.0.0.1 --directory dist
 
-FREEZE_DIR ?= runs/frozen-200-v2
+FREEZE_DIR ?= runs/frozen-200-v3
 freeze-docker:
 	mkdir -p runs
 	test ! -e "$(FREEZE_DIR)"

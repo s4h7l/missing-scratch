@@ -257,7 +257,6 @@ addEventListener('hashchange', progress);
 progress();
 
 const logos = { gemini: 'gemini', openai: 'openai', openrouter: 'openrouter', anthropic: 'claude', groq: 'groq' };
-const lineup = ['Gemini', 'Claude', 'Qwen-VL', 'OpenAI', 'Groq'];
 function brandFor(run) {
   const id = run.model.toLowerCase();
   if (id.includes('claude')) return 'claude';
@@ -292,10 +291,8 @@ async function loadReports(raw) {
       if (hex !== report.dataset) throw new Error('Reports belong to another dataset');
     }
     const status = report.reports.length ? report.reports.length + ' recorded model configurations on this dataset.' : 'Model evaluation pending. Scores appear here after the frozen dataset is run.';
-    by('report-status').textContent = by('landing-report-status').textContent = status;
-    if (!report.reports.length) {
-      for (const [i, name] of lineup.entries()) modelRow(name, ['gemini','claude','qwen','openai','groq'][i], ['Pending','Pending','Pending']);
-    }
+    by('report-status').textContent = status;
+    by('score-table').hidden = !report.reports.length;
     for (const run of report.reports) {
       const vision = run.modes.vision?.scores;
       const baseline = run.modes['question-only']?.scores;
@@ -324,7 +321,7 @@ async function loadReports(raw) {
       by('report-details').append(details);
     }
   } catch {
-    by('report-status').textContent = by('landing-report-status').textContent = 'No reports could be verified for this dataset.';
+    by('report-status').textContent = 'No reports could be verified for this dataset.';
   } finally {
     by('report-loading').hidden = true;
   }
@@ -339,9 +336,8 @@ async function loadAudit(raw) {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
     const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
     if (audit.dataset !== hex) throw new Error('Audit belongs to another dataset');
-    display.textContent = 'On visibility cases, the best single cutoff based on obstacle height got ' +
-      audit.best_threshold_correct + ' of ' + audit.total +
-      ' right. The paired obstacle now moves sideways while staying at the same height.';
+    display.textContent = 'Across ' + audit.total + ' visibility cases, the best horizontal interval, vertical interval, and exact coordinate lookup each got ' +
+      [audit.horizontal_interval_correct, audit.vertical_interval_correct, audit.coordinate_lookup_correct].join(', ') + ' answers right, respectively.';
   } catch {
     display.textContent = 'No shortcut diagnostic could be verified for this dataset.';
   }
