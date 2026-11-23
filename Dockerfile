@@ -11,10 +11,22 @@ WORKDIR /build
 COPY server/main.go .
 RUN CGO_ENABLED=0 go build -trimpath -o /playground main.go
 
-FROM scratch
+FROM scratch AS frozen-site
 COPY --from=server /playground /playground
 COPY --from=generator /app/dist /public
 COPY datasets/v4/ /public/
 USER 65534:65534
 EXPOSE 8000
 ENTRYPOINT ["/playground"]
+
+FROM python:3.12-slim AS integrated
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 MISSING_SCRATCH_RUNTIME=/data MS_PUBLIC_DIR=/public
+COPY requirements-backend.txt .
+RUN pip install --no-cache-dir -r requirements-backend.txt && mkdir -p /data && chown 65534:65534 /data
+COPY backend/ backend/
+COPY integrated_app.py .
+COPY --from=frozen-site /public /public
+USER 65534:65534
+EXPOSE 8000
+CMD ["python","-m","uvicorn","integrated_app:app","--host","0.0.0.0","--port","8000"]

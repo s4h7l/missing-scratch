@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><link rel="stylesheet" href="typography.css"><script src="bench.js" defer></script><script src="app.js" defer></script><script src="replay.js" defer></script>
+<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><link rel="stylesheet" href="typography.css"><script src="bench.js" defer></script><script src="app.js" defer></script><script src="replay.js" defer></script><script src="live.js" defer></script>
 </head>
 <body>
 <header class="header"><div class="header-inner">
 <a class="brand" href="#overview"><img class="brand-mark" src="missing-scratch-mark.png" alt="" width="36" height="36"><span>Missing <strong>Scratch</strong></span></a>
 <nav class="product-nav" aria-label="Main navigation">
-<a href="#overview">Overview</a><a href="#inspection">Inspection</a><a href="#simulator">Simulator</a><a href="#benchmark">Benchmark</a><a href="#evidence">Evidence</a>
+<a href="#overview">Overview</a><a href="#inspection">Inspection</a><a href="#live">Live inspection</a><a href="#simulator">Simulator</a><a href="#benchmark">Benchmark</a><a href="#evidence">Evidence</a>
 </nav><a class="header-action" href="#inspection">Open lab <span aria-hidden="true">↗</span></a></div></header>
 <main>
 <section data-page="overview" class="page landing">
@@ -42,6 +42,14 @@
 <a class="text-link" href="#simulator">Open the full bench ↗</a></section>
 </section>
 
+<section data-page="live" class="page" hidden>
+<h1>Live inspection</h1>
+<div class="tool-row"><label>Task <select id="live-kind"><option value="visibility">Visibility</option><option value="obstruction">Obstruction</option><option value="repair">Repair</option></select></label>
+<label><input id="live-pair" type="checkbox"> Paired scenes</label>
+<button type="button" class="primary" id="live-generate">Generate scene</button></div>
+<p id="live-status" role="status"></p><div id="live-cases"></div>
+<details id="live-reports"><summary>Live benchmark and validation results</summary><div id="live-summary" aria-live="polite"></div></details>
+</section>
 <section data-page="inspection" class="page" hidden>
 <p class="eyebrow">Judge demo</p><h1 class="page-title">Test your sightline</h1>
 <p class="lead">Pick an answer to see what the camera can actually see, and why.</p>

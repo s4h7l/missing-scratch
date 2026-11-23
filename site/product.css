@@ -274,3 +274,5 @@ body:has(#simulator-page:not([hidden])) main { max-width: 1660px; padding-top: c
 .report-pair-scenes figure { margin: 0; }
 .report-pair-scenes img { display: block; width: 100%; border-radius: .5rem; }
 .report-pair-scenes figcaption { margin-top: .5rem; font-size: .9rem; }
+
+.live-diagram { display:block; width:100%; max-width:900px; height:auto; }

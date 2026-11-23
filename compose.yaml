@@ -8,3 +8,12 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    volumes:
+      - inspection-data:/data
+    tmpfs:
+      - /tmp
+    environment:
+      MS_OPERATOR_TOKEN: ${MS_OPERATOR_TOKEN:-}
+      MS_JUDGE_CODE: ${MS_JUDGE_CODE:-}
+volumes:
+  inspection-data:

@@ -41,6 +41,8 @@ make test
 make build
 ```
 
+For fresh V3 tasks, open [Live inspection](http://127.0.0.1:8000/#live). The integrated service locks predictions on the server and exposes the verified diagram after reveal. See [backend setup](docs/LIVE-BACKEND.md).
+
 ## How the pipeline works
 
 | Stage | Entry point | Output |
