@@ -205,6 +205,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
 .evidence-proof,.evidence-row{padding:clamp(18px,3vw,30px);display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:12px}
 .evidence-proof{background:#f6f6f6;flex-wrap:wrap}
+.evidence-proof[hidden]{display:none}
 .evidence-proof h2,.evidence-row h2{font-size:clamp(1.18rem,2.5vw,1.58rem);font-weight:610;letter-spacing:-.03em;margin:6px 0}
 .evidence-proof p,.evidence-row p{max-width:68ch;margin:6px 0;color:var(--muted)}
 .evidence-row .status{flex:none}
@@ -258,3 +259,18 @@ body:has(#simulator-page:not([hidden])) main { max-width: 1660px; padding-top: c
 .simulator-heading .secondary { min-height: 0; padding: 7px 11px; font-size: .84rem; }
 #simulator-page .workspace { margin-top: 14px; }
 #simulator-page .viewport { box-shadow: 0 16px 46px #0b172318; }
+.report-pair {
+  margin-block: 1rem;
+  padding: 1rem;
+  border: 1px solid #d7e0da;
+  border-radius: 1rem;
+}
+.report-pair h3 { margin: 0; }
+.report-pair-scenes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+}
+.report-pair-scenes figure { margin: 0; }
+.report-pair-scenes img { display: block; width: 100%; border-radius: .5rem; }
+.report-pair-scenes figcaption { margin-top: .5rem; font-size: .9rem; }

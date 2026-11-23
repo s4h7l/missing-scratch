@@ -2,9 +2,19 @@
 
 Use the frozen Docker v4 manifest throughout. Each report must bind to its SHA-256.
 
+## Reproduce the frozen release
+
+From a separate checkout, extract the frozen v4 dataset bundle and run the command below from the repository root. The rebuild uses a committed Git snapshot without local working files or Docker layer-cache reuse. The manifest and every image must match byte for byte. Keep the JSON and record who ran it, on what host and when. The original freeze used Linux ARM64.
+
+```sh
+python3 -m scratch.reproduce /path/to/frozen-dataset --revision ab5b79d
+```
+
+## Collect the evidence
+
 1. **Shortcut diagnostic.** Open Evidence → Download diagnostic. Each visibility fold holds out both camera layouts and their paired images. Interval rules are fit on the remaining groups. Exact coordinate lookup uses the training majority for ties and unseen positions. The audit covers only the movable obstacle's position. It is neither a test of all visual shortcuts nor a model result.
-2. **Blind review.** Give the same answer-free packet to two different reviewers. Ask each to complete the CSV independently and note ambiguous diagrams. Keep the coordinator key offline. Run the command below once both are back. Retain disagreements and notes. Adjudicate before final model requests. If any cases or labels change, create a new manifest and regenerate the packet; previous scores no longer attach to it.
-3. **Models.** Use one vision-capable Gemini, one Claude, and a third image-capable model such as Qwen via Groq. Get each exact model ID from the account you're using. For each, run the same 200 cases once in vision mode and once in question-only mode. Save separate logs, then publish aggregates. The exporter rejects incomplete or mismatched logs. Report both-correct pair accuracy and show a real example of the most consequential failure observed.
+2. **Blind review.** Give the same answer-free packet to two different reviewers. Ask each to complete the CSV independently and note ambiguous diagrams. Keep the coordinator key offline. Run the command below once both are back. Archive the original CSVs and the pre-correction agreement counts overall and by task. For each reported issue, log the case ID, adjudicator, decision and rationale. Adjudicate before final model requests. If any cases or labels change, create a new manifest and regenerate the packet. Previous scores no longer attach to it.
+3. **Models.** Use one vision-capable Gemini, one Claude, and a third image-capable model such as Qwen via Groq. Get each exact model ID from the account you're using. For each, run the same 200 cases once in vision mode and once in question-only mode. Save separate logs, then publish aggregates. The exporter rejects incomplete or mismatched logs. The Benchmark page shows strict pair accuracy in both modes, counts by task and difficulty, and a recorded vision example when a model repeats its answer on a pair whose reference answer changed.
 4. **Physical checks.** Tape the tabletop positions, fix camera height and aim, and verify the target is outside the direct view for reflected checks. Record the prediction before looking at the live camera view. Photograph each setup and save the corresponding camera frame. Pick 5–10 cases spanning clear, obstructed, and restored paths. Capture the pair used on stage. Report setup limitations, calibration deviations and every mismatch. Keep private footage outside public assets unless cleared.
 
 ```sh
@@ -24,9 +34,9 @@ Use the frozen Docker v4 manifest throughout. Each report must bind to its SHA-2
   runs/claude-vision.jsonl runs/claude-question-only.jsonl \
   runs/third-model-vision.jsonl runs/third-model-question-only.jsonl
 
-cp evidence/physical-template.csv runs/physical.csv
+cp runs/tabletop-v4/physical.csv runs/physical.csv
 # Fill the sheet and store photo references relative to runs/physical.csv.
-.venv/bin/python -m scratch.physical runs/physical.csv > runs/physical-report.json
+.venv/bin/python -m scratch.physical runs/physical.csv --plan runs/tabletop-v4/physical.csv > runs/physical-report.json
 ```
 
 ## Finalist demo

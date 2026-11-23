@@ -1,5 +1,6 @@
 """Summarize two independent blind reviews against a frozen dataset."""
 import argparse
+from collections import defaultdict
 import csv
 import hashlib
 import json
@@ -36,21 +37,30 @@ def main():
     left,right=[read_review(file,cases) for file in args.reviewers]
     report=dict(cases=len(cases),both_answered=0,reviewer_agreement=0,
                 reviewer_a_matches=0,reviewer_b_matches=0,issues=[])
+    by_task = defaultdict(lambda: dict(cases=0, both_answered=0, reviewer_agreement=0,
+                                        reviewer_a_matches=0, reviewer_b_matches=0, issues=0))
     for case_id,case in cases.items():
+        task = by_task[case['type']]
+        task['cases'] += 1
         a,note_a=left.get(case_id,('',''))
         b,note_b=right.get(case_id,('',''))
         letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'[:len(case['options'])]
         expected=letters[case['options'].index(case['answer'])]
         if len(a) == len(b) == 1 and a in letters and b in letters:
-            report['both_answered']+=1
-            report['reviewer_agreement']+=int(a==b)
-            report['reviewer_a_matches']+=int(a==expected)
-            report['reviewer_b_matches']+=int(b==expected)
+            for scores in (report, task):
+                scores['both_answered'] += 1
+                scores['reviewer_agreement'] += int(a == b)
+                scores['reviewer_a_matches'] += int(a == expected)
+                scores['reviewer_b_matches'] += int(b == expected)
         if a != expected or b != expected or note_a or note_b:
+            task['issues'] += 1
             report['issues'].append(dict(case=case_id, benchmark_case=case['id'], first=a,
                                          second=b, reference=expected, notes=[note_a,note_b]))
     n=report['both_answered']
-    report['agreement_rate']=report['reviewer_agreement']/n if n else None
+    for scores in (report, *by_task.values()):
+        answered = scores['both_answered']
+        scores['agreement_rate'] = scores['reviewer_agreement'] / answered if answered else None
+    report['by_task'] = dict(by_task)
     report['dataset']=hashlib.sha256(data).hexdigest()
     print(json.dumps(report,indent=2))
     if args.require_complete and n != len(cases):

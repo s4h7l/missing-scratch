@@ -37,6 +37,36 @@ def failure_breakdown(cases, rows):
             for label in FAILURES if label in counts]
 
 
+def paired_findings(cases, rows):
+    groups = defaultdict(list)
+    for case, row in zip(cases, rows, strict=True):
+        groups[case['pair']].append(dict(case=case['id'], task=case['type'],
+                                        expected=case['answer'], predicted=selected_option(case, row)))
+    total = exactly_one_correct = repeated_answer = 0
+    example = None
+    best_rank = 0
+    for pair_id, members in groups.items():
+        if len(members) != 2 or members[0]['expected'] == members[1]['expected']:
+            continue
+        total += 1
+        exactly_one_correct += sum(member['expected'] == member['predicted'] for member in members) == 1
+        if members[0]['predicted'] is None or members[0]['predicted'] != members[1]['predicted']:
+            continue
+        repeated_answer += 1
+        task = members[0]['task']
+        failure = {
+            'visibility': 'False coverage' if members[0]['predicted'] == 'Visible' else 'Missed coverage',
+            'blocker': 'Wrong obstruction',
+            'repair': 'Wrong repair',
+        }[task]
+        rank = 2 if failure == 'False coverage' else 1
+        if rank > best_rank:
+            example = dict(pair=pair_id, cases=members, failure=failure, consequence=FAILURES[failure])
+            best_rank = rank
+    return dict(answer_flips=total, exactly_one_correct=exactly_one_correct,
+                repeated_answer=repeated_answer, example=example)
+
+
 def report(dataset, logs):
     data = dataset.read_bytes()
     digest = hashlib.sha256(data).hexdigest()
@@ -55,6 +85,7 @@ def report(dataset, logs):
         if mode in models[key]:
             raise ValueError(f'{path}: duplicate mode for {name}')
         models[key][mode] = dict(scores=metrics(cases, rows), failures=failure_breakdown(cases, rows),
+                                 pairs=paired_findings(cases, rows),
                                  recorded_at=meta.get('recorded_at'))
     return dict(dataset=digest, reports=[
         dict(provider=provider, model=model, modes=modes)

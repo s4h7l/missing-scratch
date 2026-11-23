@@ -1,5 +1,5 @@
 const by = id => document.getElementById(id);
-const state = { cases: [], items: [], index: 0, selection: null, findings: new Map(), showRay: true };
+const state = { cases: [], items: [], index: 0, selection: null, mode: 'instant', findings: {instant: new Map(), paired: new Map()}, showRay: true };
 const pages = [...document.querySelectorAll('[data-page]')];
 let currentPage;
 
@@ -27,7 +27,31 @@ const judgeQuestions = {
 function showCase() {
   const item = state.items[state.index];
   if (!item) return;
-  const recorded = state.findings.get(item.id);
+  const history = state.findings[state.mode];
+  const recorded = history.get(item.id);
+  const paired = state.items.find(other => other.pair === item.pair && other.id !== item.id);
+  const pairedFinding = paired ? history.get(paired.id) : undefined;
+  const revealed = recorded !== undefined && (state.mode === 'instant' || pairedFinding !== undefined);
+  const answered = state.items.filter(candidate => history.has(candidate.id)).length;
+  by('inspection-progress').max = state.items.length;
+  by('inspection-progress').value = answered;
+  by('inspection-progress-text').textContent = answered + ' of ' + state.items.length + ' answered';
+  const onward = by('continue-inspection');
+  onward.hidden = recorded === undefined;
+  if (recorded !== undefined) {
+    onward.textContent = !revealed ? 'Answer the paired scene →' :
+      state.items.some(candidate => !history.has(candidate.id)) ? 'Next unanswered →' : 'See validation evidence →';
+  }
+  if (state.displayedCase !== item.id) {
+    state.displayedCase = item.id;
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      for (const panel of [by('scene').parentElement, by('prompt').parentElement]) {
+        panel.getAnimations().forEach(animation => animation.cancel());
+        panel.animate([{opacity:.55,transform:'translateY(4px)'},{opacity:1,transform:'none'}],
+          {duration:190,easing:'ease-out'});
+      }
+    }
+  }
   state.selection = recorded ?? null;
   state.showRay = true;
   by('scene').src = item.image;
@@ -45,10 +69,26 @@ function showCase() {
   for (const option of item.options) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.textContent = option;
+    const label = document.createElement('span');
+    label.textContent = option;
+    button.append(label);
+    if (revealed && (option === item.answer || option === recorded)) {
+      const correct = option === item.answer;
+      button.classList.add(correct ? 'answer-correct' : 'answer-wrong');
+      const badge = document.createElement('span');
+      badge.className = 'answer-badge';
+      badge.textContent = correct ? (option === recorded ? '✓ Your answer · Correct' : '✓ Correct answer') : '× Your answer · Incorrect';
+      button.append(badge);
+    }
     button.setAttribute('aria-pressed', String(state.selection === option));
     button.disabled = recorded !== undefined;
     button.addEventListener('click', () => {
+      if (state.mode === 'instant') {
+        history.set(item.id, option);
+        showCase();
+        by('result').focus({preventScroll:true});
+        return;
+      }
       state.selection = option;
       for (const choice of by('choices').children) choice.setAttribute('aria-pressed', String(choice === button));
       by('record').disabled = false;
@@ -56,6 +96,7 @@ function showCase() {
     by('choices').append(button);
   }
 
+  by('record').hidden = state.mode === 'instant';
   by('record').disabled = true;
   by('record').textContent = recorded === undefined ? 'Lock prediction' : 'Prediction locked';
   by('pair').disabled = false;
@@ -63,24 +104,30 @@ function showCase() {
   by('toggle-ray').disabled = true;
   by('toggle-ray').textContent = 'Hide ray path';
   by('result').textContent = '';
+  by('answer-feedback').hidden = recorded === undefined;
+  by('answer-feedback').dataset.outcome = revealed ? (recorded === item.answer ? 'correct' : 'incorrect') : 'pending';
   by('trace').hidden = true;
   by('ray').setAttribute('hidden', '');
 
   if (recorded === undefined) return;
-  const paired = state.cases.find(other => other.pair === item.pair && other.id !== item.id);
-  const pairedFinding = state.findings.get(paired.id);
-  if (pairedFinding === undefined) {
-    by('result').textContent = 'Prediction locked. Open the paired scene and answer it to reveal the geometry.';
+  if (!revealed) {
+    by('result').textContent = 'Prediction locked. Answer the paired scene to reveal both results.';
     return;
   }
   by('toggle-ray').disabled = false;
-  const pairSummary = recorded === item.answer && pairedFinding === paired.answer ?
-    ' Both paired findings matched.' : ' At least one paired finding differed.';
-  by('result').textContent = (recorded === item.answer ? 'Finding matches. ' : 'Reference finding: ') + item.answer + '.' + pairSummary;
+  const pairSummary = pairedFinding === undefined ? '' :
+    recorded === item.answer && pairedFinding === paired.answer ? ' Both predictions in the pair are correct.' :
+    ' At least one prediction in the pair is incorrect.';
+  by('result').textContent = (recorded === item.answer ? 'Correct. ' : 'Incorrect. Correct answer: ') + item.answer + '.' + pairSummary;
   const trace = item.trace;
-  by('trace').textContent = trace.blockers.length ?
-    'Base path intersects ' + trace.blockers.join(', ') + '. The overlay shows the ideal path before obstruction.' :
-    'The reflected base path is clear.';
+  if (item.type === 'repair') {
+    by('trace').textContent = item.answer + ' restores the sightline. The dashed ray marks the original path in the base scene.';
+  } else if (item.type === 'blocker') {
+    by('trace').textContent = 'Obstacle ' + item.answer + ' is the first intersection along the camera → mirror → target path.';
+  } else {
+    by('trace').textContent = trace.visible ? 'The ray reaches the mirror and continues to the target without hitting an obstacle.' :
+      'Obstacle ' + trace.blockers.join(', ') + ' interrupts the sightline. The dashed ray shows where it would travel if clear.';
+  }
   by('trace').hidden = false;
   by('ray').setAttribute('viewBox', '0 0 680 ' + (item.type === 'repair' ? 744 : 248));
   by('ray').firstElementChild.setAttribute('points',
@@ -116,6 +163,8 @@ const defaults = { camera: 135, mirror: 335, block: 225, target: 555 };
 let trialActive = false;
 let trialPrediction = null;
 let savedLayout;
+let baseline;
+let currentBenchOutcome;
 const practiceCases = {
   blocked: defaults,
   clear: {...defaults, block: 85},
@@ -125,6 +174,25 @@ const layoutValues = () => Object.fromEntries(Object.keys(defaults).map(key => [
 function applyLayout(values) {
   for (const [key,value] of Object.entries(values)) by(key).value = value;
   simulate();
+}
+
+const objectNames = {camera:'Camera',mirror:'Mirror',block:'Obstacle',target:'Target'};
+
+function updateComparison(layout, outcome) {
+  currentBenchOutcome = outcome;
+  if (!baseline || trialActive) return;
+  const names = Object.keys(layout).filter(key => layout[key] !== baseline.layout[key])
+    .map(key => objectNames[key]);
+  by('comparison-readout').hidden = false;
+  by('baseline-outcome').textContent = baseline.outcome;
+  by('current-outcome').textContent = outcome;
+  const change = by('comparison-change');
+  change.hidden = false;
+  const text = names.length ? names.join(', ') + ' moved. ' + (outcome === baseline.outcome ?
+    'Coverage outcome stayed the same.' : 'Coverage outcome changed.') : 'The current layout matches the saved setup.';
+  if (change.textContent !== text) change.textContent = text;
+  change.dataset.changed = String(outcome !== baseline.outcome);
+  by('restore-baseline').disabled = !names.length;
 }
 
 function setTrial(active) {
@@ -160,11 +228,18 @@ function simulate() {
   window.opticsBench.draw({source, target, mirror, plane, obstacle, ray, reflection,
     clear: inside && !blocked, awaiting, locked: trialActive});
   by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Free exploration';
-  const status = awaiting ? 'Will the target appear in the mirror?' : !inside ? 'Mirror misses the sightline' : blocked ? 'Coverage obstructed' : 'Target covered';
+  const outcome = blocked ? 'Obstructed' : !inside ? 'Mirror out of reach' : 'Visible';
+  const status = awaiting ? 'Will the target appear in the mirror?' :
+    firstHit !== null ? 'Coverage obstructed' : !inside ? 'Mirror misses the sightline' :
+    blocked ? 'Coverage obstructed' : 'Target covered';
   if (by('coverage').textContent !== status) by('coverage').textContent = status;
   by('coverage').dataset.outcome = awaiting ? 'predict' : inside && !blocked ? 'clear' : 'blocked';
-  by('coverage-detail').textContent = awaiting ? 'The layout is locked. Rotate the view if you like, then pick an answer to reveal the ray.' : !inside ? 'The reflection point lies outside the mirror span.' :
-    blocked ? 'The ideal reflected path crosses the obstacle.' : 'The reflection point falls on the mirror and both path segments are clear.';
+  by('coverage-detail').textContent = awaiting ? 'The layout is locked. Rotate the view if you like, then pick an answer to reveal the ray.' :
+    firstHit !== null ? 'The obstacle stops the ray before it reaches the mirror.' :
+    !inside ? 'The reflection point lies outside the mirror span.' :
+    blocked ? 'The obstacle stops the ray after it leaves the mirror.' :
+    'The reflection point falls on the mirror and both path segments are clear.';
+  updateComparison(layoutValues(), firstHit !== null ? 'Obstructed' : outcome);
   for (const key of Object.keys(defaults)) by(key + '-value').value = by(key).value;
   if (!trialActive) by('bench-case').value = Object.entries(practiceCases).find(([,values]) =>
     Object.entries(values).every(([key,value]) => by(key).valueAsNumber === value))?.[0] ?? 'custom';
@@ -181,6 +256,18 @@ function simulate() {
 }
 
 function bindCases() {
+  for (const button of document.querySelectorAll('[data-feedback-mode]')) {
+    button.addEventListener('click', () => {
+      state.mode = button.dataset.feedbackMode;
+      for (const mode of document.querySelectorAll('[data-feedback-mode]')) {
+        mode.setAttribute('aria-pressed',String(mode === button));
+      }
+      by('feedback-instructions').textContent = state.mode === 'instant' ?
+        'Choose one answer. The correct option and ray path appear immediately.' :
+        'Lock a prediction for each scene. Feedback appears after both are recorded.';
+      showCase();
+    });
+  }
   by('kind').addEventListener('change', () => {
     state.items = state.cases.filter(item => by('kind').value === 'all' || by('kind').value === item.type);
     state.index = 0;
@@ -188,9 +275,24 @@ function bindCases() {
   });
   by('prev').addEventListener('click', () => move(-1));
   by('next').addEventListener('click', () => move(1));
+  by('continue-inspection').addEventListener('click', () => {
+    const history = state.findings[state.mode];
+    const current = state.items[state.index];
+    const other = state.items.findIndex(caseItem => caseItem.pair === current.pair && caseItem.id !== current.id);
+    if (state.mode === 'paired' && other >= 0 && !history.has(state.items[other].id)) {
+      state.index = other;
+    } else {
+      const remaining = state.items.findIndex((item,index) => index > state.index && !history.has(item.id));
+      const next = remaining >= 0 ? remaining : state.items.findIndex(item => !history.has(item.id));
+      if (next < 0) { location.hash = '#evidence'; return; }
+      state.index = next;
+    }
+    showCase();
+    by('prompt').focus({preventScroll:true});
+  });
   by('record').addEventListener('click', () => {
     if (state.selection === null) return;
-    state.findings.set(state.items[state.index].id, state.selection);
+    state.findings[state.mode].set(state.items[state.index].id, state.selection);
     showCase();
   });
   by('pair').addEventListener('click', () => {
@@ -242,6 +344,16 @@ by('reset').addEventListener('click', () => {
   setTrial(false);
   applyLayout(defaults);
 });
+by('save-baseline').addEventListener('click', () => {
+  baseline = {layout:layoutValues(), outcome:currentBenchOutcome};
+  by('save-baseline').textContent = 'Replace saved setup';
+  updateComparison(baseline.layout, baseline.outcome);
+});
+by('restore-baseline').addEventListener('click', () => {
+  if (!baseline) return;
+  applyLayout(baseline.layout);
+  by('save-baseline').focus({preventScroll:true});
+});
 by('bench-case').addEventListener('change', event => {
   const values = practiceCases[event.target.value];
   if (values) applyLayout(values);
@@ -257,7 +369,9 @@ fetch('cases.json').then(response => {
   state.cases = state.items = cases;
   by('scene-count').textContent = cases.length;
   by('evidence-count').textContent = cases.length;
-  void loadAudit(raw);
+  const digest = manifestDigest(raw);
+  void loadAudit(digest);
+  void loadReproduction(digest, cases.length);
   by('pair-count').textContent = new Set(cases.map(item => item.pair)).size;
   by('landing-scenes').textContent = by('scene-count').textContent;
   by('landing-pairs').textContent = by('pair-count').textContent;
@@ -269,7 +383,7 @@ fetch('cases.json').then(response => {
   }
   bindCases();
   showCase();
-  void loadReports(raw);
+  void loadReports(digest);
 }).catch(() => {
   by('prompt').textContent = 'The synthetic dataset could not be loaded.';
 });
@@ -325,15 +439,57 @@ function modelRow(name, brand, values) {
   row.append(title);
   for (const value of values) row.insertCell().textContent = value;
 }
-async function loadReports(raw) {
+function appendPairEvidence(details, pairs) {
+  if (!pairs?.answer_flips) return;
+  const summary = document.createElement('p');
+  summary.className = 'detail';
+  summary.textContent = 'On ' + pairs.answer_flips + ' pairs where the reference answer changed, ' +
+    pairs.exactly_one_correct + ' had exactly one correct response and ' +
+    pairs.repeated_answer + ' received the same valid response twice.';
+  details.append(summary);
+  if (!pairs.example) return;
+  const evidence = document.createElement('div');
+  evidence.className = 'report-pair';
+  const title = document.createElement('h3');
+  title.textContent = pairs.example.failure + ' · ' + 'Matched pair ' + pairs.example.pair;
+  const consequence = document.createElement('p');
+  consequence.className = 'detail';
+  consequence.textContent = pairs.example.consequence;
+  evidence.append(title, consequence);
+  const scenes = document.createElement('div');
+  scenes.className = 'report-pair-scenes';
+  for (const member of pairs.example.cases) {
+    const scene = state.cases.find(item => item.id === member.case);
+    if (!scene) continue;
+    const figure = document.createElement('figure');
+    const link = document.createElement('a');
+    link.href = scene.image;
+    const image = document.createElement('img');
+    image.loading = 'lazy';
+    image.alt = 'Open the full benchmark diagram for ' + scene.id;
+    image.src = scene.image;
+    link.append(image);
+    const caption = document.createElement('figcaption');
+    caption.textContent = scene.id + ' · Model: ' + member.predicted + ' · Expected: ' + member.expected;
+    figure.append(link, caption);
+    scenes.append(figure);
+  }
+  evidence.append(scenes);
+  details.append(evidence);
+}
+async function manifestDigest(raw) {
+  if (!globalThis.crypto?.subtle) return null;
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+  return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
+}
+async function loadReports(digest) {
   try {
     const response = await fetch('model-reports.json');
     if (!response.ok) throw new Error('Report file unavailable');
     const report = await response.json();
     if (report.reports.length) {
-      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
-      const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
-      if (hex !== report.dataset) throw new Error('Reports belong to another dataset');
+      const hex = await digest;
+      if (!hex || hex !== report.dataset) throw new Error('Reports belong to another dataset');
     }
     const status = report.reports.length ? report.reports.length + ' recorded model configurations on this dataset.' : 'Model evaluation pending. Scores appear here after the frozen dataset is run.';
     by('report-status').textContent = status;
@@ -341,10 +497,11 @@ async function loadReports(raw) {
     for (const run of report.reports) {
       const vision = run.modes.vision?.scores;
       const baseline = run.modes['question-only']?.scores;
-      modelRow(run.model, brandFor(run), [scoreText(vision?.overall), scoreText(baseline?.overall), scoreText(vision?.both_pair_members)]);
+      modelRow(run.model, brandFor(run), [scoreText(vision?.overall), scoreText(baseline?.overall),
+        scoreText(vision?.both_pair_members), scoreText(baseline?.both_pair_members)]);
       const details = document.createElement('details');
       const summary = document.createElement('summary');
-      summary.textContent = run.model + ' · ' + run.provider + ' · Task breakdown';
+      summary.textContent = run.model + ' · ' + run.provider + ' · Score breakdown and examples';
       details.append(summary);
       for (const mode of ['vision','question-only']) {
         const scores = run.modes[mode]?.scores;
@@ -354,6 +511,16 @@ async function loadReports(raw) {
         p.textContent = mode + ' · ' + ['visibility','blocker','repair','both_pair_members'].map(key =>
           (key === 'both_pair_members' ? 'Pairs' : key) + ' ' + scoreText(scores[key])).join(' · ');
         details.append(p);
+        const difficulty = document.createElement('ul');
+        difficulty.className = 'detail report-difficulty';
+        for (const task of ['visibility', 'blocker', 'repair']) {
+          const item = document.createElement('li');
+          item.textContent = (task === 'blocker' ? 'obstruction' : task) + ' · ' +
+            ['easy', 'medium', 'hard'].map(level => level + ' ' + scoreText(scores[task + '/' + level])).join(' · ');
+          difficulty.append(item);
+        }
+        details.append(difficulty);
+        if (mode === 'vision') appendPairEvidence(details, run.modes[mode].pairs);
         for (const finding of run.modes[mode].failures ?? []) {
           const item = document.createElement('p');
           item.className = 'detail';
@@ -372,15 +539,28 @@ async function loadReports(raw) {
   }
 }
 
-async function loadAudit(raw) {
+async function loadReproduction(digest, imageCount) {
+  try {
+    const response = await fetch('reproduction.json');
+    if (!response.ok) return;
+    const record = await response.json();
+    const hex = await digest;
+    if (!hex || hex !== record.manifest_sha256 || record.images_byte_identical !== imageCount) return;
+    by('reproduction-images').textContent = record.images_byte_identical;
+    by('reproduction-proof').hidden = false;
+  } catch {
+    by('reproduction-proof').hidden = true;
+  }
+}
+
+async function loadAudit(digest) {
   const display = by('shortcut-audit');
   try {
     const response = await fetch('validity-audit.json');
     if (!response.ok) throw new Error('Audit unavailable');
     const audit = await response.json();
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
-    const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
-    if (audit.dataset !== hex) throw new Error('Audit belongs to another dataset');
+    const hex = await digest;
+    if (!hex || audit.dataset !== hex) throw new Error('Audit belongs to another dataset');
     display.textContent = 'Across ' + audit.total + ' visibility cases, the best horizontal interval, vertical interval, and exact coordinate lookup each got ' +
       [audit.horizontal_interval_correct, audit.vertical_interval_correct, audit.coordinate_lookup_correct].join(', ') + ' answers right, respectively.' +
       (audit.held_out ? ' With whole layout groups held out, the same three methods scored ' +

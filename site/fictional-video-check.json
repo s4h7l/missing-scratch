@@ -1,0 +1,23 @@
+{
+  "method": "Independently count target-colored pixels in the decoded mirror-view region and compare against both exact geometry methods.",
+  "scope": "Synthetic render consistency check only. No model API or physical camera was used.",
+  "manifest_sha256": "b1bb924611d7c0ef40a68d961309fa939f67535edd72f7a795e2c50859378423",
+  "samples": [
+    {
+      "case": "0000-0",
+      "timestamp_s": 3,
+      "geometry_visible": false,
+      "decoded_green_target_pixels": 0,
+      "rendered_target_visible": false,
+      "matches": true
+    },
+    {
+      "case": "0000-1",
+      "timestamp_s": 12,
+      "geometry_visible": true,
+      "decoded_green_target_pixels": 4048,
+      "rendered_target_visible": true,
+      "matches": true
+    }
+  ]
+}

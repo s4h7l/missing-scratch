@@ -4,17 +4,17 @@ Source: [Hack2Skill's Track 2 criteria](https://hack2skill.com/event/innodata/?s
 
 | Criterion | Evidence available | Finish before submitting |
 |---|---|---|
-| Implementation · 25% | Seeded generator, exact manifest, Docker demo, reproducible scoring | Ask a teammate to reproduce the same Docker release from a clean checkout and record the hash |
-| Validity · 25% | Two geometry methods, exact image checksums, obstacle height diagnostic | Have two reviewers independently complete the 72-case packet. Report agreement, ambiguities and any exclusions. Run question-only controls. Inspect additional image shortcuts, including horizontal position. |
-| Variation · 20% | Three tasks and 100 pairs | Present specific examples of distinct reasoning. Treat the difficulty labels as generated settings until difficulty is measured. |
-| Engineering judgment · 15% | Corrected a synthetic shortcut and measured the effect | Use three or more vision models and give failure counts, denominators and case examples. |
+| Implementation · 25% | Seeded generator, exact manifest, Docker demo, reproducible scoring. The [clean rebuild](../site/reproduction.json) matched the v4 manifest and all 200 images. | Have a teammate repeat the rebuild and record their result. |
+| Validity · 25% | Two geometry methods, exact image checksums, and held-out shortcut checks for all three tasks | Have two reviewers independently complete the 72-case packet. Report agreement, ambiguities and any exclusions. Run question-only controls. |
+| Variation · 20% | Three tasks and 100 pairs. The report computes task-by-difficulty scores for both model modes. | Treat the difficulty labels as generated settings until measured results show how performance changes. |
+| Engineering judgment · 15% | Corrected a synthetic shortcut and measured the effect. The report surfaces both diagrams when a model repeats an answer across an answer-changing pair. | Run three vision models and their question-only controls. Verify the example and publish counts and denominators. |
 | Impact and communication · 15% | Paired judge challenge and live simulator | Show how false coverage can leave a target uninspected. Add 5–10 camera checks when recorded, including mismatches. |
 
 ## Measured design finding
 
 In the original 68 visibility cases, a single threshold on the movable blocker's vertical position matched 68/68 labels. In v2, the moved obstacle stays at the same height in both cases. The same feature's best threshold matches 34/68, even when chosen on those cases. This measures one dataset shortcut. It does not measure model performance or rule out other shortcuts.
 
-Freeze and distribute the v2 manifest and images together. Do not mix with earlier scores or reviewer packets.
+The following notes document earlier dataset versions. Use the v4 manifest and matching review packet for the current evaluation.
 
 ## Finalist sequence
 
