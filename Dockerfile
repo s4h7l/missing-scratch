@@ -14,6 +14,7 @@ RUN CGO_ENABLED=0 go build -trimpath -o /playground main.go
 FROM scratch
 COPY --from=server /playground /playground
 COPY --from=generator /app/dist /public
+COPY datasets/v4/ /public/
 USER 65534:65534
 EXPOSE 8000
 ENTRYPOINT ["/playground"]

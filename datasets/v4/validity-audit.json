@@ -1,0 +1,35 @@
+{
+  "dataset": "b1bb924611d7c0ef40a68d961309fa939f67535edd72f7a795e2c50859378423",
+  "total": 68,
+  "horizontal_interval_correct": 34,
+  "vertical_interval_correct": 34,
+  "coordinate_lookup_correct": 34,
+  "held_out": {
+    "groups": 17,
+    "horizontal": 34,
+    "vertical": 34,
+    "coordinate_lookup": 34,
+    "total": 68
+  },
+  "other_tasks": {
+    "blocker": {
+      "held_out_groups": 33,
+      "total": 66,
+      "correct": {
+        "labeled_obstacles_only": 33,
+        "answer_option_order_only": 33,
+        "camera_side_only": 38
+      }
+    },
+    "repair": {
+      "held_out_groups": 33,
+      "total": 66,
+      "correct": {
+        "labeled_obstacles_only": 33,
+        "answer_option_order_only": 33,
+        "camera_side_only": 36,
+        "image_panel_order_only": 33
+      }
+    }
+  }
+}

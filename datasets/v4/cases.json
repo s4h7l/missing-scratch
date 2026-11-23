@@ -1,0 +1,6647 @@
+{
+  "cases": [
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0000-0",
+      "image": "images/0000-0.png",
+      "image_sha256": "3d2428c9c944b93dea201cc73f673eafcc7a78f48150a903da6d17714e506190",
+      "layout_group": "visibility-000",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 0,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          20,
+          21
+        ],
+        "target": [
+          86,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0000-1",
+      "image": "images/0000-1.png",
+      "image_sha256": "c0f1b31b024936066272023ef673169bcc53dc9c8e571d86e2eeb9dbcf334716",
+      "layout_group": "visibility-000",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 0,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          20,
+          21
+        ],
+        "target": [
+          86,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0001-0",
+      "image": "images/0001-0.png",
+      "image_sha256": "c8cc6035ab76b2b3bfc47e6157eba57411b8dd59d44b19976b70b97319209421",
+      "layout_group": "visibility-000",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 1,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          42,
+          21
+        ],
+        "target": [
+          64,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0001-1",
+      "image": "images/0001-1.png",
+      "image_sha256": "32950cac56c242e5aa6cbf683d047d900e1d737fb5ff8d485e514738c76191ef",
+      "layout_group": "visibility-000",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 1,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          42,
+          21
+        ],
+        "target": [
+          64,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0002-0",
+      "image": "images/0002-0.png",
+      "image_sha256": "1db07d25ecfd6442de9fa31dab7b5c3d1ba98f7f34b8e17eb58e0d12c7eb8f8b",
+      "layout_group": "visibility-001",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 2,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          14,
+          21
+        ],
+        "target": [
+          80,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0002-1",
+      "image": "images/0002-1.png",
+      "image_sha256": "2bcb32d5464e67a8a76ddf9b77a25389c52bd498a469e4ba633bb336d7802cd6",
+      "layout_group": "visibility-001",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 2,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          14,
+          21
+        ],
+        "target": [
+          80,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0003-0",
+      "image": "images/0003-0.png",
+      "image_sha256": "d7f0d15c4580392ba447a96b279aef6f686993688002467ab8482f1e60696ba5",
+      "layout_group": "blocker-003",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 3,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0003-1",
+      "image": "images/0003-1.png",
+      "image_sha256": "ca9931046eecb5edfb9d823503d0604117a50e84fba7ae3e9e0470ac1c944beb",
+      "layout_group": "blocker-003",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 3,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          60.5,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0004-0",
+      "image": "images/0004-0.png",
+      "image_sha256": "ca88595f40060bb004f809d140f355581d36ae106d36473a78aa5c8d92b65da5",
+      "layout_group": "blocker-004",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 4,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          44.0,
+          0
+        ],
+        "camera": [
+          11,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0004-1",
+      "image": "images/0004-1.png",
+      "image_sha256": "d4a1743a025cb2587c074383d29268820cf8ced25588819d9a0d0531561148e4",
+      "layout_group": "blocker-004",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 4,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          56.5,
+          0
+        ],
+        "camera": [
+          36,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0005-0",
+      "image": "images/0005-0.png",
+      "image_sha256": "a064d6f65b0a9a7d6183c5d093d53643af2698e83c3111ce79f0d75dde279429",
+      "layout_group": "blocker-005",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 5,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          88,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0005-1",
+      "image": "images/0005-1.png",
+      "image_sha256": "e91a7cd2a2e50f28de20234c9e3e5d9bb6e5eee28838f0197191a8e45bdc294a",
+      "layout_group": "blocker-005",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 5,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          67.0,
+          0
+        ],
+        "camera": [
+          46,
+          22
+        ],
+        "target": [
+          88,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0006-0",
+      "image": "images/0006-0.png",
+      "image_sha256": "ba1b47ca94735a1c1c6dc5263a74a8749d24c412a81e0a70d45c902a83993a9c",
+      "layout_group": "repair-006",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 6,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0006-1",
+      "image": "images/0006-1.png",
+      "image_sha256": "2aad038cbd4399007d5f0c51ffb13711a4b9298aec91301240012945539cc20b",
+      "layout_group": "repair-006",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 6,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0007-0",
+      "image": "images/0007-0.png",
+      "image_sha256": "76e2effd09fb771257b1803786b8decc4e5be926e2225d9c3d63ddb718bbb760",
+      "layout_group": "repair-007",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 7,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          48.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0007-1",
+      "image": "images/0007-1.png",
+      "image_sha256": "c9416de28fd3a0e87e72e1aa90ba3c3f70be0cea532b72b9843a62ed7baccc3b",
+      "layout_group": "repair-007",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 7,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          62.0,
+          0
+        ],
+        "camera": [
+          43,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0008-0",
+      "image": "images/0008-0.png",
+      "image_sha256": "90385e7828ca8cfc37364577978e69a69fc20d85c28baf756b9c9d0546ffab34",
+      "layout_group": "repair-008",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 8,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0008-1",
+      "image": "images/0008-1.png",
+      "image_sha256": "e1ab07f787876cbabaf833f2a0bc2372785f051179a1dee59b1bfae3deb2332a",
+      "layout_group": "repair-008",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 8,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          61.5,
+          0
+        ],
+        "camera": [
+          43,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0009-0",
+      "image": "images/0009-0.png",
+      "image_sha256": "ee8b71672fe6286617c222be1efaf70c2ffe7153b8ba93f7185a5b718aff3ac5",
+      "layout_group": "visibility-001",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 9,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          39,
+          21
+        ],
+        "target": [
+          55,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0009-1",
+      "image": "images/0009-1.png",
+      "image_sha256": "2418b4fa3183dec7a29984d01a9cc0372c45bc6dadd12aa790e7d08bbecc80b5",
+      "layout_group": "visibility-001",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 9,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          39,
+          21
+        ],
+        "target": [
+          55,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0010-0",
+      "image": "images/0010-0.png",
+      "image_sha256": "59878f49ce3a23cf6937047223c097fa61c419f4731be6779ca8347c675577e1",
+      "layout_group": "visibility-002",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 10,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          13,
+          21
+        ],
+        "target": [
+          83,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0010-1",
+      "image": "images/0010-1.png",
+      "image_sha256": "c7bd74b0a975934ec7418fcc3c0e1a7ae677a310e382554d69b643c374895f55",
+      "layout_group": "visibility-002",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 10,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          13,
+          21
+        ],
+        "target": [
+          83,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0011-0",
+      "image": "images/0011-0.png",
+      "image_sha256": "fcde89cf68fedd9b7d4e4617e474db97f680ae8574b8bfba8a7816f107d25227",
+      "layout_group": "visibility-002",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 11,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          41,
+          21
+        ],
+        "target": [
+          55,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0011-1",
+      "image": "images/0011-1.png",
+      "image_sha256": "51987cac0c22bbad499cdfcbedd9217204735c24de6d0ef51b6492c9e7d130a9",
+      "layout_group": "visibility-002",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 11,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          41,
+          21
+        ],
+        "target": [
+          55,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0012-0",
+      "image": "images/0012-0.png",
+      "image_sha256": "2faaa0d69a29fef40cabd2496c489ec37d22ed79a7fd8b85b47111e2c6dc313b",
+      "layout_group": "blocker-012",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 12,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0012-1",
+      "image": "images/0012-1.png",
+      "image_sha256": "bb4704842e603b19e972a72f2aab992412efc6cbdf6ecc4f01dab9a89b46ed45",
+      "layout_group": "blocker-012",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 12,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          57.5,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0013-0",
+      "image": "images/0013-0.png",
+      "image_sha256": "ac8d69354614c0c7471c98360f3f5b66c407c82d78f59587a3999e3de7c9e976",
+      "layout_group": "blocker-013",
+      "options": [
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 13,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          51.5,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0013-1",
+      "image": "images/0013-1.png",
+      "image_sha256": "bd8628a94fe261ccf0b4eb97d8bc19e113d028244a1ea9b8836e7da1f1f3c246",
+      "layout_group": "blocker-013",
+      "options": [
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 13,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          63.0,
+          0
+        ],
+        "camera": [
+          43,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0014-0",
+      "image": "images/0014-0.png",
+      "image_sha256": "b45a39fb15be5e781858f0493f8062957a912612a359f364b1a2c0b9d46aa6da",
+      "layout_group": "blocker-014",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 14,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          49.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0014-1",
+      "image": "images/0014-1.png",
+      "image_sha256": "e1c91de1b3c2e607f97bc82670d6c38a7b32b410197e123443408ecb544378bb",
+      "layout_group": "blocker-014",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 14,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          60.5,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0015-0",
+      "image": "images/0015-0.png",
+      "image_sha256": "f9b9ab4fc8a2f920baaf2567dde0c23073f1a0f8060aac58daac5ed800ad9305",
+      "layout_group": "repair-015",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 15,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0015-1",
+      "image": "images/0015-1.png",
+      "image_sha256": "8269fef06e967069cc2be4a4543699db82e49b3fa0f32a57bbcc2ff0e0fbfcc1",
+      "layout_group": "repair-015",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 15,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          60.5,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0016-0",
+      "image": "images/0016-0.png",
+      "image_sha256": "c40225ad2a7af03437a0cc071f95e170f2972017c3973539921641140bfca546",
+      "layout_group": "repair-016",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 16,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          11,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0016-1",
+      "image": "images/0016-1.png",
+      "image_sha256": "71084a227de2de2e65474baaa3b3baf14ac362d082e725e6a0094cbf6f1edad7",
+      "layout_group": "repair-016",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 16,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          58.0,
+          0
+        ],
+        "camera": [
+          37,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0017-0",
+      "image": "images/0017-0.png",
+      "image_sha256": "267543921f6d302c7f029fa7fbacae4653801d7e11a053c9d67d5dc4697bea8e",
+      "layout_group": "repair-017",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 17,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0017-1",
+      "image": "images/0017-1.png",
+      "image_sha256": "9c9e47a9409c6fe2965ae1ae2f8c68f1f5c2c603078fa1d72ee6dba40ad8a114",
+      "layout_group": "repair-017",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 17,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          60.5,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0018-0",
+      "image": "images/0018-0.png",
+      "image_sha256": "d457d444fe46633832621ffe3733029000cffa9be93381eb29fb15c1f0a6887a",
+      "layout_group": "visibility-003",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 18,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          20,
+          24
+        ],
+        "target": [
+          82,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0018-1",
+      "image": "images/0018-1.png",
+      "image_sha256": "1cceb3d2e1f5e2901a22c73ca71e9c143c3856650cef080c76ae6272e7deafd2",
+      "layout_group": "visibility-003",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 18,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          20,
+          24
+        ],
+        "target": [
+          82,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0019-0",
+      "image": "images/0019-0.png",
+      "image_sha256": "59cd7ab962ae7a708eafcc2b49cc4805adc4ca83413bd47448345d9f9c0e6b62",
+      "layout_group": "visibility-003",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 19,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          40,
+          24
+        ],
+        "target": [
+          62,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0019-1",
+      "image": "images/0019-1.png",
+      "image_sha256": "bd6b4d299eaa602466fc4ba8bbeae6d465d5a52636278025865b0ba9c0b4de73",
+      "layout_group": "visibility-003",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 19,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          40,
+          24
+        ],
+        "target": [
+          62,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0020-0",
+      "image": "images/0020-0.png",
+      "image_sha256": "8e5ccb4ba61d880a348d4a7c69b7160e0493b3767ff0714d3397d3b2f9425fd6",
+      "layout_group": "visibility-004",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 20,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          46.0,
+          0
+        ],
+        "camera": [
+          12,
+          24
+        ],
+        "target": [
+          80,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0020-1",
+      "image": "images/0020-1.png",
+      "image_sha256": "135fe02e3471b575e2ad6162604ef96011e91e8ba954ac3a4f638ac777c3ad42",
+      "layout_group": "visibility-004",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 20,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          46.0,
+          0
+        ],
+        "camera": [
+          12,
+          24
+        ],
+        "target": [
+          80,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0021-0",
+      "image": "images/0021-0.png",
+      "image_sha256": "20cb64d785033253a18667fc251a5e25d84a7ece9641f6d81bd79b84266ce0cc",
+      "layout_group": "blocker-021",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 21,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          49.5,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0021-1",
+      "image": "images/0021-1.png",
+      "image_sha256": "5e39f1a4ff8bbf69f7185dbe49475215d77ea93596657819253f3fbdc2090c73",
+      "layout_group": "blocker-021",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 21,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          61.5,
+          0
+        ],
+        "camera": [
+          42,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0022-0",
+      "image": "images/0022-0.png",
+      "image_sha256": "f81c17cf7deaa7f9b429e73953e9838bbd07c8bd05df39cc55198055984a0648",
+      "layout_group": "blocker-022",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 22,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          50.5,
+          0
+        ],
+        "camera": [
+          17,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0022-1",
+      "image": "images/0022-1.png",
+      "image_sha256": "6afcd259546ca72f80c48cd16fc444215f0f9aa3aca16d00e5e06886d257786d",
+      "layout_group": "blocker-022",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 22,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          64.0,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0023-0",
+      "image": "images/0023-0.png",
+      "image_sha256": "37fb4a1e56d77ff027e0db3332d7a075c77394c4a7137643fa1b0a26793cd4a9",
+      "layout_group": "blocker-023",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 23,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0023-1",
+      "image": "images/0023-1.png",
+      "image_sha256": "4622b351130293d8895fe0507a5a787049397f2a10bfe48cef64151ac98c8bde",
+      "layout_group": "blocker-023",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 23,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          60.0,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0024-0",
+      "image": "images/0024-0.png",
+      "image_sha256": "cb178f24cbfe6600d5566641cb75a504f531c40570bc16878dbb720cbed33e4b",
+      "layout_group": "repair-024",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 24,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0024-1",
+      "image": "images/0024-1.png",
+      "image_sha256": "c195db52c290053a65ba2670a6d3deaf94b13c43146ed98be691281b07d77e68",
+      "layout_group": "repair-024",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 24,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          64.5,
+          0
+        ],
+        "camera": [
+          45,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0025-0",
+      "image": "images/0025-0.png",
+      "image_sha256": "73d91426e0e8316a74b5e3e4cc6d2e94352531d8ea160b4ef5919de2db1b136f",
+      "layout_group": "repair-025",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 25,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          53.5,
+          0
+        ],
+        "camera": [
+          21,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0025-1",
+      "image": "images/0025-1.png",
+      "image_sha256": "921b7747c62c51e1fc898968e34e28d0a0e2fccb4cd99c9ac34b42692f0d78cc",
+      "layout_group": "repair-025",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 25,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          64.5,
+          0
+        ],
+        "camera": [
+          43,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0026-0",
+      "image": "images/0026-0.png",
+      "image_sha256": "0924965445f82de32cdbd235faa88a1080e9296e8eaea6b5b8d78d708c39bd3c",
+      "layout_group": "repair-026",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 26,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0026-1",
+      "image": "images/0026-1.png",
+      "image_sha256": "4b0d2e9784c55d3cdafb28872572e3cda28603756ca4bb62d24a670ee4abe26e",
+      "layout_group": "repair-026",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 26,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          65.0,
+          0
+        ],
+        "camera": [
+          46,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0027-0",
+      "image": "images/0027-0.png",
+      "image_sha256": "845fc74d15774c86f426d740a44fa7c981d37d7a334bb55570f088e3cc331d9b",
+      "layout_group": "visibility-004",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 27,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          46.0,
+          0
+        ],
+        "camera": [
+          36,
+          24
+        ],
+        "target": [
+          56,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0027-1",
+      "image": "images/0027-1.png",
+      "image_sha256": "e45499e8e7ad77bdf6c21e21fafb29fe882a0d62d72c8a35cdcded2a43bdd9df",
+      "layout_group": "visibility-004",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 27,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          46.0,
+          0
+        ],
+        "camera": [
+          36,
+          24
+        ],
+        "target": [
+          56,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0028-0",
+      "image": "images/0028-0.png",
+      "image_sha256": "3df59130b3dafa5b698422310dc39a5ffd49354a359a7209bf0b2fb6ce565e12",
+      "layout_group": "visibility-005",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 28,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          50.0,
+          0
+        ],
+        "camera": [
+          18,
+          24
+        ],
+        "target": [
+          82,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0028-1",
+      "image": "images/0028-1.png",
+      "image_sha256": "31d825c4ae874577236175542eecd51cadecf9e76e97800141eccd226f310c79",
+      "layout_group": "visibility-005",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 28,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          50.0,
+          0
+        ],
+        "camera": [
+          18,
+          24
+        ],
+        "target": [
+          82,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0029-0",
+      "image": "images/0029-0.png",
+      "image_sha256": "e84d1cfa3c2878a0bac3522f41b3893703a817ed6b8e4c6c0d593850c42208a2",
+      "layout_group": "visibility-005",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 29,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          50.0,
+          0
+        ],
+        "camera": [
+          39,
+          24
+        ],
+        "target": [
+          61,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0029-1",
+      "image": "images/0029-1.png",
+      "image_sha256": "2212d15dfd0432d4592dacdbc76a56884f19e25cb7c37e42bec3da475c8ae7a7",
+      "layout_group": "visibility-005",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 29,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          50.0,
+          0
+        ],
+        "camera": [
+          39,
+          24
+        ],
+        "target": [
+          61,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0030-0",
+      "image": "images/0030-0.png",
+      "image_sha256": "aa236e739e4ca601481a2ac4bfd36a7062545e4e51cf50fd28a434fcbf813420",
+      "layout_group": "blocker-030",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 30,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          49.5,
+          0
+        ],
+        "camera": [
+          17,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0030-1",
+      "image": "images/0030-1.png",
+      "image_sha256": "1b52de9f53a7babeff2d2f155764c259356bdc5c5698eeeec3e44fa41f734c44",
+      "layout_group": "blocker-030",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 30,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          37,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0031-0",
+      "image": "images/0031-0.png",
+      "image_sha256": "104498edb0a27af965547022823eb15b8d7b9b6482ef2f63ab6dab7eeed5bfa4",
+      "layout_group": "blocker-031",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 31,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0031-1",
+      "image": "images/0031-1.png",
+      "image_sha256": "3730a370b4fbb5a69b6002436b684d89dbe9ac99e00107d0e740f7532b42047d",
+      "layout_group": "blocker-031",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 31,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          57.0,
+          0
+        ],
+        "camera": [
+          37,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0032-0",
+      "image": "images/0032-0.png",
+      "image_sha256": "29159b51f374215cf5bb2a86a819b59ce5a03c64dbac922a33ca9c7bc0ddaf43",
+      "layout_group": "blocker-032",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 32,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0032-1",
+      "image": "images/0032-1.png",
+      "image_sha256": "63757be5cfe2f77dea707c7e9b5d9b0057e348941c27851a17b55de85dcbb2c5",
+      "layout_group": "blocker-032",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 32,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          58.5,
+          0
+        ],
+        "camera": [
+          36,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0033-0",
+      "image": "images/0033-0.png",
+      "image_sha256": "1ccbb1df9390075a62353c0f3a330a65e777254f140d923aac4da6023003b568",
+      "layout_group": "repair-033",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 33,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          19,
+          22
+        ],
+        "target": [
+          87,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0033-1",
+      "image": "images/0033-1.png",
+      "image_sha256": "38d4c054d5d666eae75d0e84568a6869988ee4d9d3c2f6958bdde3b1e7b6d2de",
+      "layout_group": "repair-033",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 33,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          65.5,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          87,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0034-0",
+      "image": "images/0034-0.png",
+      "image_sha256": "7f2c5c903fbb6c8e0498ad410414f6e9a6d15806f373bcd27b7452f38b227a50",
+      "layout_group": "repair-034",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 34,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          53.5,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          87,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0034-1",
+      "image": "images/0034-1.png",
+      "image_sha256": "dedf0dd7b076520a738cb96caf09b33a762e2b1b03bd2890502f2e5b88b778c6",
+      "layout_group": "repair-034",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 34,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          66.0,
+          0
+        ],
+        "camera": [
+          45,
+          22
+        ],
+        "target": [
+          87,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0035-0",
+      "image": "images/0035-0.png",
+      "image_sha256": "7d0dcc5c63db0365606e45acd975ba7d3cd9db4ae61fbf4c090a5287ae03e5c7",
+      "layout_group": "repair-035",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 35,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          19,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0035-1",
+      "image": "images/0035-1.png",
+      "image_sha256": "1cfc90202e263313663e5f1efb874f310bdfec8a327f5d354f1808a06779e6f0",
+      "layout_group": "repair-035",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 35,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          64.5,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0036-0",
+      "image": "images/0036-0.png",
+      "image_sha256": "5b0b2750ae21123e4f8b0dbd90f79a917eb7a8868b7fd32581289969fe36eecd",
+      "layout_group": "visibility-006",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 36,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          75,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0036-1",
+      "image": "images/0036-1.png",
+      "image_sha256": "b7aab07f19a46537ae9e58a1a5839c020a7ad828024965dd6315e6429cb26678",
+      "layout_group": "visibility-006",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 36,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          75,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0037-0",
+      "image": "images/0037-0.png",
+      "image_sha256": "05b5d5fe9360ee4aefd8b13a43252d64578b0f0c6066dfd12a4dac59e4b2cfcd",
+      "layout_group": "visibility-006",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 37,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          34,
+          22
+        ],
+        "target": [
+          56,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0037-1",
+      "image": "images/0037-1.png",
+      "image_sha256": "888fb1781e45567faf06657e5bc0ab20067b2970dba93c6d51ff269787f3ec34",
+      "layout_group": "visibility-006",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 37,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          34,
+          22
+        ],
+        "target": [
+          56,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0038-0",
+      "image": "images/0038-0.png",
+      "image_sha256": "767fd2e01645459717045bac87bcc11ab163e47abd4d0e667481c42c6c2c77cb",
+      "layout_group": "visibility-007",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 38,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          12,
+          22
+        ],
+        "target": [
+          78,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0038-1",
+      "image": "images/0038-1.png",
+      "image_sha256": "9f5d1713de2328a9c4a4b68d3a90925a3a74793cda7c8451278e4a68db2665c9",
+      "layout_group": "visibility-007",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 38,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          12,
+          22
+        ],
+        "target": [
+          78,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0039-0",
+      "image": "images/0039-0.png",
+      "image_sha256": "0c01b18e7cab8987ff45177b21102d4329657e4847e6cb3472030c92592745d4",
+      "layout_group": "blocker-039",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 39,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          43.5,
+          0
+        ],
+        "camera": [
+          11,
+          22
+        ],
+        "target": [
+          76,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0039-1",
+      "image": "images/0039-1.png",
+      "image_sha256": "f2a9630cedfb2be4d83e475e4678a4d9dabe64eda4d7df96960449fe0b94c378",
+      "layout_group": "blocker-039",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 39,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          56.0,
+          0
+        ],
+        "camera": [
+          36,
+          22
+        ],
+        "target": [
+          76,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0040-0",
+      "image": "images/0040-0.png",
+      "image_sha256": "0d6013582d69fb8dd0fdf50fadac4e02562ab81314be987e715250f3bea02c7a",
+      "layout_group": "blocker-040",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 40,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          46.5,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0040-1",
+      "image": "images/0040-1.png",
+      "image_sha256": "5e33fc2fe5dfb8f7cfea6970ab78ff81fd799025f5e8e8d49a610e00ad1ab2d7",
+      "layout_group": "blocker-040",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 40,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          59.0,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0041-0",
+      "image": "images/0041-0.png",
+      "image_sha256": "d4c5a49952cb4db57a12a81135e969f13fbd872617c40229113438908a4c0314",
+      "layout_group": "blocker-041",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 41,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          52.5,
+          0
+        ],
+        "camera": [
+          21,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0041-1",
+      "image": "images/0041-1.png",
+      "image_sha256": "240f375d718bed7f66484287bcf90cab013a22b856e23f792426dd34edd6cf00",
+      "layout_group": "blocker-041",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 41,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          64.5,
+          0
+        ],
+        "camera": [
+          45,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0042-0",
+      "image": "images/0042-0.png",
+      "image_sha256": "dbf47ccb541000fb92562ed4f73a5c4c721f157d9333004debc319f8f097ee59",
+      "layout_group": "repair-042",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 42,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          52.5,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0042-1",
+      "image": "images/0042-1.png",
+      "image_sha256": "36aedf73c6b93c4194855ca47962bc86b13b900d975c11b73453ced4ae5a609b",
+      "layout_group": "repair-042",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 42,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          64.5,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0043-0",
+      "image": "images/0043-0.png",
+      "image_sha256": "c9a4573101b15a6be9d777999683c42ad773f7985ddf3969d836c336a80c3df2",
+      "layout_group": "repair-043",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 43,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0043-1",
+      "image": "images/0043-1.png",
+      "image_sha256": "8938835604b1e8aa0e9bd48244a84dfe7e09f3a81c8f7eb9cf5e01aa299c2710",
+      "layout_group": "repair-043",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 43,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          56.0,
+          0
+        ],
+        "camera": [
+          35,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0044-0",
+      "image": "images/0044-0.png",
+      "image_sha256": "894d727b5fe19924ae503157a92a9d363cd3885923a67010ce9732725e72ce46",
+      "layout_group": "repair-044",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 44,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          52.5,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0044-1",
+      "image": "images/0044-1.png",
+      "image_sha256": "6cbeb23a92af090ca2351046890ee84d59e26a39b5270695e4eb3e1d3486c3c0",
+      "layout_group": "repair-044",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 44,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          65.5,
+          0
+        ],
+        "camera": [
+          46,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0045-0",
+      "image": "images/0045-0.png",
+      "image_sha256": "14d9834cff770167c5491c008a058c18a8935beb087c9fe0854e3a824865aab6",
+      "layout_group": "visibility-007",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 45,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          35,
+          22
+        ],
+        "target": [
+          55,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0045-1",
+      "image": "images/0045-1.png",
+      "image_sha256": "fcf6014114077f33a2c2aebd60b788a370c32a7a8742f92f80675bb0daee4c70",
+      "layout_group": "visibility-007",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 45,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          35,
+          22
+        ],
+        "target": [
+          55,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0046-0",
+      "image": "images/0046-0.png",
+      "image_sha256": "250f5ed3359e42d653b8140244bdf34984eec61aeceb7c53814ecb21e2623096",
+      "layout_group": "visibility-008",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 46,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          23,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0046-1",
+      "image": "images/0046-1.png",
+      "image_sha256": "9df875fbccab87559a0639ecb0f8e21aa7850b4b95a85c642ee70098205fde51",
+      "layout_group": "visibility-008",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 46,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          23,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0047-0",
+      "image": "images/0047-0.png",
+      "image_sha256": "05ce6c33d907e57d32d4257f09311479e84c1a883d5d9b71659448578404ef69",
+      "layout_group": "visibility-008",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 47,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          64,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0047-1",
+      "image": "images/0047-1.png",
+      "image_sha256": "8dbc3cf1377e51a307ae261130b5c8cdc205034bd13b3d9a8bdc06d65770afa1",
+      "layout_group": "visibility-008",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 47,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          64,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0048-0",
+      "image": "images/0048-0.png",
+      "image_sha256": "42b4aa8ad93288a9afdbbcbfb6eaaa92d527048ad0bac77eb6113c2d215e4122",
+      "layout_group": "blocker-048",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 48,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          51.5,
+          0
+        ],
+        "camera": [
+          19,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0048-1",
+      "image": "images/0048-1.png",
+      "image_sha256": "b204e66c2f70b7fe927c5c42c281a483a9c073deb58671507fc6d518f4a3cec1",
+      "layout_group": "blocker-048",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 48,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          65.5,
+          0
+        ],
+        "camera": [
+          47,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0049-0",
+      "image": "images/0049-0.png",
+      "image_sha256": "843b6df684302cfc6cc1b97aa1943a1dcd97a1438959986e4d248bd809af6cee",
+      "layout_group": "blocker-049",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 49,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          47.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0049-1",
+      "image": "images/0049-1.png",
+      "image_sha256": "0e6e54c43e75def8222e99b0c9d028f3afa887c347044ffaffb174bae8f12243",
+      "layout_group": "blocker-049",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 49,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0050-0",
+      "image": "images/0050-0.png",
+      "image_sha256": "717cba95a332b0d454febf780964288a3445cdd0a6afd3c288c4552719bd8177",
+      "layout_group": "blocker-050",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 50,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          46.5,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0050-1",
+      "image": "images/0050-1.png",
+      "image_sha256": "9a253577a8e519d2e2d2960e56fb3c88338aba8e1af95c1ee4e7a5121ef85ad9",
+      "layout_group": "blocker-050",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 50,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          60.0,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0051-0",
+      "image": "images/0051-0.png",
+      "image_sha256": "d4a756247ac8a41f3784b44a65229ebdc6ab97692298fe612b732c833adb0c19",
+      "layout_group": "repair-051",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 51,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          21,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0051-1",
+      "image": "images/0051-1.png",
+      "image_sha256": "6800ed881b6b745a9382363179970c545d4bc82a853ea7b28cce7dea08632000",
+      "layout_group": "repair-051",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 51,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          63.5,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          83,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0052-0",
+      "image": "images/0052-0.png",
+      "image_sha256": "a940915d3be78aed84cf6765332bb6ffe5b595b004a0beaa0addfb4abfb9fcb2",
+      "layout_group": "repair-052",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 52,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.5,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0052-1",
+      "image": "images/0052-1.png",
+      "image_sha256": "1713bf179285222e030d3905e526a1f7cf83d3526f6ce0c4a78116e11778fb6d",
+      "layout_group": "repair-052",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 52,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          60.5,
+          0
+        ],
+        "camera": [
+          42,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0053-0",
+      "image": "images/0053-0.png",
+      "image_sha256": "d8c8f21e83fb0f704398851378b23cc29cf58c144db02bfb7796ae36d48ac39e",
+      "layout_group": "repair-053",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 53,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          14,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0053-1",
+      "image": "images/0053-1.png",
+      "image_sha256": "74da143b2e9032344fb9dbe0d1d157ecdf5dd84a9b60935f98bc5edd5ed12403",
+      "layout_group": "repair-053",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 53,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0054-0",
+      "image": "images/0054-0.png",
+      "image_sha256": "a3bd6c07656bfc4fe007b3da4f6c5efa0268c413997a57c1539adf7076ed9546",
+      "layout_group": "visibility-009",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 54,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          24,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0054-1",
+      "image": "images/0054-1.png",
+      "image_sha256": "ccaaae86ae0f93c170ad6cccfb3e86f224196d6fd86be76e1cb2ca68a2451a12",
+      "layout_group": "visibility-009",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 54,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          24,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0055-0",
+      "image": "images/0055-0.png",
+      "image_sha256": "b673e14206322f1d58a24916df7b0f186733cb35dde46623ab2f099a2717cf8b",
+      "layout_group": "visibility-009",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 55,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          46,
+          22
+        ],
+        "target": [
+          62,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0055-1",
+      "image": "images/0055-1.png",
+      "image_sha256": "34020491d5b27249cab7e4e46d44c9c2ebe9b3a21c76ec00c17f5b09b9fda944",
+      "layout_group": "visibility-009",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 55,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          54.0,
+          0
+        ],
+        "camera": [
+          46,
+          22
+        ],
+        "target": [
+          62,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0056-0",
+      "image": "images/0056-0.png",
+      "image_sha256": "1e22ebc1ce561e84323afc4b9fb8b41b2ed9c1b9195261681da017c15a5cc06b",
+      "layout_group": "visibility-010",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 56,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          23,
+          21
+        ],
+        "target": [
+          83,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0056-1",
+      "image": "images/0056-1.png",
+      "image_sha256": "f98015c78f5124b3d7deb0127c30ae8bb3d4bf728b7f4ad63979cc810ae7c60c",
+      "layout_group": "visibility-010",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 56,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          23,
+          21
+        ],
+        "target": [
+          83,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0057-0",
+      "image": "images/0057-0.png",
+      "image_sha256": "63715873dfa728614b04626f1f58bc165cc4ad632c6de608f71e505feed81b86",
+      "layout_group": "blocker-057",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 57,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0057-1",
+      "image": "images/0057-1.png",
+      "image_sha256": "30cad0f3a34c473506c45db5112d3f8d3a79add29d8464c63b575f03e69fd90a",
+      "layout_group": "blocker-057",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 57,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          58.0,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0058-0",
+      "image": "images/0058-0.png",
+      "image_sha256": "7c3d81e5764e650a256913fcc9a00593a5fb1638267551b7d2117fcda7cbb58a",
+      "layout_group": "blocker-058",
+      "options": [
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 58,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          48.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0058-1",
+      "image": "images/0058-1.png",
+      "image_sha256": "ccc6d4f9080562e94e7187dcb8cb4e2d0d6af60fc4413dd6b38a24ca9457fd14",
+      "layout_group": "blocker-058",
+      "options": [
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 58,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          60.5,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0059-0",
+      "image": "images/0059-0.png",
+      "image_sha256": "1fee64f97ced6118a678de93f43721fe041572cb385c979d5ff6d6351db7229e",
+      "layout_group": "blocker-059",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 59,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          48.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0059-1",
+      "image": "images/0059-1.png",
+      "image_sha256": "1a6e029ea10a110fe20f076247d1ffcbc5645439ece3aa3c7d722c47c1d8e668",
+      "layout_group": "blocker-059",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 59,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          60.0,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0060-0",
+      "image": "images/0060-0.png",
+      "image_sha256": "1037e1a1fb2a02d87acd62bb28aeec82255a11d8d7659a908d7146eee1af2a70",
+      "layout_group": "repair-060",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 60,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.5,
+          0
+        ],
+        "camera": [
+          17,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0060-1",
+      "image": "images/0060-1.png",
+      "image_sha256": "b3c7dd019a21f388c7ec270b50617d599e84165739a71d005feaf6a08c3d8cad",
+      "layout_group": "repair-060",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 60,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          39,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0061-0",
+      "image": "images/0061-0.png",
+      "image_sha256": "718dc199b345dd5d7f7b79bf9e898dbdd5e1991dbf44f5f06c344c2bf79d8d5d",
+      "layout_group": "repair-061",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 61,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          46.0,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0061-1",
+      "image": "images/0061-1.png",
+      "image_sha256": "b61cd6656f257e65c9715b692e553d102459eb1d8ec9ebb33f268d00cf2b2899",
+      "layout_group": "repair-061",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 61,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0062-0",
+      "image": "images/0062-0.png",
+      "image_sha256": "5b967e4465e9fe0a58ec453a34db2b05ec950b154ebdfaa065a97af27a28fdd9",
+      "layout_group": "repair-062",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 62,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          46.0,
+          0
+        ],
+        "camera": [
+          14,
+          22
+        ],
+        "target": [
+          78,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0062-1",
+      "image": "images/0062-1.png",
+      "image_sha256": "e625fc7fa87a9115d0e935225dae437446397e507cc4699ff7830708ad015ed0",
+      "layout_group": "repair-062",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 62,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          58.0,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          78,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0063-0",
+      "image": "images/0063-0.png",
+      "image_sha256": "1a579229a84def189e663226f2d00ae3de67c7988df27ec331f74e00ae0d414f",
+      "layout_group": "visibility-010",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 63,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          42,
+          21
+        ],
+        "target": [
+          64,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0063-1",
+      "image": "images/0063-1.png",
+      "image_sha256": "a210164fce7bc55883fac29bfe2a43a67379f3894389e29fb59c9242846872b9",
+      "layout_group": "visibility-010",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 63,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          53.0,
+          0
+        ],
+        "camera": [
+          42,
+          21
+        ],
+        "target": [
+          64,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0064-0",
+      "image": "images/0064-0.png",
+      "image_sha256": "88a2da4f0756c357d402f736d1c94223898cfb51f5b87729d11048d4a41a0e3f",
+      "layout_group": "visibility-011",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 64,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          21,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0064-1",
+      "image": "images/0064-1.png",
+      "image_sha256": "996b4fc2b4b5720d2a8fba98bb7c88455edc6c0577d96e948fde56cd175d3fad",
+      "layout_group": "visibility-011",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 64,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          21,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0065-0",
+      "image": "images/0065-0.png",
+      "image_sha256": "fcdad5a9d577402629bbca91682f166c55ec2168ed133924973219b33c6f9e30",
+      "layout_group": "visibility-011",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 65,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          62,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0065-1",
+      "image": "images/0065-1.png",
+      "image_sha256": "9183e5d7ac6c07881f9afcd4e9271cf9b758c059a65b295a5bcf9705a6e3c279",
+      "layout_group": "visibility-011",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 65,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          62,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0066-0",
+      "image": "images/0066-0.png",
+      "image_sha256": "74ea385a87855cf7eac9475324b86aa66d4b5ff1fedda73b871d6497b5cd5a76",
+      "layout_group": "blocker-066",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 66,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          47.5,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0066-1",
+      "image": "images/0066-1.png",
+      "image_sha256": "e8f2f5e130088d099c71b86d5fdd1cb5d5b545cc03eef52004d26f567b836acb",
+      "layout_group": "blocker-066",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 66,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          37,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0067-0",
+      "image": "images/0067-0.png",
+      "image_sha256": "65878742085ee5c1dfef6c2cfa2a06a0b65d21a4c9b5b4618bc6f04f101a52ad",
+      "layout_group": "blocker-067",
+      "options": [
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 67,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          48.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0067-1",
+      "image": "images/0067-1.png",
+      "image_sha256": "2ef97ec6c72b9b9c2d517cc17b1d53c8ba17f446438d570aba49e564b9417a00",
+      "layout_group": "blocker-067",
+      "options": [
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 67,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          61.0,
+          0
+        ],
+        "camera": [
+          41,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0068-0",
+      "image": "images/0068-0.png",
+      "image_sha256": "72301ef893ce6f6e9134287955f32bfb30a7258b09af5a743f95cc3b27690b82",
+      "layout_group": "blocker-068",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 68,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          48.5,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0068-1",
+      "image": "images/0068-1.png",
+      "image_sha256": "90be2efd5e16d545d989d2f4ed7848fd0cc12ddaa49f645cdcf622a599e79318",
+      "layout_group": "blocker-068",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 68,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          62.0,
+          0
+        ],
+        "camera": [
+          42,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0069-0",
+      "image": "images/0069-0.png",
+      "image_sha256": "ec452d2f37da1fbd3404a1c71b6d397715ef8b01343aa3607038a08a3b82e2ca",
+      "layout_group": "repair-069",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 69,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          51.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0069-1",
+      "image": "images/0069-1.png",
+      "image_sha256": "5241adc949fabb789c01dbdf68ec16e7eeaaba65805747d431a24f9c17af8651",
+      "layout_group": "repair-069",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 69,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          62.5,
+          0
+        ],
+        "camera": [
+          41,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0070-0",
+      "image": "images/0070-0.png",
+      "image_sha256": "1582909e3f01b4c90697c42176839edbbfd9b4cf02fe78f00598e65d26ef664a",
+      "layout_group": "repair-070",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 70,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0070-1",
+      "image": "images/0070-1.png",
+      "image_sha256": "33a6e442ec787f9318ec14b75c99200ad6edc44f815c6cbe922cd76954ff3049",
+      "layout_group": "repair-070",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 70,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          58.5,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          77,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0071-0",
+      "image": "images/0071-0.png",
+      "image_sha256": "b2701ffd70ca1856583523bf10e5f11fb02d30cea0fcd2223f6fc46532c12f67",
+      "layout_group": "repair-071",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 71,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          50.5,
+          0
+        ],
+        "camera": [
+          17,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0071-1",
+      "image": "images/0071-1.png",
+      "image_sha256": "56030d6dbc31ddf41e37392b85e86db6bc3c9efcad11de38fc6252c137c68c10",
+      "layout_group": "repair-071",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 71,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          63.5,
+          0
+        ],
+        "camera": [
+          43,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0072-0",
+      "image": "images/0072-0.png",
+      "image_sha256": "f1297b61a184c1c7032bac5a0fe19cb26c29887bc6b594b052c6848b73e13ed9",
+      "layout_group": "visibility-012",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 72,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          18,
+          24
+        ],
+        "target": [
+          78,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0072-1",
+      "image": "images/0072-1.png",
+      "image_sha256": "c357469e1c2d869005f60310779cf7aa2c1221909c8779d86b32947ac84f51c3",
+      "layout_group": "visibility-012",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 72,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          18,
+          24
+        ],
+        "target": [
+          78,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0073-0",
+      "image": "images/0073-0.png",
+      "image_sha256": "41f6e0f3a167692ed68ad90f2f1fcf1935582b98a0ec9cdc75975cb59edd1ca0",
+      "layout_group": "visibility-012",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 73,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          38,
+          24
+        ],
+        "target": [
+          58,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0073-1",
+      "image": "images/0073-1.png",
+      "image_sha256": "d94b61677bc57b1d4b7caacbc80a7ae6e8317d96ffce0c5c1407ef40d13988cb",
+      "layout_group": "visibility-012",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 73,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          38,
+          24
+        ],
+        "target": [
+          58,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0074-0",
+      "image": "images/0074-0.png",
+      "image_sha256": "84be9edad1ca2c8f6f05e188853e601d1693ca5520c32456de1f382e6bf63bec",
+      "layout_group": "visibility-013",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 74,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          18,
+          21
+        ],
+        "target": [
+          78,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0074-1",
+      "image": "images/0074-1.png",
+      "image_sha256": "c1293cc857a539d08bf113965ecd220e14969cca16df4093b6d0fdb7c9490e33",
+      "layout_group": "visibility-013",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 74,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          18,
+          21
+        ],
+        "target": [
+          78,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0075-0",
+      "image": "images/0075-0.png",
+      "image_sha256": "f14d2b045c23d9f2788d5658b2cf7b294880a5ea77f9344319cb3ff958260328",
+      "layout_group": "blocker-075",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 75,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          50.5,
+          0
+        ],
+        "camera": [
+          19,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0075-1",
+      "image": "images/0075-1.png",
+      "image_sha256": "c939195653ea4350c2afb4947c3658e0111bb01b151a85b594e94289a2929424",
+      "layout_group": "blocker-075",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 75,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          63.0,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0076-0",
+      "image": "images/0076-0.png",
+      "image_sha256": "351261e7552b376a663b58d1693b57d9bd6854cf1de65ae23153870b0b5ac0fc",
+      "layout_group": "blocker-076",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 76,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          46.5,
+          0
+        ],
+        "camera": [
+          13,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0076-1",
+      "image": "images/0076-1.png",
+      "image_sha256": "38eec828a33225d0e155c7df6839111cc055719251cab9912e2f4d69f3246dd0",
+      "layout_group": "blocker-076",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 76,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          59.0,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0077-0",
+      "image": "images/0077-0.png",
+      "image_sha256": "256a9d71edbf99e156cd2b252c5639d04d300264d9e68341788925a59d94ab71",
+      "layout_group": "blocker-077",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 77,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          47.5,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0077-1",
+      "image": "images/0077-1.png",
+      "image_sha256": "2c48ca7804cbfa91515aba47c7ecfaf84e2014813690418277420150ace1338c",
+      "layout_group": "blocker-077",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "pair": 77,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          61.0,
+          0
+        ],
+        "camera": [
+          42,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0078-0",
+      "image": "images/0078-0.png",
+      "image_sha256": "cbaf9f9f39a5d652e1999a13c25977c269afa2aab4a7e0e27dbcf8487ed92b4a",
+      "layout_group": "repair-078",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 78,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0078-1",
+      "image": "images/0078-1.png",
+      "image_sha256": "dce9e1273dc84a2ba3bc4d1faa25e2251db9e8e37daaad410e00178e019fa2d6",
+      "layout_group": "repair-078",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 78,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          60.0,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0079-0",
+      "image": "images/0079-0.png",
+      "image_sha256": "f567a0eb951be93d07b191f93b1f0b19ed5071cc26704010b7cf77c530468c10",
+      "layout_group": "repair-079",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 79,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          47.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0079-1",
+      "image": "images/0079-1.png",
+      "image_sha256": "63bfa4fc73fbe603d09cf2085e4d9de8e5a85cecb9543c5b42240472b011ead0",
+      "layout_group": "repair-079",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 79,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          59.5,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0080-0",
+      "image": "images/0080-0.png",
+      "image_sha256": "ad136b228b3579e08f4f7ff2e8d20cac8da23a8507bf90debbd46e8730ed7c09",
+      "layout_group": "repair-080",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 80,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          53.5,
+          0
+        ],
+        "camera": [
+          23,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0080-1",
+      "image": "images/0080-1.png",
+      "image_sha256": "c04fa119820d3ed353586360ce8a091b54cf33c1b27401745af61a780b34cedd",
+      "layout_group": "repair-080",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 80,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          64.5,
+          0
+        ],
+        "camera": [
+          45,
+          22
+        ],
+        "target": [
+          84,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0081-0",
+      "image": "images/0081-0.png",
+      "image_sha256": "76677b7338d1a9acb1f6147c09318a828462715df4e27e6ee668ec4a2cffe0bb",
+      "layout_group": "visibility-013",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 81,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          38,
+          21
+        ],
+        "target": [
+          58,
+          21
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0081-1",
+      "image": "images/0081-1.png",
+      "image_sha256": "cca46f6fa65f575b476a066949ca4c53781dd0c174428b25c20a9fabee64f72f",
+      "layout_group": "visibility-013",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 81,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          48.0,
+          0
+        ],
+        "camera": [
+          38,
+          21
+        ],
+        "target": [
+          58,
+          21
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0082-0",
+      "image": "images/0082-0.png",
+      "image_sha256": "abfdce41b310394247738931fe68dd8414d0f6bde34607c566e486299053c297",
+      "layout_group": "visibility-014",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 82,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          19,
+          23
+        ],
+        "target": [
+          79,
+          23
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0082-1",
+      "image": "images/0082-1.png",
+      "image_sha256": "00a02124141e02517091aa67c34978e6990f550ef1186444d81584a0d1009247",
+      "layout_group": "visibility-014",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 82,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          19,
+          23
+        ],
+        "target": [
+          79,
+          23
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0083-0",
+      "image": "images/0083-0.png",
+      "image_sha256": "5314519440d758121dd46cb47cda2c2fe261bc0d24a0d9c31833963bfbc9b045",
+      "layout_group": "visibility-014",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 83,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          38,
+          23
+        ],
+        "target": [
+          60,
+          23
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0083-1",
+      "image": "images/0083-1.png",
+      "image_sha256": "195afeb04e19bd250ed1753fef775b8c5072278c83838b29d12529cde0e925f3",
+      "layout_group": "visibility-014",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 83,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          49.0,
+          0
+        ],
+        "camera": [
+          38,
+          23
+        ],
+        "target": [
+          60,
+          23
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0084-0",
+      "image": "images/0084-0.png",
+      "image_sha256": "8d73c2d5aacc7e7d45ce133511af5df1fa3ed6e5f5d76ca8450dfea483a29591",
+      "layout_group": "blocker-084",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 84,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0084-1",
+      "image": "images/0084-1.png",
+      "image_sha256": "abe47cc7323d30132ed175367c4ebeb78c76694871e33acfebd7ee7db9dfdcad",
+      "layout_group": "blocker-084",
+      "options": [
+        "A",
+        "B"
+      ],
+      "pair": 84,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          58.5,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0085-0",
+      "image": "images/0085-0.png",
+      "image_sha256": "827bbba96ed4c30cab3424ff2427c852bbe13d40678c9b8697e8381ae9440ffa",
+      "layout_group": "blocker-085",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 85,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          50.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0085-1",
+      "image": "images/0085-1.png",
+      "image_sha256": "75fb5f4050f2d8dd0f3153c283474c666f7732d86b05b3d76727d259cda4aac5",
+      "layout_group": "blocker-085",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 85,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          62.5,
+          0
+        ],
+        "camera": [
+          43,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0086-0",
+      "image": "images/0086-0.png",
+      "image_sha256": "4c63c76b0d037879e25282d45175f74ad953746738df1ba65868aa53e6ace413",
+      "layout_group": "blocker-086",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 86,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          53.5,
+          0
+        ],
+        "camera": [
+          20,
+          22
+        ],
+        "target": [
+          87,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0086-1",
+      "image": "images/0086-1.png",
+      "image_sha256": "87d9b7821709dfa2dbf177a663bbdae113808f062fa048af064ebe2bb8d42385",
+      "layout_group": "blocker-086",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 86,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          66.0,
+          0
+        ],
+        "camera": [
+          45,
+          22
+        ],
+        "target": [
+          87,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0087-0",
+      "image": "images/0087-0.png",
+      "image_sha256": "1bd82900e8ac595f51fabfbc307d53de199e311c5deb3147ad895c0223988d0a",
+      "layout_group": "repair-087",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 87,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          50.5,
+          0
+        ],
+        "camera": [
+          16,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0087-1",
+      "image": "images/0087-1.png",
+      "image_sha256": "9ac77aefbe89cb96a9d500a4b3b4d17dbb82168b0f7fffcdb4c525deaccf2823",
+      "layout_group": "repair-087",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 87,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          63.5,
+          0
+        ],
+        "camera": [
+          42,
+          22
+        ],
+        "target": [
+          85,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0088-0",
+      "image": "images/0088-0.png",
+      "image_sha256": "486c77719e35cfb65e04f07abf294481f1bcd9b8ec08e7186107156de40aebad",
+      "layout_group": "repair-088",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 88,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          50.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0088-1",
+      "image": "images/0088-1.png",
+      "image_sha256": "351997f45de61ff845140b9d35e2905e14ab8f315fe8795532c2a274415a0f91",
+      "layout_group": "repair-088",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 88,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          63.0,
+          0
+        ],
+        "camera": [
+          44,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0089-0",
+      "image": "images/0089-0.png",
+      "image_sha256": "cef2cc1dc3f98122853fab50e9012227c8b6e88201322fb91a5d482ad3a1dcea",
+      "layout_group": "repair-089",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 89,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0089-1",
+      "image": "images/0089-1.png",
+      "image_sha256": "c4cf04f1dde0eedf4e0b996cc6a4ea23c93b4ca13c6779841960c0e9e64e10f6",
+      "layout_group": "repair-089",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 89,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          65.5,
+          0
+        ],
+        "camera": [
+          45,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0090-0",
+      "image": "images/0090-0.png",
+      "image_sha256": "d983d99ab4b3c294dbc5506c52e0506f805ef25de2dfec589193843672ade063",
+      "layout_group": "visibility-015",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 90,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0090-1",
+      "image": "images/0090-1.png",
+      "image_sha256": "17fe686d7bb289f4a32257587e7be5909d4e374046b67bbb700a7994939360b1",
+      "layout_group": "visibility-015",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 90,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "medium",
+      "id": "0091-0",
+      "image": "images/0091-0.png",
+      "image_sha256": "bf9052e3d0e09a0f1ca9f72a7d23a1de2af15e954b2ee707677fcb2be6fb7001",
+      "layout_group": "visibility-015",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 91,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          41,
+          22
+        ],
+        "target": [
+          63,
+          22
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "medium",
+      "id": "0091-1",
+      "image": "images/0091-1.png",
+      "image_sha256": "93163a807017db2d40e7a43d34c0d67cde301eaf65966776e04ed056d482fb87",
+      "layout_group": "visibility-015",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 91,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          52.0,
+          0
+        ],
+        "camera": [
+          41,
+          22
+        ],
+        "target": [
+          63,
+          22
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "hard",
+      "id": "0092-0",
+      "image": "images/0092-0.png",
+      "image_sha256": "cb9030f9316470ca479dc423c9118004727cbada61a4a8fa0548a1190d3fd1b6",
+      "layout_group": "visibility-016",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 92,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          11,
+          24
+        ],
+        "target": [
+          79,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "hard",
+      "id": "0092-1",
+      "image": "images/0092-1.png",
+      "image_sha256": "6012b3579dc1ec74460cd668b197ff84afb6475eba88c619c44703298bfc60bf",
+      "layout_group": "visibility-016",
+      "options": [
+        "Blocked",
+        "Visible"
+      ],
+      "pair": 92,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          11,
+          24
+        ],
+        "target": [
+          79,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "B",
+      "difficulty": "easy",
+      "id": "0093-0",
+      "image": "images/0093-0.png",
+      "image_sha256": "b9e465d03937e5db6df14948f815ae5092bd720a744f0bd018a619b31df273f5",
+      "layout_group": "blocker-093",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 93,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          49.5,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "easy",
+      "id": "0093-1",
+      "image": "images/0093-1.png",
+      "image_sha256": "23f0ecb3637f43b1a9b576682bcbe03e74c1c30be9c8788e7e0cf05640614634",
+      "layout_group": "blocker-093",
+      "options": [
+        "B",
+        "A"
+      ],
+      "pair": 93,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          61.5,
+          0
+        ],
+        "camera": [
+          42,
+          22
+        ],
+        "target": [
+          81,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "medium",
+      "id": "0094-0",
+      "image": "images/0094-0.png",
+      "image_sha256": "82ea8b11eba75360d0ebc2a56e096408ab7e4a35fdf8f758204ebc7357a7049e",
+      "layout_group": "blocker-094",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 94,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          52.5,
+          0
+        ],
+        "camera": [
+          19,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "medium",
+      "id": "0094-1",
+      "image": "images/0094-1.png",
+      "image_sha256": "6bc017cb0a61a957378f3d73bdae18c35972a5d111046e1b5a72231700801767",
+      "layout_group": "blocker-094",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "pair": 94,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          66.0,
+          0
+        ],
+        "camera": [
+          46,
+          22
+        ],
+        "target": [
+          86,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "A",
+      "difficulty": "hard",
+      "id": "0095-0",
+      "image": "images/0095-0.png",
+      "image_sha256": "d31b0ec9af852b157dab692fa7aee06e2d9bc85df7938cf6d9e182d1803bc801",
+      "layout_group": "blocker-095",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 95,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "A",
+          "C"
+        ],
+        "bounce": [
+          49.5,
+          0
+        ],
+        "camera": [
+          19,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "B",
+      "difficulty": "hard",
+      "id": "0095-1",
+      "image": "images/0095-1.png",
+      "image_sha256": "b89fb0c2728751c368c524ba61e556121372875baa2c1dce4997fd952f66802b",
+      "layout_group": "blocker-095",
+      "options": [
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "pair": 95,
+      "question": "Which obstacle would the ray from the camera encounter first along the mirror path?",
+      "trace": {
+        "blockers": [
+          "B",
+          "C"
+        ],
+        "bounce": [
+          60.5,
+          0
+        ],
+        "camera": [
+          41,
+          22
+        ],
+        "target": [
+          80,
+          22
+        ],
+        "visible": false
+      },
+      "type": "blocker"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "easy",
+      "id": "0096-0",
+      "image": "images/0096-0.png",
+      "image_sha256": "d49c1512be692264ea25e2efd2adb4d2ce40e1969bbbdb7904a7e7546e83d5c6",
+      "layout_group": "repair-096",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 96,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          47.0,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "easy",
+      "id": "0096-1",
+      "image": "images/0096-1.png",
+      "image_sha256": "e2cc8a0a58398c623d52ed5a215cf365cb230c2b09f8c427aa0212d31ccc50a3",
+      "layout_group": "repair-096",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 96,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          58.5,
+          0
+        ],
+        "camera": [
+          38,
+          22
+        ],
+        "target": [
+          79,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "medium",
+      "id": "0097-0",
+      "image": "images/0097-0.png",
+      "image_sha256": "281438c505dd5f4b5ef9fb2dce2614b25c74709bd59efa2904fb1500ff92a857",
+      "layout_group": "repair-097",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 97,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          46.5,
+          0
+        ],
+        "camera": [
+          15,
+          22
+        ],
+        "target": [
+          78,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "medium",
+      "id": "0097-1",
+      "image": "images/0097-1.png",
+      "image_sha256": "7955369cbd7d00ed6b965ae58518f131932fb2b8ae0c9d4f34ef5ebd9a1ad15c",
+      "layout_group": "repair-097",
+      "options": [
+        "Move obstacle A",
+        "Move obstacle B"
+      ],
+      "pair": 97,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          59.0,
+          0
+        ],
+        "camera": [
+          40,
+          22
+        ],
+        "target": [
+          78,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle B",
+      "difficulty": "hard",
+      "id": "0098-0",
+      "image": "images/0098-0.png",
+      "image_sha256": "083b38be2461cae8123e5a28f8bc082d422b567231722afb454cedf187f1b2ef",
+      "layout_group": "repair-098",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 98,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "B"
+        ],
+        "bounce": [
+          50.0,
+          0
+        ],
+        "camera": [
+          18,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Move obstacle A",
+      "difficulty": "hard",
+      "id": "0098-1",
+      "image": "images/0098-1.png",
+      "image_sha256": "d84a3485568ada76ff146a1851714b291ef06ee55b7cd3b5f317f8a806a7c56b",
+      "layout_group": "repair-098",
+      "options": [
+        "Move obstacle B",
+        "Move obstacle A"
+      ],
+      "pair": 98,
+      "question": "Which replacement scene restores visibility through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          61.5,
+          0
+        ],
+        "camera": [
+          41,
+          22
+        ],
+        "target": [
+          82,
+          22
+        ],
+        "visible": false
+      },
+      "type": "repair"
+    },
+    {
+      "answer": "Blocked",
+      "difficulty": "easy",
+      "id": "0099-0",
+      "image": "images/0099-0.png",
+      "image_sha256": "ba53c2dbbc65c6061c19f194340af281aa6ef4065a5efa4ea8ecdece3d4f1b89",
+      "layout_group": "visibility-016",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 99,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [
+          "A"
+        ],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          38,
+          24
+        ],
+        "target": [
+          52,
+          24
+        ],
+        "visible": false
+      },
+      "type": "visibility"
+    },
+    {
+      "answer": "Visible",
+      "difficulty": "easy",
+      "id": "0099-1",
+      "image": "images/0099-1.png",
+      "image_sha256": "873f563863a178840163801d376a6e04bc932ce60d691d7cbce50a8cc069fc56",
+      "layout_group": "visibility-016",
+      "options": [
+        "Visible",
+        "Blocked"
+      ],
+      "pair": 99,
+      "question": "Can the camera see the marked target through the mirror?",
+      "trace": {
+        "blockers": [],
+        "bounce": [
+          45.0,
+          0
+        ],
+        "camera": [
+          38,
+          24
+        ],
+        "target": [
+          52,
+          24
+        ],
+        "visible": true
+      },
+      "type": "visibility"
+    }
+  ],
+  "seed": 42
+}
