@@ -19,11 +19,11 @@ USER 65534:65534
 EXPOSE 8000
 ENTRYPOINT ["/playground"]
 
-FROM python:3.12-slim AS integrated
+FROM python:3.12-alpine AS integrated
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 MISSING_SCRATCH_RUNTIME=/data MS_PUBLIC_DIR=/public
 COPY requirements-backend.txt .
-RUN pip install --no-cache-dir -r requirements-backend.txt && mkdir -p /data && chown 65534:65534 /data
+RUN apk upgrade --no-cache && pip install --no-cache-dir -r requirements-backend.txt && mkdir -p /data && chown 65534:65534 /data
 COPY backend/ backend/
 COPY integrated_app.py .
 COPY --from=frozen-site /public /public

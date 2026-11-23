@@ -20,6 +20,8 @@ jobs:
           diff -r dist /tmp/missing-scratch-replay
       - run: docker compose config -q
       - run: docker build -t missing-scratch:ci .
+      - name: Run V3 backend tests in the built image
+        run: docker run --rm -v "$PWD/backend_tests:/checks:ro" missing-scratch:ci python -m unittest discover -s /checks -v
       - name: Scan the final image
         run: |
           docker save missing-scratch:ci -o /tmp/missing-scratch-ci.tar
