@@ -303,7 +303,7 @@
   const open = () => document.fullscreenElement === page || page.classList.contains('bench-fallback-full');
   function refreshFullscreen() {
     fullscreen.setAttribute('aria-pressed',String(open()));
-    label.textContent = open() ? 'Exit fullscreen' : 'Expand fullscreen';
+    label.textContent = open() ? 'Exit full screen' : 'Full screen';
   }
   async function closeFullscreen() {
     page.classList.remove('bench-fallback-full');

@@ -331,14 +331,14 @@ function simulate() {
       secondHit === null ? target : stopAt(reflection, target, secondHit)];
   window.opticsBench.draw({source, target, mirror, plane, obstacles, ray, reflection,
     clear: inside && !blocked, awaiting, locked: trialActive, scene:selectedSite, decor:sites[selectedSite].decor});
-  by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Free exploration';
+  by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Explore the setup';
   const outcome = blocked ? 'Obstructed' : !inside ? 'Mirror out of reach' : 'Visible';
   const status = awaiting ? activeMission.question :
     firstHit !== null ? 'Coverage obstructed' : !inside ? 'Mirror misses the sightline' :
     blocked ? 'Coverage obstructed' : 'Target covered';
   if (by('coverage').textContent !== status) by('coverage').textContent = status;
   by('coverage').dataset.outcome = awaiting ? 'predict' : inside && !blocked ? 'clear' : 'blocked';
-  by('coverage-detail').textContent = awaiting ? 'The layout is locked. Rotate the view if you like, then pick an answer to reveal the ray.' :
+  by('coverage-detail').textContent = awaiting ? 'Choose an answer, then select Check answer to reveal the ray.' :
     firstHit !== null ? first.label + ' stops the ray before it reaches the mirror.' :
     !inside ? 'The reflection point lies outside the mirror span.' :
     blocked ? second.label + ' stops the reflected ray before it reaches the target.' :
@@ -439,7 +439,7 @@ function openSimulation(fragment = location.hash.slice(1), inLab = false) {
   by('sim-workspace').hidden = !isCase && !isSandbox;
   if (!isCase && !isSandbox) return;
   selectedSite = isCase ? site : 'dock';
-  by('bench-site-name').textContent = isCase ? sites[site].name : 'Free exploration';
+  by('bench-site-name').textContent = isCase ? sites[site].name : 'Explore the setup';
   mission = isCase ? sceneFor(level, index) : null;
   setTrial(isCase);
   window.opticsBench.framePlan();
@@ -490,6 +490,12 @@ function pilotPrediction(row, scene) {
   return (/^[A-Z]$/.test(letter) ? scene.options[letter.charCodeAt(0)-65] : null) ?? 'Invalid response';
 }
 
+function pilotModelName(model) {
+  if (model.name === 'gpt-6-luna') return 'GPT-6 Luna';
+  if (model.name === 'Codex CLI') return 'OpenAI model (CLI pilot)';
+  return model.name;
+}
+
 function renderScorecard(pilot, scene, choice, practice) {
   const card = by('lab-models');
   card.replaceChildren();
@@ -497,7 +503,7 @@ function renderScorecard(pilot, scene, choice, practice) {
   title.textContent = 'Case scorecard';
   card.append(title);
 
-  function addRow(label, answer, grade, brand) {
+  function addRow(label, answer, grade, brand, mode) {
     const row = document.createElement('div');
     row.className = 'lab-score-row';
     const name = document.createElement('span');
@@ -506,10 +512,20 @@ function renderScorecard(pilot, scene, choice, practice) {
       const mark = document.createElement('img');
       mark.src = 'logo-' + brand + '.svg';
       mark.alt = '';
+      mark.width = mark.height = 16;
       mark.className = 'lab-brand lab-brand-' + brand;
       name.append(mark);
     }
-    name.append(label);
+    const wording = document.createElement('span');
+    wording.className = 'lab-score-label';
+    wording.textContent = label;
+    if (mode) {
+      const qualifier = document.createElement('span');
+      qualifier.className = 'lab-score-mode';
+      qualifier.textContent = mode;
+      wording.append(qualifier);
+    }
+    name.append(wording);
     const response = document.createElement('span');
     response.textContent = answer;
     const status = document.createElement('strong');
@@ -521,17 +537,17 @@ function renderScorecard(pilot, scene, choice, practice) {
   }
 
   addRow('Verified answer',scene.answer);
-  addRow('You',choice,choice === scene.answer);
+  addRow('Your answer',choice,choice === scene.answer);
   const models = pilot?.models ?? [{name:'OpenAI model',provider:'openai',rows:[]},
     {name:'Gemini 3 Flash Preview',provider:'gemini',rows:[]}];
   for (const [index,model] of models.entries()) {
     const brand = model.provider ?? (index === 0 ? 'openai' : 'gemini');
-    const name = brand === 'openai' && !model.provider ? 'OpenAI model (CLI pilot)' : model.name;
+    const name = pilotModelName(model);
     const rows = practice ? [] : model.rows.filter(row => row.case === scene.id);
-    if (!rows.length) addRow(name, 'No result for this case', undefined, brand);
+    if (!rows.length) addRow(name, 'No recorded answer', undefined, brand);
     for (const row of rows) {
       const answer = pilotPrediction(row,scene);
-      addRow(name + ' · ' + (row.mode === 'vision' ? 'Vision' : 'Question only'), answer, answer === scene.answer, brand);
+      addRow(name, answer, answer === scene.answer, brand, row.mode === 'vision' ? 'With image' : 'Question only');
     }
   }
   if (practice || !pilot) return;
@@ -558,7 +574,7 @@ function renderScorecard(pilot, scene, choice, practice) {
       measures.push(label + ' ' + scored.filter(item => item.correct).length + '/' + scored.length +
         ' · pairs ' + complete.filter(members => members.every(Boolean)).length + '/' + complete.length);
     }
-    line.textContent = (model.provider ? model.name : model.name === 'Codex CLI' ? 'OpenAI model (CLI pilot)' : model.name) +
+    line.textContent = pilotModelName(model) +
       ' — ' + measures.join(' | ');
     totals.append(line);
   }
@@ -577,7 +593,7 @@ function renderScorecard(pilot, scene, choice, practice) {
     const caption = document.createElement('figcaption');
     const answers = models.flatMap(model => {
       const row = model.rows.find(r => r.case === member.id && r.mode === 'vision');
-      return row ? [model.name + ': ' + pilotPrediction(row,member)] : [];
+      return row ? [pilotModelName(model) + ': ' + pilotPrediction(row,member)] : [];
     });
     caption.textContent = member.id + ' · Verified: ' + member.answer + (answers.length ? ' · ' + answers.join(' · ') : '');
     figure.append(image,caption);
@@ -604,10 +620,10 @@ function buildLab(pilot) {
     by('lab-back').hidden = !practice && !benchmarkId;
     by('lab-benchmark-link').hidden = !practice;
     by('lab-intro').textContent = practice ?
-      'Review your decision and the verified answer for this simulator case.' :
-      'Answer the exact benchmark question, then compare with the recorded OpenAI and Gemini model responses.';
-    by('lab-scope').textContent = practice ? 'Practice case. Human feedback uses the same geometry as the simulator.' :
-      'One matched-pair pilot. Full benchmark scores are pending.';
+      'Check your answer against the simulated sightline.' :
+      'Answer the question, then compare your result with the recorded model answers.';
+    by('lab-scope').textContent = practice ? 'Practice case. No model results have been recorded for this scene.' :
+      'Pilot results cover two scenes. The full benchmark run is incomplete.';
     if (practice) {
       const scenario = sceneFor(level,index,site);
       scene = {id:casePath, question:scenario.question, options:scenario.choices ?? scenario.actions.map(action => action.label),
@@ -872,7 +888,7 @@ async function loadReports(digest) {
       const hex = await digest;
       if (!hex || hex !== report.dataset) throw new Error('Reports belong to another dataset');
     }
-    const status = report.reports.length ? report.reports.length + ' recorded model configurations on this dataset.' : 'Model evaluation pending. Scores appear here after the frozen dataset is run.';
+    const status = report.reports.length ? report.reports.length + ' recorded model configurations on this dataset.' : 'No complete benchmark runs yet.';
     by('report-status').textContent = status;
     by('score-table').hidden = !report.reports.length;
     for (const run of report.reports) {
