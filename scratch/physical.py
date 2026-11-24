@@ -46,9 +46,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('csv', type=Path)
     parser.add_argument('--plan', type=Path, help='Unedited capture-plan CSV with pre-recorded predictions')
+    parser.add_argument('--opening-pair', action='store_true', help='Validate only the two planned opening captures')
     args = parser.parse_args()
+    if args.opening_pair and args.plan is None:
+        parser.error('--opening-pair requires the original --plan')
     report = summarize(args.csv, args.plan)
-    if not 5 <= report['total'] <= 10:
+    if args.opening_pair:
+        ids = {row['case_id'] for row in report['cases']}
+        if ids != {'01-pair-blocked', '02-pair-clear'}:
+            parser.error('Provide both opening-pair captures and observations')
+    elif not 5 <= report['total'] <= 10:
         parser.error('Record 5–10 camera cases before producing a validation summary')
     print(json.dumps(report, indent=2))
 

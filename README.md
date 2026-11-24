@@ -6,7 +6,7 @@ The Missing Scratch is an Innodata Track 2 benchmark for reflected camera covera
 
 **200 scenes · 100 matched pairs · 3 task types · 2 geometry methods**
 
-[Example pair](#example-pair) · [Quick start](#quick-start) · [Frozen dataset](datasets/v4/cases.json) · [Evidence and results](#evidence-and-results)
+[Run the demo](#quick-start) · [Pilot results](#pilot-results) · [Frozen dataset](datasets/v4/cases.json) · [Validation evidence](#evidence-and-results)
 
 ## Problem statement
 
@@ -30,7 +30,7 @@ python3 -m scratch.verify_release
 docker compose up --build
 ```
 
-Open [the local playground](http://127.0.0.1:8000/#inspection). Predict both scenes, reveal the verified ray, or open the simulator and choose a loading dock, warehouse aisle, or inspection cell. Each site offers visibility, first-obstruction, and repair practice. Every case has its own direct link, such as the [first loading-dock case](http://127.0.0.1:8000/#simulator/dock/easy/1). The simulator reveals a laser-style ray that stops at the first obstruction. Its equipment is illustrated and its practice cases are separate from benchmark evaluation. The frozen `datasets/v4/` directory is the source for comparable model runs.
+Start with the [opening benchmark pair](http://127.0.0.1:8000/#simulator/benchmark/0000-0). Lock a prediction for each scene, reveal the geometry, and compare your answers with the recorded model replies. Open [the case gallery](http://127.0.0.1:8000/#simulator) for obstruction and repair cases, or [Evidence](http://127.0.0.1:8000/#evidence) for the validation records.
 
 For generation and tests without Docker:
 
@@ -60,6 +60,19 @@ Custom layouts support one camera, one target, one horizontal mirror, and multip
 
 The frozen release has **68 visibility, 66 obstruction, and 66 repair cases**. Both members of a pair must be correct to earn pair credit.
 
+## Pilot results
+
+Both systems saw the same two frozen cases, with and without the scene images. A strict pair earns one point only when both answers are correct. GPT-6 Luna was run through Codex CLI.
+
+| Model | With image | Question only | Strict pair with image | Strict pair with question only |
+| --- | ---: | ---: | ---: | ---: |
+| GPT-6 Luna (`gpt-6-luna`) | 2/2 | 1/2 | 1/1 | 0/1 |
+| Gemini 3 Flash Preview (`gemini-3-flash-preview`) | 1/2 | 0/2 | 0/1 | 0/1 |
+
+Gemini called both scenes **Blocked**, missing the clear scene. In an inspection, that could trigger an unnecessary repeat check. The finding covers one pair. The pilot record also includes a separate GPT-6 Luna obstruction pair. [Exact images, answers, and shortcut checks](evidence/PILOT-FINDING.md) · [Recorded replies](site/lab-pilot.json)
+
+The full 200-scene model evaluation is pending. Complete runs will be published with per-task, per-difficulty, and strict pair scores.
+
 ## Evidence and results
 
 | Evidence | Status | Inspect |
@@ -67,9 +80,9 @@ The frozen release has **68 visibility, 66 obstruction, and 66 repair cases**. B
 | Frozen dataset | 200 images and 100 pairs checked | [Manifest](datasets/v4/cases.json) · [Images](datasets/v4/images) |
 | Clean rebuild | Manifest and all 200 images matched byte for byte on Linux ARM64 | [Rebuild record](site/reproduction.json) |
 | Shortcut audit | Measured on held-out layouts. Visibility position rules scored 34/68. Camera-side-only scored 38/66 on obstruction and 36/66 on repair. | [Audit output](datasets/v4/validity-audit.json) |
-| Blind human review | 72-case workflow ready. Agreement pending independent reviews. | [Review protocol](evidence/RUNBOOK.md#collect-the-evidence) |
-| Frontier model comparison | Report pipeline verified. Full vision and question-only runs pending. | [Published aggregates](site/model-reports.json) · [API setup](docs/API-SETUP.md) |
-| Physical camera check | Capture protocol ready. Actual camera observations pending. | [Demo protocol](evidence/DEMO.md) |
+| Blind human review | Exact inputs verified for the 72-case packet. Independent agreement pending. | [Review protocol](evidence/RUNBOOK.md#collect-the-evidence) |
+| Frontier model comparison | Opening pair recorded in both modes. Full runs pending. | [Published aggregates](site/model-reports.json) · [API setup](docs/API-SETUP.md) |
+| Physical camera check | Opening-pair protocol ready. Physical frames pending. | [Demo protocol](evidence/DEMO.md) |
 
 The synthetic geometry assumes a single finite specular mirror, a point camera and target, and opaque obstacles in a top-down plane. Difficulty labels are generator settings. The shortcut audit covers specific simple features. Blind review will test whether people can interpret the diagrams as intended.
 

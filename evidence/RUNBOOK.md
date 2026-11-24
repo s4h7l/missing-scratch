@@ -4,10 +4,10 @@ Use the frozen Docker v4 manifest throughout. Each report must bind to its SHA-2
 
 ## Reproduce the frozen release
 
-From a separate checkout, extract the frozen v4 dataset bundle and run the command below from the repository root. The rebuild uses a committed Git snapshot without local working files or Docker layer-cache reuse. The manifest and every image must match byte for byte. Keep the JSON and record who ran it, on what host and when. The original freeze used Linux ARM64.
+From a clean checkout with Git history and Docker available, run the command below from the repository root. The rebuild uses a committed Git snapshot without local working files or Docker layer-cache reuse. The manifest and every image must match byte for byte. Keep the JSON and record who ran it, on what host and when. The original freeze used Linux ARM64.
 
 ```sh
-python3 -m scratch.reproduce /path/to/frozen-dataset --revision ab5b79d
+python3 -m scratch.reproduce datasets/v4 --revision ab5b79d
 ```
 
 ## Collect the evidence
@@ -61,3 +61,16 @@ The capture card and a CSV with six expected labels can be regenerated with:
 ```
 
 Use capture 01 and 02 for the stage example. Do not claim a camera outcome until the corresponding frame has been recorded and checked.
+
+### Resume an interrupted provider run
+
+Once the provider is available, repeat the original command with the same dataset,
+provider, model and mode. Add `--resume-from path/to/interrupted.jsonl` and
+point `--record` to a fresh file. The runner copies the successful prefix and
+retries from the first failure. The request cap applies to new calls. Keep both
+logs for audit and publish only the complete replacement.
+
+For just the two opening captures, put rows `01-pair-blocked` and
+`02-pair-clear` in the observation CSV with their actual image files and
+observations. Add `--opening-pair` to the physical-report command. Report the
+result as one physically checked pair.

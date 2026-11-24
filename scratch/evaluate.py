@@ -104,7 +104,8 @@ def main():
     parser.add_argument('--provider',choices=sorted(PROVIDER_KEYS))
     parser.add_argument('--model')
     parser.add_argument('--mode',choices=['vision','question-only'],default='vision')
-    parser.add_argument('--max-requests',type=int)
+    parser.add_argument('--max-requests',type=int,help='Maximum new provider requests')
+    parser.add_argument('--resume-from',type=Path,help='Copy the successful prefix from a previous run into a new log')
     operation=parser.add_mutually_exclusive_group(required=True)
     operation.add_argument('--record',type=Path)
     operation.add_argument('--replay',type=Path)
@@ -113,18 +114,39 @@ def main():
     data=args.dataset.read_bytes()
     digest=hashlib.sha256(data).hexdigest()
     cases=json.loads(data)['cases']
+    if args.resume_from and not args.record:
+        parser.error('--resume-from requires --record with a fresh output path')
     if args.record:
         if not args.provider or not args.model or not args.max_requests or args.max_requests<1:
             parser.error('Live runs require provider, model, and a positive request cap')
         key_name = PROVIDER_KEYS[args.provider]
         if not os.environ.get(key_name):
             parser.error(f'Set {key_name} before starting a live run')
-        cases=cases[:args.max_requests]
+        identity = dict(dataset=digest,provider=args.provider,model=args.model,mode=args.mode)
+        metadata = dict(identity,recorded_at=datetime.now(timezone.utc).isoformat())
+        output = []
+        if args.resume_from:
+            try:
+                previous, *rows = map(json.loads, args.resume_from.read_text().splitlines())
+                if any(previous.get(key) != value for key,value in identity.items()):
+                    raise ValueError('Previous run belongs to a different dataset, model or mode')
+                if [row.get('id') for row in rows] != [case['id'] for case in cases[:len(rows)]]:
+                    raise ValueError('Previous run does not match the frozen case order')
+                for row in rows:
+                    if 'error' in row or not isinstance(row.get('response'),str):
+                        break
+                    output.append(row)
+                metadata['recorded_at'] = previous.get('recorded_at') or metadata['recorded_at']
+            except (OSError, ValueError, AttributeError) as error:
+                parser.error(str(error))
+        remaining = cases[len(output):len(output)+args.max_requests]
         args.record.parent.mkdir(parents=True,exist_ok=True)
         with args.record.open('x') as log:
-            log.write(json.dumps(dict(dataset=digest,provider=args.provider,model=args.model,mode=args.mode,recorded_at=datetime.now(timezone.utc).isoformat()))+'\n')
-            output=[]
-            for case in cases:
+            log.write(json.dumps(metadata)+'\n')
+            for row in output:
+                log.write(json.dumps(row)+'\n')
+            log.flush()
+            for case in remaining:
                 result={'id':case['id']}
                 try:
                     result['response']=request_model(args.provider,args.model,case,args.dataset.parent,args.mode)
@@ -133,7 +155,7 @@ def main():
                 log.write(json.dumps(result)+'\n')
                 log.flush()
                 output.append(result)
-                if result.get('error') in {'HTTP 401','HTTP 403','HTTP 402','HTTP 429'}:
+                if 'error' in result:
                     break
     elif args.replay:
         metadata,*output=map(json.loads,args.replay.read_text().splitlines())
