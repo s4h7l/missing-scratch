@@ -41,6 +41,12 @@ make test
 make build
 ```
 
+## Build a custom inspection setup
+
+Open the [setup builder](http://127.0.0.1:8000/#simulator/sandbox). The warehouse preset starts with a rack blocking the incoming ray. Choose **Save baseline**, then **Apply verified repair** to compare the blocked and visible layouts. Drag equipment or set its X and Y coordinates. With the scene focused, the arrow keys move the selected item one plan unit, or ten with Shift.
+
+Custom layouts support one camera, one target, one horizontal mirror, and multiple rectangular blockers. Save layouts in the current browser or export a versioned JSON file to share. The builder evaluates the plan-view sightline. The orbit view illustrates that geometry, and custom layouts do not affect frozen benchmark scores.
+
 ## How the pipeline works
 
 | Stage | Entry point | Output |

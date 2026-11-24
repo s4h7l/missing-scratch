@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><link rel="stylesheet" href="typography.css"><script src="bench.js" defer></script><script src="app.js" defer></script><script src="replay.js" defer></script>
+<title>Missing Scratch · Camera Coverage Lab</title><link rel="icon" type="image/png" href="favicon.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="product.css"><link rel="stylesheet" href="typography.css"><script src="bench.js" defer></script><script src="builder.js" defer></script><script src="app.js" defer></script><script src="replay.js" defer></script>
 </head>
 <body>
 <header class="header"><div class="header-inner">
@@ -79,8 +79,11 @@
 </div>
 <div id="sim-gallery">
 <p class="lead">Choose a scored pair or open the practice library.</p>
-<div id="sim-featured" class="sim-post-grid"></div><details class="practice-library"><summary>Explore all 18 practice simulations</summary><div id="sim-posts"></div></details>
-<a class="secondary" href="#simulator/sandbox">Build your own setup</a>
+<div id="sim-featured" class="sim-post-grid"></div>
+<section class="builder-entry"><div><h2>Build your own setup</h2><p>Place equipment, test coverage, and compare a repair.</p></div><a class="primary" href="#simulator/sandbox">Open setup builder</a></section>
+<section class="practice-library" aria-labelledby="practice-title"><h2 id="practice-title">Practice simulations</h2>
+<div class="builder-toolbar"><label>Site <select id="practice-site"><option value="all">All sites</option><option value="dock">Loading dock</option><option value="warehouse">Warehouse aisle</option><option value="cell">Inspection cell</option></select></label>
+<label>Difficulty <select id="practice-level"><option value="all">All levels</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></label><p id="practice-count" role="status">18 cases</p></div><div id="sim-posts"></div></section>
 </div>
 <div class="workspace" id="sim-workspace" hidden><div class="panel viewport" id="sim-viewport"><div class="bar"><div><i></i> <span id="bench-site-name">Loading dock</span></div><button id="bench-fullscreen" type="button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="fullscreen-label">Full screen</span></button></div>
 <div class="sim-view"><span class="bench-view-tag" id="bench-view-tag">3D view</span><svg id="layout" viewBox="0 0 760 410" role="img" tabindex="0" aria-label="Optical bench" aria-describedby="bench-help">
@@ -105,23 +108,7 @@
 <label>Heading <output id="bench-heading-value"></output><input id="bench-heading" type="range" min="0" max="359" value="330"></label>
 <label>Tilt <output id="bench-tilt-value"></output><input id="bench-tilt" type="range" min="0" max="75" value="42"></label>
 <p class="detail" id="bench-help">Drag empty space to pan. Use Orbit drag to rotate. In free exploration, you can also drag equipment.</p>
-</div><details class="scene-setup" id="scene-setup"><summary>Adjust equipment and compare setups</summary><div id="layout-controls">
-<section class="comparison-panel" aria-labelledby="comparison-title">
-<h3 id="comparison-title">Compare setups</h3>
-<p class="detail" id="comparison-help">Save this setup, then move an object to see what changed.</p>
-<dl id="comparison-readout" hidden><div><dt>Saved setup</dt><dd id="baseline-outcome"></dd></div>
-<div><dt>Current setup</dt><dd id="current-outcome"></dd></div></dl>
-<p id="comparison-change" role="status" hidden></p>
-<div class="comparison-actions"><button id="save-baseline" type="button" aria-describedby="comparison-help">Save setup</button><button id="restore-baseline" type="button" disabled>Restore setup</button></div>
-</section>
-<label for="bench-case" class="eyebrow">Preset layout</label>
-<select id="bench-case"><option value="custom" disabled>Custom layout</option><option value="blocked" selected>01 · Obstructed path</option><option value="clear">02 · Clear reflection</option><option value="miss">03 · Mirror out of reach</option></select>
-<label class="slider">Camera position <output id="camera-value"></output><input id="camera" type="range" min="65" max="270" value="135"></label>
-<label class="slider">Mirror position <output id="mirror-value"></output><input id="mirror" type="range" min="150" max="510" value="335"></label>
-<label class="slider">Obstacle position <output id="block-value"></output><input id="block" type="range" min="70" max="555" value="225"></label>
-<label class="slider">Target position <output id="target-value"></output><input id="target" type="range" min="480" max="630" value="555"></label>
-<button id="reset" type="button">Reset object positions</button></div>
-</details></div>
+</div></div>
 <aside class="panel inspector bench-inspector">
 <div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p></div>
 <h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
@@ -129,7 +116,25 @@
 <div class="sim-case-links"><a class="secondary sim-return" href="#simulator">All cases</a></div>
 <div id="trial-actions" class="mission-answers" role="group" aria-label="Submit your inspection decision" hidden></div>
 <button id="trial-submit" class="primary" type="button" hidden disabled>Check answer</button><p id="trial-result" class="finding" role="status" hidden></p>
-<p class="detail bench-scope">This simulation uses a single mirror. Practice answers are excluded from benchmark scores.</p></aside></div></section>
+<p class="detail bench-scope">This simulation uses a single mirror. Practice answers are excluded from benchmark scores.</p></aside>
+<aside id="setup-builder" class="panel inspector" hidden aria-labelledby="builder-title">
+<h2 id="builder-title">Custom setup</h2>
+<div id="builder-outcome" class="finding" role="status"></div>
+<div class="builder-toolbar"><label for="builder-preset">Starting layout</label><select id="builder-preset"><option value="warehouse">Warehouse · repair demo</option><option value="dock">Loading dock</option><option value="cell">Inspection cell</option><option value="empty">Empty floor</option></select><button id="builder-load" type="button">Load layout</button><button id="builder-undo" type="button">Undo</button><button id="builder-reset" type="button">Reset layout</button></div>
+<fieldset id="builder-tray"><legend>Add equipment</legend><button type="button" data-component="camera">Camera</button><button type="button" data-component="target">Target</button><button type="button" data-component="mirror">Mirror</button><button type="button" data-component="carton">Carton</button><button type="button" data-component="pallet">Pallet</button><button type="button" data-component="rack">Rack</button></fieldset>
+<label for="builder-selection">Selected equipment</label><select id="builder-selection"></select>
+<fieldset id="builder-properties" disabled><legend>Position in plan units</legend><div class="builder-toolbar"><label>X <input id="builder-x" type="number" step="1" required></label><label>Y <input id="builder-y" type="number" step="1" required></label><button id="builder-position" type="button">Move</button></div>
+<div class="builder-toolbar"><button id="builder-duplicate" type="button">Duplicate</button><button id="builder-delete" type="button">Remove</button></div></fieldset>
+<div class="builder-toolbar"><button id="builder-baseline" type="button">Save baseline</button><button id="builder-restore" type="button" disabled>Restore baseline</button><button id="builder-repair" type="button" hidden>Apply verified repair</button></div>
+<p id="builder-repair-note" class="detail" hidden></p><div id="builder-compare" hidden></div>
+<details class="scene-setup"><summary>Save, reopen, or share a layout</summary>
+<div class="builder-toolbar"><label for="builder-name">Layout name</label><input id="builder-name" maxlength="60"><button id="builder-save" type="button">Save on this browser</button></div>
+<div class="builder-toolbar"><label for="builder-saved">Your saved layouts</label><select id="builder-saved"></select><button id="builder-open" type="button">Open</button></div>
+<div class="builder-toolbar"><button id="builder-export" type="button">Export JSON</button><label for="builder-import">Import JSON</label><input id="builder-import" type="file" accept=".json,application/json"></div>
+</details>
+<p id="builder-message" class="detail" role="status"></p>
+<p class="detail">Single horizontal mirror in plan view. Custom setups are separate from benchmark scores.</p>
+</aside></div></section>
 
 <section data-page="lab" class="page lab-page" hidden>
 <h1 class="page-title">Model comparison lab</h1>

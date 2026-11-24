@@ -243,37 +243,7 @@ function sceneFor(level, index, site = selectedSite) {
 
 let trialPrediction = null;
 
-let baseline;
-let currentBenchOutcome;
-const practiceCases = {
-  blocked: defaults,
-  clear: {...defaults, block: 85},
-  miss: {...defaults, mirror: 150, block: 85},
-};
-const layoutValues = () => Object.fromEntries(Object.keys(defaults).map(key => [key, by(key).valueAsNumber]));
-function applyLayout(values) {
-  for (const [key,value] of Object.entries(values)) by(key).value = value;
-  simulate();
-}
-
-const objectNames = {camera:'Camera',mirror:'Mirror',block:'Obstacle',target:'Target'};
-
-function updateComparison(layout, outcome) {
-  currentBenchOutcome = outcome;
-  if (!baseline || trialActive) return;
-  const names = Object.keys(layout).filter(key => layout[key] !== baseline.layout[key])
-    .map(key => objectNames[key]);
-  by('comparison-readout').hidden = false;
-  by('baseline-outcome').textContent = baseline.outcome;
-  by('current-outcome').textContent = outcome;
-  const change = by('comparison-change');
-  change.hidden = false;
-  const text = names.length ? names.join(', ') + ' moved. ' + (outcome === baseline.outcome ?
-    'Coverage outcome stayed the same.' : 'Coverage outcome changed.') : 'The current layout matches the saved setup.';
-  if (change.textContent !== text) change.textContent = text;
-  change.dataset.changed = String(outcome !== baseline.outcome);
-  by('restore-baseline').disabled = !names.length;
-}
+let practiceLayout = defaults;
 
 function setTrial(active) {
   trialActive = active;
@@ -282,21 +252,19 @@ function setTrial(active) {
   by('trial-submit').hidden = !active;
   by('trial-submit').disabled = true;
   by('mission-context').hidden = !active;
-  by('scene-setup').hidden = active;
   by('trial-result').hidden = true;
   for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
-  for (const key of Object.keys(defaults)) by(key).disabled = active;
 }
 function traceBench(layout, blocks, obstacleName) {
   const {camera, mirror, block, target:targetX} = layout;
-  const source = [camera, 95];
-  const target = [targetX, 119];
-  const plane = 314;
-  const reflection = [camera + (targetX - camera) * (plane - source[1]) /
-    (2 * plane - source[1] - target[1]), plane];
-  const inside = Math.abs(reflection[0] - mirror) <= 89;
-  const obstacle = [block, 174, block + 52, 216];
-  const obstacles = [{label:obstacleName, box:obstacle}, ...blocks];
+  const obstacles = [{label:obstacleName, box:[block,174,block+52,216]}, ...blocks];
+  return traceOptics([camera,95],[targetX,119],mirror,314,89,obstacles);
+}
+
+function traceOptics(source, target, mirror, plane, halfWidth, obstacles) {
+  const distance = plane - source[1];
+  const reflection = [source[0] + (target[0]-source[0])*distance/(2*plane-source[1]-target[1]),plane];
+  const inside = Math.abs(reflection[0] - mirror) <= halfWidth;
   function closest(a, b) {
     let first = null;
     for (const {label, box} of obstacles) {
@@ -324,8 +292,9 @@ function referenceAnswer(scenario, layout) {
 }
 
 function simulate() {
+  if (window.setupBuilder.active) { window.setupBuilder.render(); return; }
   const activeMission = trialActive ? mission : null;
-  const layout = layoutValues();
+  const layout = practiceLayout;
   const planned = activeMission ? validRepairs(activeMission, layout) : null;
   const repair = trialPrediction === null ? null : planned?.[0];
   const {source, target, mirror, plane, reflection, inside, obstacles, first, second, clear} =
@@ -342,7 +311,6 @@ function simulate() {
   window.opticsBench.draw({source, target, mirror, plane, obstacles, ray, reflection,
     clear: inside && !blocked, awaiting, locked: trialActive, scene:selectedSite, decor:sites[selectedSite].decor});
   by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Explore the setup';
-  const outcome = blocked ? 'Obstructed' : !inside ? 'Mirror out of reach' : 'Visible';
   const status = awaiting ? activeMission.question :
     firstHit !== null ? 'Coverage obstructed' : !inside ? 'Mirror misses the sightline' :
     blocked ? 'Coverage obstructed' : 'Target covered';
@@ -353,10 +321,6 @@ function simulate() {
     !inside ? 'The reflection point lies outside the mirror span.' :
     blocked ? second.label + ' stops the reflected ray before it reaches the target.' :
     'The reflection point falls on the mirror and both path segments are clear.';
-  updateComparison(layoutValues(), firstHit !== null ? 'Obstructed' : outcome);
-  for (const key of Object.keys(defaults)) by(key + '-value').value = by(key).value;
-  if (!trialActive) by('bench-case').value = Object.entries(practiceCases).find(([,values]) =>
-    Object.entries(values).every(([key,value]) => by(key).valueAsNumber === value))?.[0] ?? 'custom';
   if (trialPrediction !== null) {
     const expected = referenceAnswer(activeMission, layout);
     const result = by('trial-result');
@@ -430,17 +394,20 @@ function bindCases() {
 
 window.addEventListener('hashchange', route);
 route();
-for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
 function openSimulation(fragment = location.hash.slice(1), inLab = false) {
   const [page, site, level, number] = fragment.split('/');
   if (!inLab && by('sim-viewport').parentElement !== by('sim-workspace')) {
     by('sim-workspace').prepend(by('sim-viewport'));
   }
-  if (page !== 'simulator' || site === 'benchmark') return;
+  if (page !== 'simulator' || site === 'benchmark') {
+    window.setupBuilder.activate(false);
+    return;
+  }
   const index = Number(number) - 1;
   const isCase = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
     Number.isInteger(index) && index >= 0 && index < missions[level].length;
   const isSandbox = site === 'sandbox';
+  window.setupBuilder.activate(isSandbox);
   activeCasePath = isCase ? [site,level,number].join('/') : null;
   const labLink = by('case-lab-link');
   labLink.hidden = !isCase;
@@ -452,11 +419,14 @@ function openSimulation(fragment = location.hash.slice(1), inLab = false) {
   by('bench-site-name').textContent = isCase ? sites[site].name : 'Explore the setup';
   mission = isCase ? sceneFor(level, index) : null;
   setTrial(isCase);
+  by('sim-workspace').classList.toggle('builder-workspace',isSandbox);
+  by('sim-workspace').querySelector('.bench-inspector').hidden = isSandbox;
+  by('bench-help').textContent = isSandbox ?
+    'Drag equipment to move it. Focus the scene and use arrow keys to nudge the selection. Hold Shift for larger steps.' :
+    'Drag to pan. Turn on Orbit drag to rotate. Use + and − to zoom.';
+  if (isCase) practiceLayout = mission.layout;
   window.opticsBench.framePlan();
-  if (!isCase) {
-    applyLayout(defaults);
-    return;
-  }
+  if (!isCase) return;
   by('mission-context').textContent = mission.name + ' · ' + level + ' · Case ' + number;
   const answers = by('trial-actions');
   answers.replaceChildren();
@@ -479,7 +449,7 @@ function openSimulation(fragment = location.hash.slice(1), inLab = false) {
       option.setAttribute('aria-pressed', String(option.dataset.trialAnswer === savedChoice));
     }
   }
-  applyLayout(mission.layout);
+  simulate();
   if (!inLab) {
     window.scrollTo(0, 0);
     by('coverage').focus({preventScroll:true});
@@ -721,6 +691,7 @@ function buildSimulationGallery() {
         const trace = traceBench(scenario.layout, scenario.blocks, scenario.obstacle);
         const link = document.createElement('a');
         link.className = 'sim-post';
+        link.dataset.practiceLevel = level;
         link.href = '#simulator/' + site + '/' + level + '/' + (index + 1);
         link.append(window.opticsBench.preview(trace, site, location.decor));
         const caption = document.createElement('div');
@@ -733,6 +704,7 @@ function buildSimulationGallery() {
         cards.append(link);
       }
     }
+    group.dataset.practiceSite = site;
     group.append(heading,cards);
     by('sim-posts').append(group);
     const landingGroup = group.cloneNode(true);
@@ -743,24 +715,23 @@ function buildSimulationGallery() {
   }
   selectedSite = 'dock';
 }
-by('reset').addEventListener('click', () => {
-  setTrial(false);
-  applyLayout(defaults);
-});
-by('save-baseline').addEventListener('click', () => {
-  baseline = {layout:layoutValues(), outcome:currentBenchOutcome};
-  by('save-baseline').textContent = 'Replace saved setup';
-  updateComparison(baseline.layout, baseline.outcome);
-});
-by('restore-baseline').addEventListener('click', () => {
-  if (!baseline) return;
-  applyLayout(baseline.layout);
-  by('save-baseline').focus({preventScroll:true});
-});
-by('bench-case').addEventListener('change', event => {
-  const values = practiceCases[event.target.value];
-  if (values) applyLayout(values);
-});
+function filterPractice() {
+  let count = 0;
+  for (const group of by('sim-posts').children) {
+    let visible = 0;
+    for (const card of group.querySelectorAll('[data-practice-level]')) {
+      card.hidden = (by('practice-site').value !== 'all' && by('practice-site').value !== group.dataset.practiceSite) ||
+        (by('practice-level').value !== 'all' && by('practice-level').value !== card.dataset.practiceLevel);
+      if (!card.hidden) visible++;
+    }
+    group.hidden = visible === 0;
+    count += visible;
+  }
+  by('practice-count').textContent = count + (count === 1 ? ' case' : ' cases');
+}
+by('practice-site').addEventListener('change',filterPractice);
+by('practice-level').addEventListener('change',filterPractice);
+window.setupBuilder.bind(traceOptics);
 window.opticsBench.bind(simulate);
 buildSimulationGallery();
 openSimulation();

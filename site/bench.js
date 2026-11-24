@@ -78,7 +78,7 @@
       'pointer-events':'none'},parent);
   }
 
-  function solid(id, label, [x,y,u,v], height, palette, locked) {
+  function solid(id, label, [x,y,u,v], height, palette, locked, kind = id, selected = false) {
     const group = element('g', {'data-bench-object': id, class: locked ? 'bench-object locked' : 'bench-object'}, objects);
     const a = [x,y], b = [u,y], c = [u,v], d = [x,v];
     if (view.tilt > 0) {
@@ -93,21 +93,22 @@
     }
     const topFace = polygon([a,b,c,d],palette[0],group,height);
     topFace.setAttribute('stroke','#ffffff');
-    topFace.setAttribute('stroke-opacity','.26');
+    topFace.setAttribute('stroke-opacity',selected ? '1' : '.26');
+    if (selected) topFace.setAttribute('stroke-width','3');
     const [mx,my] = point([(x+u)/2,(y+v)/2],height);
-    if (view.tilt > 0 && id === 'camera') {
+    if (view.tilt > 0 && kind === 'camera') {
       const [lx,ly] = point([(x+u)/2,v],22);
       element('ellipse',{cx:lx,cy:ly,rx:11,ry:7,fill:'#142333',stroke:'#a4bed6','stroke-width':2},group);
       element('ellipse',{cx:lx,cy:ly,rx:5,ry:3,fill:'#6bcdef'},group);
     }
-    if (view.tilt > 0 && id.startsWith('block-')) {
+    if (view.tilt > 0 && (kind === 'rack' || kind.startsWith('block-'))) {
       for (const fraction of [.18,.45,.72]) {
         const [x1,y1] = point([x,v],height*fraction);
         const [x2,y2] = point([u,v],height*fraction);
         element('line',{x1,y1,x2,y2,stroke:'#b2c0cd','stroke-width':3},group);
       }
     }
-    if (view.tilt > 0 && id === 'block') {
+    if (view.tilt > 0 && kind === 'block') {
       const packages = [[a, b, c, d], [[x+3,y+4],[u-3,y+4],[u-3,v-4],[x+3,v-4]]];
       polygon(packages[0], '#523922', group, height-8);
       polygon(packages[1], palette[0], group, height);
@@ -118,27 +119,27 @@
         element('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:'#f3dfbc','stroke-width':2,'stroke-opacity':.75},group);
       }
     }
-    if (id === 'camera' || id === 'target') {
+    if (kind === 'camera' || kind === 'target') {
       element('circle',{cx:mx,cy:my,r:5,fill:'#101b2b',stroke:'#e1f2ff','stroke-width':1.4},group);
     }
-    if (id === 'mirror' && view.tilt > 0) {
+    if (kind === 'mirror' && view.tilt > 0) {
       element('polygon',{points:[point(a),point(b),point(b,height),point(a,height)]
         .map(p => p.join(',')).join(' '),fill:'url(#mirror-finish)','fill-opacity':'.8'},group);
     }
-    const assets = {camera:'camera',target:'target',block:'carton',mirror:'mirror'};
-    if (assets[id]) {
-      if (id === 'mirror' && view.tilt > 0) {
+    const assets = {carton:'carton',pallet:'carton',camera:'camera',target:'target',block:'carton',mirror:'mirror'};
+    if (assets[kind]) {
+      if (kind === 'mirror' && view.tilt > 0) {
         texture('mirror',point(a,height),point(b,height),point(a,6),group);
       } else {
-        const inset = id === 'target' ? 2 : 0;
-        texture(assets[id],point([x+inset,y],height),point([u-inset,y],height),point([x+inset,v],height),group);
+        const inset = kind === 'target' ? 2 : 0;
+        texture(assets[kind],point([x+inset,y],height),point([u-inset,y],height),point([x+inset,v],height),group);
       }
     }
     const [tx,ty] = point([(x+u)/2,y], height);
     element('text',{x:tx,y:ty-9,'text-anchor':'middle','class':'bench-label'},group).textContent = label;
   }
 
-  function draw({source,target,mirror,plane,obstacles,ray,reflection,clear,awaiting,locked,scene,decor}) {
+  function draw({source,target,mirror,plane,obstacles,ray,reflection,clear,awaiting,locked,scene,decor,customModels}) {
     floor.replaceChildren();
     objects.replaceChildren();
     path.replaceChildren();
@@ -173,8 +174,8 @@
         polygon([[strip,y],[strip+2,y],[strip+2,v],[strip,v]], '#917c59', floor);
       }
     }
-    const [cx,cy] = source, [tx,ty] = target;
-    const models = [
+    const [cx,cy] = source ?? [], [tx,ty] = target ?? [];
+    const models = customModels ?? [
       ['camera','Camera',[cx-22,cy-16,cx+22,cy+16],34,['#91c8fc','#3875a6','#245881']],
       ['target','Target',[tx-16,ty-14,tx+16,ty+14],13,['#daf099','#7d9d42','#547330']],
       ...obstacles.map(({label,box},i) => [i === 0 ? 'block' : 'block-' + i, label, box, i === 0 ? 48 : 58,
@@ -185,8 +186,8 @@
       const depth = ([,,[x,y,u,v]]) => point([(x+u)/2,(y+v)/2])[1];
       return depth(a) - depth(b);
     });
-    for (const [id,label,box,height,palette] of models) solid(id,label,box,height,palette,locked);
-    if (awaiting) return;
+    for (const [id,label,box,height,palette,kind,selected] of models) solid(id,label,box,height,palette,locked,kind,selected);
+    if (awaiting || !ray.length) return;
     const points = ray.map(p => point(p,22));
     const outline = points.map(p=>p.join(',')).join(' ');
     element('polyline',{points:outline,fill:'none',stroke:clear?'#65ff9c':'#ff4f5f','stroke-opacity':.18,
@@ -228,21 +229,20 @@
       cancelAnimationFrame(orbitFrame);
       stopAuto();
       const group = event.target.closest('[data-bench-object]');
-      const slider = group ? document.getElementById(group.dataset.benchObject) : null;
-      const mode = orbitMode || event.shiftKey ? 'orbit' : slider && !slider.disabled ? 'object' : 'pan';
-      if (mode === 'object' && !slider) return;
-      drag = {id:event.pointerId, start:pointer(event), mode, slider, value:slider?.valueAsNumber, view:{...view}};
+      const custom = !orbitMode && !event.shiftKey && group && window.setupBuilder.active && window.setupBuilder.beginDrag(group.dataset.benchObject);
+      const mode = orbitMode || event.shiftKey ? 'orbit' : custom ? 'custom' : 'pan';
+      drag = {id:event.pointerId, start:pointer(event), mode, custom, view:{...view}};
       svg.setPointerCapture(event.pointerId);
     });
     svg.addEventListener('pointermove',event => {
       if (!drag || drag.id !== event.pointerId) return;
       const p = pointer(event);
       const dx = p.x - drag.start.x, dy = p.y - drag.start.y;
-      if (drag.mode === 'object') {
-        if (drag.slider.disabled) return;
-        const a = point([0,0]), b = point([1,0]);
-        const x = b[0]-a[0], y = b[1]-a[1];
-        drag.slider.value = Math.round(drag.value + (dx*x + dy*y)/(x*x+y*y));
+      if (drag.mode === 'custom') {
+        const a = point([0,0]), b = point([1,0]), c = point([0,1]);
+        const ux = b[0]-a[0], uy = b[1]-a[1], vx = c[0]-a[0], vy = c[1]-a[1];
+        const det = ux*vy-uy*vx;
+        window.setupBuilder.dragTo(drag.custom, (dx*vy-dy*vx)/det, (dy*ux-dx*uy)/det);
       } else if (drag.mode === 'orbit') {
         view.heading = wrap(drag.view.heading + dx*.55);
         view.tilt = clamp(drag.view.tilt - dy*.35,0,75);
@@ -253,7 +253,11 @@
       refresh();
     });
     for (const name of ['pointerup','pointercancel','lostpointercapture']) {
-      svg.addEventListener(name,event => { if (drag?.id === event.pointerId) drag = null; });
+      svg.addEventListener(name,event => {
+        if (drag?.id !== event.pointerId) return;
+        if (drag.mode === 'custom') window.setupBuilder.endDrag(drag.custom);
+        drag = null;
+      });
     }
     heading.addEventListener('input',() => { stopAuto(); cancelAnimationFrame(orbitFrame); view.heading = heading.valueAsNumber; refresh(); });
     tilt.addEventListener('input',() => { stopAuto(); cancelAnimationFrame(orbitFrame); view.tilt = tilt.valueAsNumber; refresh(); });
@@ -287,6 +291,10 @@
         event.preventDefault();
         zoom(event.key === '-' ? 1/1.2 : 1.2);
       } else if (Object.hasOwn(offsets,event.key)) {
+        if (window.setupBuilder.active && window.setupBuilder.nudge(event.key,event.shiftKey)) {
+          event.preventDefault();
+          return;
+        }
         event.preventDefault();
         const [x,y] = offsets[event.key];
         view.x = clamp(view.x+x,-510,510);

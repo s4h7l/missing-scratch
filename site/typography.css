@@ -261,4 +261,27 @@ tbody th, .status, .text-link { font-weight: 600; }
 }
 .scene-setup { padding:.75rem 1rem; border-top:1px solid var(--line); background:var(--paper); }
 .scene-setup summary { cursor:pointer; color:var(--heading); font-weight:600; }
-.scene-setup #layout-controls { padding-top:.7rem; }
+
+.builder-entry { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin:1.4rem 0; padding:1.15rem 1.3rem; border:1px solid #c8d9eb; border-radius:14px; background:#eef5fc; }
+.builder-entry h2,.practice-library h2 { font-size:1.35rem; margin:0; }
+.builder-entry p { color:var(--muted); margin:.25rem 0 0; }
+.builder-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem .65rem; margin:.55rem 0; }
+.builder-toolbar p { margin:0; }
+.builder-toolbar label { font-size:.875rem; font-weight:600; }
+.builder-toolbar select,.builder-toolbar input { max-width:100%; }
+#sim-posts [hidden],#setup-builder[hidden],.builder-workspace .bench-inspector[hidden],#builder-compare[hidden],#builder-repair[hidden] { display:none; }
+#sim-workspace.builder-workspace { grid-template-columns:minmax(0,1.8fr) minmax(340px,1fr); }
+#setup-builder { min-width:0; }
+#setup-builder h2 { font-size:1.5rem; margin-top:0; }
+#setup-builder fieldset { border:1px solid var(--line); border-radius:9px; flex-wrap:wrap; margin:.8rem 0; padding:.65rem; min-width:0; }
+#setup-builder legend { color:var(--heading); font-size:.95rem; font-weight:650; }
+#setup-builder input:not([type=file]) { max-width:100%; border:1px solid var(--line); border-radius:6px; padding:.45rem; font:inherit; }
+#builder-x,#builder-y { width:5rem; }
+#builder-tray { display:flex; gap:.4rem; }
+#builder-selection { display:block; margin-top:.35rem; max-width:100%; }
+#builder-compare { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+#builder-compare figure { margin:0; }
+#builder-compare canvas { display:block; width:100%; height:auto; border-radius:6px; }
+#builder-compare figcaption { margin:.3rem 0; font-size:.82rem; }
+#setup-builder .scene-setup { padding:.65rem 0; margin-top:.8rem; }
+@media(max-width:940px) { #sim-workspace.builder-workspace { grid-template-columns:minmax(0,1fr); } }
