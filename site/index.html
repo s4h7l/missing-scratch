@@ -9,8 +9,8 @@
 <header class="header"><div class="header-inner">
 <a class="brand" href="#overview"><img class="brand-mark" src="missing-scratch-mark.png" alt="" width="36" height="36"><span>Missing <strong>Scratch</strong></span></a>
 <nav class="product-nav" aria-label="Main navigation">
-<a href="#overview">Overview</a><a href="#inspection">Inspection</a><a href="#simulator">Simulator</a><a href="#benchmark">Benchmark</a><a href="#lab">Lab</a><a href="#evidence">Evidence</a>
-</nav><a class="header-action" href="#inspection">Open lab <span aria-hidden="true">↗</span></a></div></header>
+<a href="#overview">Overview</a><a href="#simulator">Simulator</a><a href="#benchmark">Benchmark</a><a href="#lab">Lab</a><a href="#evidence">Evidence</a>
+</nav><a class="header-action" href="#lab">Open lab <span aria-hidden="true">↗</span></a></div></header>
 <main>
 <section data-page="overview" class="page landing">
 <div class="scroll-meter" aria-hidden="true"></div>
@@ -18,7 +18,7 @@
 <p class="product-label">Missing Scratch</p>
 <h1>See the <em>blind spot.</em></h1>
 <p class="lead">Make an inspection decision from the floor plan, then follow the beam to see what the camera misses.</p>
-<div class="actions"><a class="primary" href="#simulator/dock/easy/1">Open the first case</a><a class="secondary" href="#lab">Compare model answers</a></div>
+<div class="actions"><a class="primary" href="#simulator/benchmark/0000-0">Open the first case</a><a class="secondary" href="#lab">Compare model answers</a></div>
 </div>
 <div class="preview-stage" id="motion">
 <div class="panel replay-panel">
@@ -36,19 +36,19 @@
 <div class="landing-stats reveal"><div><strong id="landing-scenes">—</strong><span>generated scenes</span></div><div><strong id="landing-pairs">—</strong><span>matched pairs</span></div><div><strong>3</strong><span>inspection tasks</span></div><div><strong>2</strong><span>geometry methods</span></div></div>
 <section id="experiment" class="story reveal"><div class="story-head"><p class="eyebrow">The experiment</p><h2>One change. Two answers.</h2><p>The camera, target, and mirror stay put. The model earns credit only if it gets both scenes right.</p></div>
 <div class="pair-grid"><figure class="sample"><img id="landing-a" alt="Synthetic scene A"><figcaption id="landing-a-caption">Scene A</figcaption></figure><figure class="sample"><img id="landing-b" alt="Synthetic scene B"><figcaption id="landing-b-caption">Scene B</figcaption></figure></div>
-<a class="text-link" href="#inspection">Inspect the full dataset ↗</a></section>
+<a class="text-link" href="#simulator/benchmark/0000-0">Inspect the full dataset ↗</a></section>
 <section class="story reveal"><div class="story-head"><p class="eyebrow">Task types</p><h2>Three inspection tasks</h2></div>
 <div class="feature-grid"><article class="panel feature"><span class="tile-icon">01</span><h3>Visibility</h3><p>Can the camera see the target through the mirror?</p></article><article class="panel feature"><span class="tile-icon">02</span><h3>Obstruction</h3><p>Which obstacle does the ideal reflected path meet first?</p></article><article class="panel feature"><span class="tile-icon">03</span><h3>Repair</h3><p>Which placement change restores the sightline?</p></article></div>
 <a class="text-link" href="#simulator">Open the simulator</a></section>
 <section class="landing-cases" aria-labelledby="landing-cases-title">
 <h2 id="landing-cases-title">Choose an inspection case</h2>
 <p class="lead">Open a floor plan, submit a decision, and follow the beam in 3D.</p>
-<div id="landing-sim-posts"></div>
+<div id="landing-featured" class="sim-post-grid"></div><details class="practice-library"><summary>Explore all practice simulations</summary><div id="landing-sim-posts"></div></details>
 </section>
 </section>
 
 <section data-page="inspection" class="page" hidden>
-<p class="eyebrow">Judge demo</p><h1 class="page-title">Test your sightline</h1>
+<div class="simulator-heading"><h1 class="page-title">Scored benchmark</h1><div class="sim-case-links"><a id="benchmark-case-lab" class="primary" href="#lab" hidden>Open Lab</a><a class="secondary" href="#simulator">Back to gallery</a></div></div>
 <p class="lead">Pick an answer to see what the camera can actually see, and why.</p>
 <div class="inspection-modes" role="group" aria-label="Feedback mode">
 <button type="button" data-feedback-mode="instant" aria-pressed="true">Instant feedback</button>
@@ -80,7 +80,7 @@
 </div>
 <div id="sim-gallery">
 <p class="lead">Choose a case to open its inspection scene.</p>
-<div id="sim-posts"></div>
+<div id="sim-featured" class="sim-post-grid"></div><details class="practice-library"><summary>Explore all 18 practice simulations</summary><div id="sim-posts"></div></details>
 <a class="secondary" href="#simulator/sandbox">Open the free-explore bench</a>
 </div>
 <div class="workspace" id="sim-workspace" hidden><div class="panel viewport" id="sim-viewport"><div class="bar"><div><i></i> <span id="bench-site-name">Loading dock</span></div><button id="bench-fullscreen" type="button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="fullscreen-label">Expand fullscreen</span></button></div>
@@ -164,7 +164,7 @@
 <div class="panel evidence-proof">
 <div><span class="status done">Synthetic geometry checked</span><h2><span id="evidence-count">—</span> cases with reference answers</h2>
 <p>Two geometry methods check each generated case. The manifest ties each answer to the exact image evaluated.</p></div>
-<div class="actions"><a class="primary" href="#inspection">Inspect a verified pair</a><a class="secondary" href="cases.json" download>Download manifest</a></div>
+<div class="actions"><a class="primary" href="#simulator/benchmark/0000-0">Inspect a verified pair</a><a class="secondary" href="cases.json" download>Download manifest</a></div>
 </div>
 <div class="panel evidence-proof"><div><h2>Shortcut checks</h2>
 <p id="shortcut-audit" role="status">Loading the shortcut audit…</p>

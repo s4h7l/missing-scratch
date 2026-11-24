@@ -228,3 +228,13 @@ tbody th, .status, .text-link { font-weight: 600; }
 #lab-preview .viewport { width:100%; border:0; box-shadow:none; }
 #lab-preview .viewport #bench-fullscreen { display:none; }
 #lab-preview .viewport .bench-nav { color:var(--heading); }
+
+.lab-brand { width:16px; height:16px; padding:2px; border-radius:4px; }
+.lab-score-name { font-size:.875rem; font-weight:570; }
+#benchmark-case-lab[hidden] { display:none; }
+.featured-case img { display:block; width:100%; aspect-ratio:2.5; object-fit:cover; object-position:top; background:#101c29; }
+.practice-library { margin:1.5rem 0; border-top:1px solid var(--line); padding-top:.9rem; }
+.practice-library summary { cursor:pointer; font-weight:600; color:var(--heading); }
+.lab-pair-evidence { margin-top:1rem; }
+.lab-pair-evidence summary { cursor:pointer; font-weight:600; }
+.lab-pair-evidence figure { margin:.75rem 0 0; }

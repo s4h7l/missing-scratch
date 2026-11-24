@@ -4,15 +4,19 @@ const pages = [...document.querySelectorAll('[data-page]')];
 let currentPage;
 
 function route() {
-  const [slug] = location.hash.slice(1).split('/');
+  const [base,section] = location.hash.slice(1).split('/');
+  const nestedBenchmark = base === 'simulator' && section === 'benchmark';
+  const slug = nestedBenchmark ? 'inspection' : base;
+  const navPage = slug === 'inspection' ? 'simulator' : slug;
   const page = pages.find(item => item.dataset.page === slug) || pages[0];
   for (const item of pages) item.hidden = item !== page;
   for (const link of document.querySelectorAll('nav a')) {
-    if (link.hash === '#' + page.dataset.page) link.setAttribute('aria-current', 'page');
+    if (link.hash === '#' + navPage) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   }
   if (currentPage && currentPage !== page) window.scrollTo(0, 0);
   currentPage = page;
+  if (nestedBenchmark) openBenchmarkCase();
 }
 
 const judgeQuestions = {
@@ -23,6 +27,17 @@ const judgeQuestions = {
   repair: ['Which move makes the target visible again?',
     'Compare the two alternative panels below the base scene. Choose the move that leaves both parts of the reflected path clear.'],
 };
+
+function openBenchmarkCase() {
+  const id = location.hash.slice(1).split('/')[2];
+  if (!id) return;
+  const index = state.cases.findIndex(item => item.id === id);
+  if (index < 0) return;
+  by('kind').value = 'all';
+  state.items = state.cases;
+  state.index = index;
+  showCase();
+}
 
 function showCase() {
   const item = state.items[state.index];
@@ -55,6 +70,9 @@ function showCase() {
   state.selection = recorded ?? null;
   state.showRay = true;
   by('scene').src = item.image;
+  const labLink = by('benchmark-case-lab');
+  labLink.href = '#lab/benchmark/' + item.id;
+  labLink.hidden = !revealed;
   by('caseId').textContent = 'CASE ' + item.id;
   by('counter').textContent = (state.index + 1) + ' / ' + state.items.length;
   by('prev').disabled = state.index === 0;
@@ -408,7 +426,7 @@ function openSimulation(fragment = location.hash.slice(1), inLab = false) {
   if (!inLab && by('sim-viewport').parentElement !== by('sim-workspace')) {
     by('sim-workspace').prepend(by('sim-viewport'));
   }
-  if (page !== 'simulator') return;
+  if (page !== 'simulator' || site === 'benchmark') return;
   const index = Number(number) - 1;
   const isCase = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
     Number.isInteger(index) && index >= 0 && index < missions[level].length;
@@ -545,6 +563,27 @@ function renderScorecard(pilot, scene, choice, practice) {
     totals.append(line);
   }
   card.append(totals);
+  const members = state.cases.filter(item => item.pair === scene.pair);
+  const comparison = document.createElement('details');
+  comparison.className = 'lab-pair-evidence';
+  const summary = document.createElement('summary');
+  summary.textContent = 'Inspect both diagrams and model answers';
+  comparison.append(summary);
+  for (const member of members) {
+    const figure = document.createElement('figure');
+    const image = document.createElement('img');
+    image.src = member.image;
+    image.alt = 'Exact benchmark diagram ' + member.id;
+    const caption = document.createElement('figcaption');
+    const answers = models.flatMap(model => {
+      const row = model.rows.find(r => r.case === member.id && r.mode === 'vision');
+      return row ? [model.name + ': ' + pilotPrediction(row,member)] : [];
+    });
+    caption.textContent = member.id + ' · Verified: ' + member.answer + (answers.length ? ' · ' + answers.join(' · ') : '');
+    figure.append(image,caption);
+    comparison.append(figure);
+  }
+  card.append(comparison);
 }
 
 function buildLab(pilot) {
@@ -555,13 +594,14 @@ function buildLab(pilot) {
     const practice = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
       Number.isInteger(index) && index >= 0 && index < missions[level].length;
     const casePath = practice ? [site,level,number].join('/') : null;
-    let scene = state.cases.find(item => item.id === by('lab-picker').value);
+    const benchmarkId = site === 'benchmark' ? level : null;
+    let scene = state.cases.find(item => item.id === (benchmarkId ?? by('lab-picker').value));
     const preview = by('lab-preview');
     preview.hidden = !practice;
     by('lab-image').hidden = practice;
-    by('lab-picker').hidden = practice;
-    by('lab-picker-label').hidden = practice;
-    by('lab-back').hidden = !practice;
+    by('lab-picker').hidden = practice || Boolean(benchmarkId);
+    by('lab-picker-label').hidden = practice || Boolean(benchmarkId);
+    by('lab-back').hidden = !practice && !benchmarkId;
     by('lab-benchmark-link').hidden = !practice;
     by('lab-intro').textContent = practice ?
       'Review your decision and the verified answer for this simulator case.' :
@@ -577,6 +617,7 @@ function buildLab(pilot) {
       by('lab-back').href = '#simulator/' + casePath;
       by('lab-case').textContent = scenario.name + ' · ' + level + ' · Case ' + number;
     } else if (scene) {
+      if (benchmarkId) by('lab-back').href = '#simulator/benchmark/' + scene.id;
       by('lab-image').src = scene.image;
       by('lab-case').textContent = scene.id + ' · Frozen benchmark v4';
     }
@@ -610,7 +651,7 @@ function buildLab(pilot) {
       });
       options.append(button);
     }
-    const saved = casePath ? humanAnswers.get(casePath) : undefined;
+    const saved = casePath ? humanAnswers.get(casePath) : benchmarkId ? state.findings[state.mode].get(scene.id) : undefined;
     if (saved) [...options.children].find(button => button.textContent === saved)?.click();
   }
   window.addEventListener('hashchange', renderLab);
@@ -700,6 +741,25 @@ fetch('cases.json').then(response => {
     by('landing-' + id + '-caption').textContent = 'Scene ' + id.toUpperCase() + ' · ' + pair[i].answer;
   }
   bindCases();
+  for (const [type,label] of [['visibility','Check visibility'],['blocker','Find the first obstruction'],['repair','Restore coverage']]) {
+    const item = cases.find(candidate => candidate.type === type);
+    const link = document.createElement('a');
+    link.className = 'sim-post featured-case';
+    link.href = '#simulator/benchmark/' + item.id;
+    const image = document.createElement('img');
+    image.src = item.image;
+    image.alt = '';
+    const caption = document.createElement('div');
+    const title = document.createElement('strong');
+    title.textContent = label;
+    const detail = document.createElement('span');
+    detail.textContent = 'Scored benchmark pair';
+    caption.append(title,detail);
+    link.append(image,caption);
+    by('sim-featured').append(link);
+    by('landing-featured').append(link.cloneNode(true));
+  }
+  openBenchmarkCase();
   showCase();
   void loadReports(digest);
   void Promise.all([digest, fetch('lab-pilot.json').then(response => response.json())])
