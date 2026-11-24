@@ -1,0 +1,55 @@
+{
+  "dataset": "b1bb924611d7c0ef40a68d961309fa939f67535edd72f7a795e2c50859378423",
+  "models": [
+    {
+      "name": "Codex CLI",
+      "rows": [
+        {
+          "case": "0000-0",
+          "mode": "vision",
+          "predicted": "A"
+        },
+        {
+          "case": "0000-1",
+          "mode": "vision",
+          "predicted": "B"
+        },
+        {
+          "case": "0000-0",
+          "mode": "question-only",
+          "predicted": "B"
+        },
+        {
+          "case": "0000-1",
+          "mode": "question-only",
+          "predicted": "A"
+        }
+      ]
+    },
+    {
+      "name": "Gemini 3 Flash Preview",
+      "rows": [
+        {
+          "case": "0000-0",
+          "mode": "vision",
+          "predicted": "B"
+        },
+        {
+          "case": "0000-1",
+          "mode": "vision",
+          "predicted": "B"
+        },
+        {
+          "case": "0000-0",
+          "mode": "question-only",
+          "predicted": "A"
+        },
+        {
+          "case": "0000-1",
+          "mode": "question-only",
+          "predicted": "B"
+        }
+      ]
+    }
+  ]
+}

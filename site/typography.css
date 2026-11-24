@@ -177,3 +177,32 @@ tbody th, .status, .text-link { font-weight: 600; }
 .sim-post strong { display:block; font-size:1.05rem; margin-top:.15rem; }
 .sim-return { margin: .6rem 0; }
 @media(max-width:660px) { .sim-post-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; } }
+
+/* Inspection case and evidence lab share readable verdict states. */
+.landing-cases { padding: 2.5rem 0; border-top: 1px solid var(--line); }
+.landing-cases h2 { margin: 0 0 .4rem; font-size: clamp(1.6rem, 4vw, 2.75rem); }
+#landing-sim-posts section { margin-block: 1.5rem 2.5rem; }
+#landing-sim-posts h2 { font-size: 1.3rem; margin-bottom: .75rem; }
+#simulator-page:has(#sim-workspace:not([hidden])) { max-width: none; }
+#sim-workspace:not([hidden]) { grid-template-columns: minmax(0, 2.25fr) minmax(270px,1fr); align-items: start; }
+#sim-workspace .sim-view { background: #090e15; }
+#sim-workspace #layout { display: block; width: 100%; max-height: 76svh; }
+.sim-case-links { display: flex; flex-wrap: wrap; gap: .45rem; margin-block: .75rem; }
+.sim-case-links .secondary { margin: 0; }
+#trial-submit { width: 100%; margin-top: .8rem; }
+.mission-answers [aria-pressed="true"] { outline: 2px solid #24716d; background: #e7f4f0; }
+[data-grade="correct"] { background: #deefe4 !important; color: #145133 !important; border-color: #4b8968 !important; }
+[data-grade="wrong"] { background: #fce2df !important; color: #852619 !important; border-color: #bc665a !important; }
+.mission-answers [data-grade]:disabled { opacity: 1; }
+.bench-laser-core { filter: drop-shadow(0 0 6px currentColor); }
+.bench-laser-pulse { stroke-dasharray: 3 9; animation-duration: 1.8s; }
+.lab-layout { display:grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr); gap: clamp(18px,4vw,55px); align-items:start; }
+.lab-layout figure { margin:0; border:1px solid var(--line); background:#101c29; color:#f7fbfa; border-radius:16px; overflow:hidden; }
+.lab-layout img { width:100%; display:block; height:auto; }
+.lab-layout figcaption { padding:.7rem 1rem; }
+.lab-controls select { display:block; margin:.35rem 0 1rem; }
+.lab-controls h2 { font-size:clamp(1.35rem,2.5vw,2rem); line-height:1.22; }
+#lab-models p { border:1px solid; padding:.55rem .75rem; border-radius:8px; margin:.55rem 0; }
+@media(max-width:860px) {
+  #sim-workspace:not([hidden]), .lab-layout { grid-template-columns:minmax(0,1fr); }
+}

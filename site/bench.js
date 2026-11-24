@@ -19,6 +19,32 @@
   let lastTilt = initial.tilt;
   let refreshView;
   let orbitFrame;
+  let autoFrame;
+  const auto = document.getElementById('bench-auto');
+  function stopAuto() {
+    cancelAnimationFrame(autoFrame);
+    auto.setAttribute('aria-pressed','false');
+    auto.textContent = 'Auto-rotate';
+  }
+
+  auto.addEventListener('click',() => {
+    if (auto.getAttribute('aria-pressed') === 'true') {
+      stopAuto();
+      return;
+    }
+    cancelAnimationFrame(orbitFrame);
+    if (view.tilt === 0) view.tilt = initial.tilt;
+    auto.setAttribute('aria-pressed','true');
+    auto.textContent = 'Pause rotation';
+    let previous = performance.now();
+    function rotate(now) {
+      view.heading = wrap(view.heading + Math.min(50,now-previous)*.019);
+      previous = now;
+      refreshView();
+      autoFrame = requestAnimationFrame(rotate);
+    }
+    autoFrame = requestAnimationFrame(rotate);
+  });
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
   function point([x,y], height = 0) {
@@ -43,6 +69,13 @@
     return element('polygon', {
       points: vertices.map(p => point(p, height).join(',')).join(' '), fill
     }, parent);
+  }
+
+  function texture(asset, a, b, d, parent) {
+    const [x,y] = a;
+    element('image',{href:'dock-'+asset+'.webp',width:1,height:1,preserveAspectRatio:'none',
+      transform:`matrix(${b[0]-x} ${b[1]-y} ${d[0]-x} ${d[1]-y} ${x} ${y})`,
+      'pointer-events':'none'},parent);
   }
 
   function solid(id, label, [x,y,u,v], height, palette, locked) {
@@ -92,6 +125,15 @@
       element('polygon',{points:[point(a),point(b),point(b,height),point(a,height)]
         .map(p => p.join(',')).join(' '),fill:'url(#mirror-finish)','fill-opacity':'.8'},group);
     }
+    const assets = {camera:'camera',target:'target',block:'carton',mirror:'mirror'};
+    if (assets[id]) {
+      if (id === 'mirror' && view.tilt > 0) {
+        texture('mirror',point(a,height),point(b,height),point(a,6),group);
+      } else {
+        const inset = id === 'target' ? 2 : 0;
+        texture(assets[id],point([x+inset,y],height),point([u-inset,y],height),point([x+inset,v],height),group);
+      }
+    }
     const [tx,ty] = point([(x+u)/2,y], height);
     element('text',{x:tx,y:ty-9,'text-anchor':'middle','class':'bench-label'},group).textContent = label;
   }
@@ -112,6 +154,7 @@
     surface.setAttribute('stroke','#75bda8');
     surface.setAttribute('stroke-opacity','.52');
     surface.setAttribute('stroke-width','2');
+    texture('floor',point(deck[0]),point(deck[1]),point(deck[3]),floor);
     for (const x of [45,145,245,345,445,545,645]) {
       for (const y of [49,360]) {
         const [cx,cy] = point([x,y]);
@@ -146,18 +189,18 @@
     if (awaiting) return;
     const points = ray.map(p => point(p,22));
     const outline = points.map(p=>p.join(',')).join(' ');
-    element('polyline',{points:outline,fill:'none',stroke:clear?'#a8ffe7':'#ffbf88','stroke-opacity':.18,
-      'stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'},path);
-    element('polyline',{points:outline,fill:'none',stroke:clear?'#a8ffe7':'#ffbf88',
+    element('polyline',{points:outline,fill:'none',stroke:clear?'#65ff9c':'#ff4f5f','stroke-opacity':.18,
+      'stroke-width':15,'stroke-linecap':'round','stroke-linejoin':'round'},path);
+    element('polyline',{points:outline,fill:'none',stroke:clear?'#65ff9c':'#ff4f5f',
       class:'bench-laser-core','stroke-width':2.5,'stroke-linecap':'round','stroke-linejoin':'round'},path);
     element('polyline',{points:outline,fill:'none',stroke:'#ffffff',pathLength:100,
-      class:'bench-laser-pulse','stroke-width':2,'stroke-linecap':'round'},path);
+      class:'bench-laser-pulse',style:'animation-delay:-'+(performance.now()%1800)+'ms','stroke-width':2,'stroke-linecap':'round'},path);
     if (ray.length === 3) {
       const [cx,cy] = point(reflection,22);
       element('circle',{cx,cy,r:6,fill:'#f2fbff',stroke:'#1b5e57','stroke-width':2},path);
     }
     const [x,y] = points.at(-1);
-    element('circle',{cx:x,cy:y,r:5,fill:clear?'#a8ffe7':'#ffbf88',stroke:'#0e1724','stroke-width':2},path);
+    element('circle',{cx:x,cy:y,r:5,fill:clear?'#65ff9c':'#ff4f5f',stroke:'#0e1724','stroke-width':2},path);
   }
 
   function bind(update) {
@@ -183,6 +226,7 @@
     svg.addEventListener('pointerdown',event => {
       if (!event.isPrimary || event.button !== 0) return;
       cancelAnimationFrame(orbitFrame);
+      stopAuto();
       const group = event.target.closest('[data-bench-object]');
       const slider = group ? document.getElementById(group.dataset.benchObject) : null;
       const mode = orbitMode || event.shiftKey ? 'orbit' : slider && !slider.disabled ? 'object' : 'pan';
@@ -211,9 +255,11 @@
     for (const name of ['pointerup','pointercancel','lostpointercapture']) {
       svg.addEventListener(name,event => { if (drag?.id === event.pointerId) drag = null; });
     }
-    heading.addEventListener('input',() => { view.heading = heading.valueAsNumber; refresh(); });
-    tilt.addEventListener('input',() => { view.tilt = tilt.valueAsNumber; refresh(); });
+    heading.addEventListener('input',() => { stopAuto(); cancelAnimationFrame(orbitFrame); view.heading = heading.valueAsNumber; refresh(); });
+    tilt.addEventListener('input',() => { stopAuto(); cancelAnimationFrame(orbitFrame); view.tilt = tilt.valueAsNumber; refresh(); });
     toggle.addEventListener('click',() => {
+      stopAuto();
+      cancelAnimationFrame(orbitFrame);
       if (view.tilt > 0) { lastTilt = view.tilt; view.tilt = 0; }
       else view.tilt = lastTilt;
       refresh();
@@ -226,6 +272,8 @@
     zoomIn.addEventListener('click',() => zoom(1.2));
     zoomOut.addEventListener('click',() => zoom(1/1.2));
     document.getElementById('bench-home').addEventListener('click',() => {
+      stopAuto();
+      cancelAnimationFrame(orbitFrame);
       Object.assign(view,initial);
       lastTilt = initial.tilt;
       orbitMode = false;
@@ -281,10 +329,13 @@
     if (event.key === 'Escape' && page.classList.contains('bench-fallback-full')) void closeFullscreen();
   });
   addEventListener('hashchange',() => {
+    stopAuto();
+    cancelAnimationFrame(orbitFrame);
     if (open()) void closeFullscreen();
   });
 
   function framePlan() {
+    stopAuto();
     cancelAnimationFrame(orbitFrame);
     Object.assign(view, initial, {heading:0, tilt:0});
     refreshView();
@@ -292,7 +343,11 @@
 
   function revealOrbit() {
     cancelAnimationFrame(orbitFrame);
-    if (reducedMotion.matches || view.tilt > 0) return;
+    if (reducedMotion.matches || auto.getAttribute('aria-pressed') === 'true') return;
+    if (view.tilt > 0) {
+      auto.click();
+      return;
+    }
     const start = performance.now();
     const heading = view.heading;
     function step(now) {
@@ -302,6 +357,7 @@
       view.tilt = initial.tilt * eased;
       refreshView();
       if (progress < 1) orbitFrame = requestAnimationFrame(step);
+      else auto.click();
     }
     orbitFrame = requestAnimationFrame(step);
   }

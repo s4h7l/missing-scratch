@@ -249,6 +249,8 @@ function setTrial(active) {
   trialActive = active;
   trialPrediction = null;
   by('trial-actions').hidden = !active;
+  by('trial-submit').hidden = !active;
+  by('trial-submit').disabled = true;
   by('mission-context').hidden = !active;
   by('layout-controls').hidden = active;
   by('trial-result').hidden = true;
@@ -321,7 +323,13 @@ function simulate() {
     const result = by('trial-result');
     result.textContent = (trialPrediction === expected ? 'Correct. ' : 'Your prediction: ' + trialPrediction + '. ') +
       'Verified answer: ' + expected + '.' + (repair ? ' The scene shows that repair.' : '');
-    by('trial-actions').hidden = true;
+    by('trial-submit').hidden = true;
+    result.dataset.grade = trialPrediction === expected ? 'correct' : 'wrong';
+    for (const button of by('trial-actions').children) {
+      const choice = button.dataset.trialAnswer;
+      button.disabled = true;
+      button.dataset.grade = choice === expected ? 'correct' : choice === trialPrediction ? 'wrong' : '';
+    }
     result.hidden = false;
   }
 }
@@ -411,17 +419,72 @@ function openSimulation() {
     button.type = 'button';
     button.textContent = choice;
     button.dataset.trialAnswer = choice;
+    button.setAttribute('aria-pressed','false');
     button.addEventListener('click', () => {
-      trialPrediction = choice;
-      simulate();
-      window.opticsBench.revealOrbit();
-      by('coverage').focus({preventScroll:true});
+      for (const option of answers.children) option.setAttribute('aria-pressed', String(option === button));
+      by('trial-submit').disabled = false;
     });
     answers.append(button);
   }
   applyLayout(mission.layout);
   window.scrollTo(0, 0);
   by('coverage').focus({preventScroll:true});
+}
+
+by('trial-submit').addEventListener('click', () => {
+  trialPrediction = by('trial-actions').querySelector('[aria-pressed="true"]')?.dataset.trialAnswer;
+  if (!trialPrediction) return;
+  simulate();
+  window.opticsBench.revealOrbit();
+  by('coverage').focus({preventScroll:true});
+});
+
+function buildLab(pilot) {
+  function renderLab() {
+    const scene = state.cases.find(item => item.id === by('lab-picker').value);
+    if (!scene) return;
+    by('lab-image').src = scene.image;
+    by('lab-case').textContent = scene.id + ' · Frozen benchmark v4';
+    by('lab-question').textContent = scene.question;
+    by('lab-verdict').hidden = true;
+    by('lab-models').hidden = true;
+    const options = by('lab-choices');
+    options.replaceChildren();
+    for (const choice of scene.options) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = choice;
+      button.addEventListener('click', () => {
+        const verdict = by('lab-verdict');
+        verdict.dataset.grade = choice === scene.answer ? 'correct' : 'wrong';
+        verdict.textContent = (choice === scene.answer ? 'Correct. ' : 'Your answer: ' + choice + '. ') +
+          'Verified answer: ' + scene.answer + '.';
+        verdict.hidden = false;
+        for (const option of options.children) {
+          option.disabled = true;
+          option.dataset.grade = option.textContent === scene.answer ? 'correct' : option === button ? 'wrong' : '';
+        }
+        const models = by('lab-models');
+        models.replaceChildren();
+        if (!pilot) models.textContent = 'Verified model pilot unavailable.';
+        for (const model of pilot?.models ?? []) {
+          for (const row of model.rows.filter(item => item.case === scene.id)) {
+            const letter = row.predicted.trim().toUpperCase();
+            const prediction = (/^[A-Z]$/.test(letter) ? scene.options[letter.charCodeAt(0)-65] : null) ?? 'Invalid response';
+            const item = document.createElement('p');
+            item.dataset.grade = prediction === scene.answer ? 'correct' : 'wrong';
+            item.textContent = model.name + ' · ' + row.mode + ' · ' + prediction +
+              (prediction === scene.answer ? ' · Correct' : ' · Incorrect');
+            models.append(item);
+          }
+        }
+        models.hidden = false;
+      });
+      options.append(button);
+    }
+  }
+  by('lab-picker').addEventListener('change', renderLab);
+  renderLab();
 }
 
 function buildSimulationGallery() {
@@ -453,6 +516,11 @@ function buildSimulationGallery() {
     }
     group.append(heading,cards);
     by('sim-posts').append(group);
+    const landingGroup = group.cloneNode(true);
+    for (const [index, canvas] of [...landingGroup.querySelectorAll('canvas')].entries()) {
+      canvas.getContext('2d').drawImage(cards.children[index].firstElementChild, 0, 0);
+    }
+    by('landing-sim-posts').append(landingGroup);
   }
   selectedSite = 'dock';
 }
@@ -503,6 +571,9 @@ fetch('cases.json').then(response => {
   bindCases();
   showCase();
   void loadReports(digest);
+  void Promise.all([digest, fetch('lab-pilot.json').then(response => response.json())])
+    .then(([hash, pilot]) => buildLab(hash && hash === pilot.dataset ? pilot : null))
+    .catch(() => buildLab(null));
 }).catch(() => {
   by('prompt').textContent = 'The synthetic dataset could not be loaded.';
 });

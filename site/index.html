@@ -9,7 +9,7 @@
 <header class="header"><div class="header-inner">
 <a class="brand" href="#overview"><img class="brand-mark" src="missing-scratch-mark.png" alt="" width="36" height="36"><span>Missing <strong>Scratch</strong></span></a>
 <nav class="product-nav" aria-label="Main navigation">
-<a href="#overview">Overview</a><a href="#inspection">Inspection</a><a href="#simulator">Simulator</a><a href="#benchmark">Benchmark</a><a href="#evidence">Evidence</a>
+<a href="#overview">Overview</a><a href="#inspection">Inspection</a><a href="#simulator">Simulator</a><a href="#benchmark">Benchmark</a><a href="#lab">Lab</a><a href="#evidence">Evidence</a>
 </nav><a class="header-action" href="#inspection">Open lab <span aria-hidden="true">↗</span></a></div></header>
 <main>
 <section data-page="overview" class="page landing">
@@ -17,8 +17,8 @@
 <div class="hero"><div class="hero-copy">
 <p class="product-label">Missing Scratch</p>
 <h1>See the <em>blind spot.</em></h1>
-<p class="lead">Can a vision model tell when moving one obstacle hides the target?</p>
-<div class="actions"><a class="primary" href="#simulator">Run an inspection challenge</a><a class="secondary" href="#inspection">Try a benchmark pair</a></div>
+<p class="lead">Make an inspection decision from the floor plan, then follow the beam to see what the camera misses.</p>
+<div class="actions"><a class="primary" href="#simulator/dock/easy/1">Open the first case</a><a class="secondary" href="#lab">Compare model answers</a></div>
 </div>
 <div class="preview-stage" id="motion">
 <div class="panel replay-panel">
@@ -40,6 +40,11 @@
 <section class="story reveal"><div class="story-head"><p class="eyebrow">Task types</p><h2>Three inspection tasks</h2></div>
 <div class="feature-grid"><article class="panel feature"><span class="tile-icon">01</span><h3>Visibility</h3><p>Can the camera see the target through the mirror?</p></article><article class="panel feature"><span class="tile-icon">02</span><h3>Obstruction</h3><p>Which obstacle does the ideal reflected path meet first?</p></article><article class="panel feature"><span class="tile-icon">03</span><h3>Repair</h3><p>Which placement change restores the sightline?</p></article></div>
 <a class="text-link" href="#simulator">Open the simulator</a></section>
+<section class="landing-cases" aria-labelledby="landing-cases-title">
+<h2 id="landing-cases-title">Choose an inspection case</h2>
+<p class="lead">Open a floor plan, submit a decision, and follow the beam in 3D.</p>
+<div id="landing-sim-posts"></div>
+</section>
 </section>
 
 <section data-page="inspection" class="page" hidden>
@@ -93,7 +98,7 @@
 <div class="bench-nav" aria-label="Bench view controls">
 <div class="bench-buttons" role="group" aria-label="View presets and zoom">
 <button id="bench-view" type="button" aria-pressed="false">2D view</button>
-<button id="bench-orbit" type="button" aria-pressed="false">Orbit drag</button>
+<button id="bench-auto" type="button" aria-pressed="false">Auto-rotate</button><button id="bench-orbit" type="button" aria-pressed="false">Orbit drag</button>
 <button id="bench-out" type="button" aria-label="Zoom out">−</button>
 <button id="bench-in" type="button" aria-label="Zoom in">+</button>
 <button id="bench-home" type="button">Reset view</button>
@@ -106,9 +111,9 @@
 <div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p><span class="control-label">Inspection station</span></div>
 <h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
 <p id="mission-context" class="detail" hidden></p>
-<a class="secondary sim-return" href="#simulator">Back to case gallery</a>
+<div class="sim-case-links"><a class="secondary sim-return" href="#simulator">All cases</a><a class="secondary" href="#lab">Model comparison lab</a></div>
 <div id="trial-actions" class="mission-answers" role="group" aria-label="Submit your inspection decision" hidden></div>
-<p id="trial-result" class="finding" role="status" hidden></p>
+<button id="trial-submit" class="primary" type="button" hidden disabled>Check answer</button><p id="trial-result" class="finding" role="status" hidden></p>
 <div id="layout-controls">
 <section class="comparison-panel" aria-labelledby="comparison-title">
 <h3 id="comparison-title">Compare setups</h3>
@@ -127,6 +132,22 @@
 <button id="reset" type="button">Reset object positions</button></div>
 <p class="detail bench-scope">The 3D view shows simulated equipment. The ray follows a single-mirror floor plan. Practice scores stay separate from the frozen benchmark.</p></aside></div></section>
 
+<section data-page="lab" class="page lab-page" hidden>
+<h1 class="page-title">Model comparison lab</h1>
+<p class="lead">Answer the exact benchmark question, then compare with the recorded Codex CLI and Gemini pilot responses.</p>
+<div class="lab-layout">
+<figure><img id="lab-image" alt="Exact benchmark diagram"><figcaption id="lab-case"></figcaption></figure>
+<div class="lab-controls">
+<label for="lab-picker">Benchmark scene</label>
+<select id="lab-picker"><option value="0000-0">Scene A · 0000-0</option><option value="0000-1">Scene B · 0000-1</option></select>
+<h2 id="lab-question"></h2>
+<div id="lab-choices" class="mission-answers"></div>
+<p id="lab-verdict" class="finding" role="status" hidden></p>
+<div id="lab-models" hidden></div>
+<p class="detail">One matched-pair pilot. Full benchmark scores are pending.</p>
+</div>
+</div>
+</section>
 <section data-page="benchmark" class="page" hidden>
 <p class="eyebrow">Model evaluation</p><h1 class="page-title">Benchmark</h1>
 <p class="lead">A fixed set of scenes lets us measure how consistently models reason about coverage, obstructions, and repairs.</p>
