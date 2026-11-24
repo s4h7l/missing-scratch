@@ -78,8 +78,68 @@
       'pointer-events':'none'},parent);
   }
 
-  function solid(id, label, [x,y,u,v], height, palette, locked, kind = id, selected = false) {
+  function cameraModel(group, center, focus, selected) {
+    const [x,y] = center;
+    const dx = focus ? focus[0]-x : 0, dy = focus ? focus[1]-y : 1;
+    const length = Math.hypot(dx,dy);
+    const [forwardX,forwardY] = length ? [dx/length,dy/length] : [0,1];
+    const world = (side,forward) => [x+side*forwardY+forward*forwardX, y-side*forwardX+forward*forwardY];
+    const vertices = (width,back,front) => [world(-width,back),world(width,back),world(width,front),world(-width,front)];
+    const face = (coords,fill) => element('polygon',{
+      points:coords.map(([side,forward,z]) => point(world(side,forward),z).join(',')).join(' '),fill
+    },group);
+    function housing(width,back,front,bottom,top,colors) {
+      const corners = [[-width,back],[width,back],[width,front],[-width,front]];
+      const edges = corners.map((corner,i) => [corner,corners[(i+1)%4]]);
+      edges.sort((a,b)=>a.reduce((sum,p)=>sum+point(world(...p))[1],0)-b.reduce((sum,p)=>sum+point(world(...p))[1],0));
+      for (const [i,[a,b]] of edges.slice(-2).entries()) {
+        face([[...a,bottom],[...b,bottom],[...b,top],[...a,top]], colors[i]);
+      }
+      const upper = polygon(vertices(width,back,front),colors[2],group,top);
+      upper.setAttribute('stroke','#a9b9c5');
+      upper.setAttribute('stroke-width',selected ? 2 : .7);
+    }
+    if (view.tilt === 0) {
+      const outline = polygon(vertices(17,-42,5),'transparent',group);
+      if (selected) {
+        outline.setAttribute('stroke','#d9eeff');
+        outline.setAttribute('stroke-width','1.5');
+      }
+      const [a,b,,d] = vertices(17,-42,5);
+      texture('camera',point(a),point(b),point(d),group);
+    } else {
+      housing(17,-39,-10,10,39,['#263342','#435267','#617488']);
+      for (const side of [-12,12]) {
+        for (const depth of [-35,-15]) {
+          const [cx,cy] = point(world(side,depth),39);
+          element('circle',{cx,cy,r:1.65,fill:'#d9c9ad',stroke:'#35404a','stroke-width':.6},group);
+        }
+      }
+      for (const [depth,radius,fill] of [
+        [-9,11,'#17232b'],[-7,11.5,'#49535d'],[-5,10.5,'#19242e'],
+        [-2,10.5,'#3c4854'],[0,9,'#0a141e'],[.5,6.4,'#26465a'],[1,3.8,'#112539'],
+      ]) {
+        const ring = Array.from({length:18},(_,i)=>{
+          const angle = i*Math.PI/9;
+          return [Math.cos(angle)*radius,depth,22+Math.sin(angle)*radius];
+        });
+        face(ring,fill);
+      }
+      const [gx,gy] = point(world(-2,1),25);
+      element('circle',{cx:gx,cy:gy,r:1.6,fill:'#a5ddf3','fill-opacity':.78},group);
+    }
+    const [cx,cy] = point(center,22);
+    element('circle',{cx,cy,r:1.6,fill:'#d2f5ff',class:'camera-optical-point'},group);
+    return point(world(0,-36),view.tilt ? 39 : 0);
+  }
+
+  function solid(id, label, [x,y,u,v], height, palette, locked, kind = id, selected = false, cameraAim) {
     const group = element('g', {'data-bench-object': id, class: locked ? 'bench-object locked' : 'bench-object'}, objects);
+    if (kind === 'camera') {
+      const [tx,ty] = cameraModel(group,[(x+u)/2,(y+v)/2],cameraAim,selected);
+      element('text',{x:tx,y:ty-8,'text-anchor':'middle',class:'bench-label'},group).textContent = label;
+      return;
+    }
     const a = [x,y], b = [u,y], c = [u,v], d = [x,v];
     if (view.tilt > 0) {
       const edges = [[a,b],[b,c],[c,d],[d,a]];
@@ -96,11 +156,6 @@
     topFace.setAttribute('stroke-opacity',selected ? '1' : '.26');
     if (selected) topFace.setAttribute('stroke-width','3');
     const [mx,my] = point([(x+u)/2,(y+v)/2],height);
-    if (view.tilt > 0 && kind === 'camera') {
-      const [lx,ly] = point([(x+u)/2,v],22);
-      element('ellipse',{cx:lx,cy:ly,rx:11,ry:7,fill:'#142333',stroke:'#a4bed6','stroke-width':2},group);
-      element('ellipse',{cx:lx,cy:ly,rx:5,ry:3,fill:'#6bcdef'},group);
-    }
     if (view.tilt > 0 && (kind === 'rack' || kind.startsWith('block-'))) {
       for (const fraction of [.18,.45,.72]) {
         const [x1,y1] = point([x,v],height*fraction);
@@ -119,14 +174,14 @@
         element('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:'#f3dfbc','stroke-width':2,'stroke-opacity':.75},group);
       }
     }
-    if (kind === 'camera' || kind === 'target') {
+    if (kind === 'target') {
       element('circle',{cx:mx,cy:my,r:5,fill:'#101b2b',stroke:'#e1f2ff','stroke-width':1.4},group);
     }
     if (kind === 'mirror' && view.tilt > 0) {
       element('polygon',{points:[point(a),point(b),point(b,height),point(a,height)]
         .map(p => p.join(',')).join(' '),fill:'url(#mirror-finish)','fill-opacity':'.8'},group);
     }
-    const assets = {carton:'carton',pallet:'carton',camera:'camera',target:'target',block:'carton',mirror:'mirror'};
+    const assets = {carton:'carton',pallet:'carton',target:'target',block:'carton',mirror:'mirror'};
     if (assets[kind]) {
       if (kind === 'mirror' && view.tilt > 0) {
         texture('mirror',point(a,height),point(b,height),point(a,6),group);
@@ -186,7 +241,7 @@
       const depth = ([,,[x,y,u,v]]) => point([(x+u)/2,(y+v)/2])[1];
       return depth(a) - depth(b);
     });
-    for (const [id,label,box,height,palette,kind,selected] of models) solid(id,label,box,height,palette,locked,kind,selected);
+    for (const [id,label,box,height,palette,kind,selected] of models) solid(id,label,box,height,palette,locked,kind,selected,awaiting ? undefined : reflection);
     if (awaiting || !ray.length) return;
     const points = ray.map(p => point(p,22));
     const outline = points.map(p=>p.join(',')).join(' ');
