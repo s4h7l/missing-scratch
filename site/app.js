@@ -1,18 +1,23 @@
 const by = id => document.getElementById(id);
-const state = { cases: [], items: [], index: 0, selection: null, mode: 'instant', findings: {instant: new Map(), paired: new Map()}, showRay: true };
+const state = { cases: [], items: [], index: 0, selection: null, mode: 'paired', findings: {instant: new Map(), paired: new Map()}, showRay: true };
 const pages = [...document.querySelectorAll('[data-page]')];
 let currentPage;
+let recordedPilot;
 
 function route() {
-  const slug = location.hash.slice(1);
+  const [base,section] = location.hash.slice(1).split('/');
+  const nestedBenchmark = base === 'simulator' && section === 'benchmark';
+  const slug = nestedBenchmark ? 'inspection' : base;
+  const navPage = slug === 'inspection' ? 'simulator' : slug;
   const page = pages.find(item => item.dataset.page === slug) || pages[0];
   for (const item of pages) item.hidden = item !== page;
   for (const link of document.querySelectorAll('nav a')) {
-    if (link.hash === '#' + page.dataset.page) link.setAttribute('aria-current', 'page');
+    if (link.hash === '#' + navPage) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   }
   if (currentPage && currentPage !== page) window.scrollTo(0, 0);
   currentPage = page;
+  if (nestedBenchmark) openBenchmarkCase();
 }
 
 const judgeQuestions = {
@@ -23,6 +28,17 @@ const judgeQuestions = {
   repair: ['Which move makes the target visible again?',
     'Compare the two alternative panels below the base scene. Choose the move that leaves both parts of the reflected path clear.'],
 };
+
+function openBenchmarkCase() {
+  const id = location.hash.slice(1).split('/')[2];
+  if (!id) return;
+  const index = state.cases.findIndex(item => item.id === id);
+  if (index < 0) return;
+  by('kind').value = 'all';
+  state.items = state.cases;
+  state.index = index;
+  showCase();
+}
 
 function showCase() {
   const item = state.items[state.index];
@@ -55,6 +71,9 @@ function showCase() {
   state.selection = recorded ?? null;
   state.showRay = true;
   by('scene').src = item.image;
+  const labLink = by('benchmark-case-lab');
+  labLink.href = '#lab/benchmark/' + item.id;
+  labLink.hidden = !revealed;
   by('caseId').textContent = 'CASE ' + item.id;
   by('counter').textContent = (state.index + 1) + ' / ' + state.items.length;
   by('prev').disabled = state.index === 0;
@@ -105,6 +124,7 @@ function showCase() {
   by('toggle-ray').textContent = 'Hide ray path';
   by('result').textContent = '';
   by('answer-feedback').hidden = recorded === undefined;
+  by('case-scorecard').hidden = true;
   by('answer-feedback').dataset.outcome = revealed ? (recorded === item.answer ? 'correct' : 'incorrect') : 'pending';
   by('trace').hidden = true;
   by('ray').setAttribute('hidden', '');
@@ -133,6 +153,14 @@ function showCase() {
   by('ray').firstElementChild.setAttribute('points',
     [trace.camera, trace.bounce, trace.target].map(([x, y]) => (40 + x * 6) + ',' + (212 - y * 6)).join(' '));
   by('ray').removeAttribute('hidden');
+  const inline = by('case-scorecard');
+  if (recordedPilot?.models.some(model => model.rows.some(row => row.case === item.id))) {
+    renderScorecard(recordedPilot, item, recorded, false, inline, pairedFinding);
+    inline.hidden = false;
+  } else if (recordedPilot) {
+    inline.textContent = 'No recorded model answers for this case.';
+    inline.hidden = false;
+  }
 }
 
 function move(step) {
@@ -161,96 +189,150 @@ function segmentEntry([x, y], [u, v], [left, top, right, bottom]) {
 
 const defaults = { camera: 135, mirror: 335, block: 225, target: 555 };
 let trialActive = false;
-let trialPrediction = null;
-let savedLayout;
-let baseline;
-let currentBenchOutcome;
-const practiceCases = {
-  blocked: defaults,
-  clear: {...defaults, block: 85},
-  miss: {...defaults, mirror: 150, block: 85},
+const missions = {
+  easy: [
+    {name:'Dock inspection', layout:{...defaults}, obstacle:'Pallet A', blocks:[],
+      question:'Can the mirror camera inspect the marked carton?', choices:['Visible','Hidden']},
+    {name:'Dock inspection', layout:{...defaults, block:92}, obstacle:'Pallet A', blocks:[],
+      question:'Can the mirror camera inspect the marked carton?', choices:['Visible','Hidden']},
+  ],
+  medium: [
+    {name:'Warehouse aisle', layout:{...defaults}, obstacle:'Pallet A', blocks:[
+      {label:'Rack B', box:[415,174,465,218]}, {label:'Rack C', box:[87,241,141,272]}],
+      question:'Which obstacle stops the reflected path first?', choices:['Pallet A','Rack B','Rack C']},
+    {name:'Warehouse aisle', layout:{...defaults, block:92}, obstacle:'Pallet A', blocks:[
+      {label:'Rack B', box:[415,174,465,218]}, {label:'Rack C', box:[87,241,141,272]}],
+      question:'Which obstacle stops the reflected path first?', choices:['Pallet A','Rack B','Rack C']},
+  ],
+  hard: [
+    {name:'Inspection cell', layout:{...defaults, mirror:270}, obstacle:'Crate A', blocks:[
+      {label:'Rack B', box:[188,256,242,279]}, {label:'Rack C', box:[543,171,592,211]}],
+      question:'Which single change restores coverage of the inspection marker?',
+      actions:[{label:'Move crate A to staging', block:90}, {label:'Move rack B to staging', remove:'Rack B'},
+        {label:'Slide the mirror right', mirror:390}]},
+    {name:'Inspection cell', layout:{...defaults, block:92, mirror:230}, obstacle:'Crate A', blocks:[
+      {label:'Rack B', box:[188,256,242,279]}, {label:'Rack C', box:[543,171,592,211]}],
+      question:'Which single change restores coverage of the inspection marker?',
+      actions:[{label:'Move crate A to staging', block:90}, {label:'Move rack B to staging', remove:'Rack B'},
+        {label:'Slide the mirror right', mirror:390}]},
+  ],
 };
-const layoutValues = () => Object.fromEntries(Object.keys(defaults).map(key => [key, by(key).valueAsNumber]));
-function applyLayout(values) {
-  for (const [key,value] of Object.entries(values)) by(key).value = value;
-  simulate();
+let mission = null;
+let activeCasePath = null;
+const humanAnswers = new Map();
+const sites = {
+  dock: {name:'Loading dock', shift:0, target:'marked carton', decor:[[508,236,622,283]]},
+  warehouse: {name:'Warehouse aisle', shift:18, target:'end-of-aisle label', decor:[[25,110,60,284],[621,149,648,270]]},
+  cell: {name:'Inspection cell', shift:-18, target:'inspection marker', decor:[[95,233,155,284],[594,185,636,230]]},
+};
+let selectedSite = 'dock';
+
+
+function sceneFor(level, index, site = selectedSite) {
+  const location = sites[site];
+  const template = missions[level][index];
+  const shift = location.shift;
+  const offset = layout => Object.fromEntries(Object.entries(layout).map(([key,value]) => [key,value + shift]));
+  return {...template, name:location.name, layout:offset(template.layout),
+    question:template.question.replace(/marked carton|inspection marker/,location.target),
+    blocks:template.blocks.map(({label,box}) => ({label,box:box.map((value,axis) => value + (axis % 2 ? 0 : shift))})),
+    actions:template.actions?.map(({block,mirror,...action}) =>
+      ({...action,...(block === undefined ? {} : {block:block+shift}),...(mirror === undefined ? {} : {mirror:mirror+shift})})),
+  };
 }
 
-const objectNames = {camera:'Camera',mirror:'Mirror',block:'Obstacle',target:'Target'};
+let trialPrediction = null;
 
-function updateComparison(layout, outcome) {
-  currentBenchOutcome = outcome;
-  if (!baseline || trialActive) return;
-  const names = Object.keys(layout).filter(key => layout[key] !== baseline.layout[key])
-    .map(key => objectNames[key]);
-  by('comparison-readout').hidden = false;
-  by('baseline-outcome').textContent = baseline.outcome;
-  by('current-outcome').textContent = outcome;
-  const change = by('comparison-change');
-  change.hidden = false;
-  const text = names.length ? names.join(', ') + ' moved. ' + (outcome === baseline.outcome ?
-    'Coverage outcome stayed the same.' : 'Coverage outcome changed.') : 'The current layout matches the saved setup.';
-  if (change.textContent !== text) change.textContent = text;
-  change.dataset.changed = String(outcome !== baseline.outcome);
-  by('restore-baseline').disabled = !names.length;
-}
+let practiceLayout = defaults;
 
 function setTrial(active) {
   trialActive = active;
   trialPrediction = null;
   by('trial-actions').hidden = !active;
-  by('exit-trial').hidden = !active;
-  by('layout-controls').hidden = active;
-  by('generate-trial').hidden = active;
-  by('generate-trial').textContent = 'Start prediction challenge';
+  by('trial-submit').hidden = !active;
+  by('trial-submit').disabled = true;
+  by('mission-context').hidden = !active;
   by('trial-result').hidden = true;
   for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
-  for (const key of Object.keys(defaults)) by(key).disabled = active;
 }
+function traceBench(layout, blocks, obstacleName) {
+  const {camera, mirror, block, target:targetX} = layout;
+  const obstacles = [{label:obstacleName, box:[block,174,block+52,216]}, ...blocks];
+  return traceOptics([camera,95],[targetX,119],mirror,314,89,obstacles);
+}
+
+function traceOptics(source, target, mirror, plane, halfWidth, obstacles) {
+  const distance = plane - source[1];
+  const reflection = [source[0] + (target[0]-source[0])*distance/(2*plane-source[1]-target[1]),plane];
+  const inside = Math.abs(reflection[0] - mirror) <= halfWidth;
+  function closest(a, b) {
+    let first = null;
+    for (const {label, box} of obstacles) {
+      const entry = segmentEntry(a, b, box);
+      if (entry !== null && (!first || entry < first.entry)) first = {label, entry};
+    }
+    return first;
+  }
+  const first = closest(source, reflection);
+  const second = inside ? closest(reflection, target) : null;
+  return {source, target, mirror, plane, reflection, inside, obstacles, first, second,
+    clear:inside && !first && !second};
+}
+
+function validRepairs(scenario, layout) {
+  return scenario.actions?.filter(action =>
+    traceBench({...layout, ...action}, scenario.blocks.filter(item => item.label !== action.remove),
+      scenario.obstacle).clear);
+}
+
+function referenceAnswer(scenario, layout) {
+  if (scenario.actions) return validRepairs(scenario, layout)?.[0]?.label;
+  const trace = traceBench(layout, scenario.blocks, scenario.obstacle);
+  return scenario.choices.includes('Visible') ? (trace.clear ? 'Visible' : 'Hidden') : (trace.first ?? trace.second)?.label;
+}
+
 function simulate() {
-  const camera = by('camera').valueAsNumber;
-  const mirror = by('mirror').valueAsNumber;
-  const block = by('block').valueAsNumber;
-  const source = [camera, 95];
-  const target = [by('target').valueAsNumber, 119];
-  const plane = 314;
-  const reflection = [camera + (target[0] - camera) * (plane - source[1]) / (2 * plane - source[1] - target[1]), plane];
-  const inside = Math.abs(reflection[0] - mirror) <= 89;
-  const obstacle = [block, 174, block + 52, 216];
-  const firstHit = segmentEntry(source, reflection, obstacle);
-  const secondHit = inside ? segmentEntry(reflection, target, obstacle) : null;
-  const blocked = inside && (firstHit !== null || secondHit !== null);
+  if (window.setupBuilder.active) { window.setupBuilder.render(); return; }
+  const activeMission = trialActive ? mission : null;
+  const layout = practiceLayout;
+  const planned = activeMission ? validRepairs(activeMission, layout) : null;
+  const repair = trialPrediction === null ? null : planned?.[0];
+  const {source, target, mirror, plane, reflection, inside, obstacles, first, second, clear} =
+    traceBench({...layout, ...repair}, (activeMission?.blocks ?? []).filter(item => item.label !== repair?.remove),
+      activeMission?.obstacle ?? 'Obstacle');
+  const firstHit = first?.entry ?? null;
+  const secondHit = second?.entry ?? null;
+  const blocked = inside && !clear;
   const awaiting = trialActive && trialPrediction === null;
   const stopAt = (a, b, t) => a.map((value, axis) => value + (b[axis] - value) * t);
   const ray = firstHit !== null ? [source, stopAt(source, reflection, firstHit)] :
     !inside ? [source, reflection] : [source, reflection,
       secondHit === null ? target : stopAt(reflection, target, secondHit)];
-  window.opticsBench.draw({source, target, mirror, plane, obstacle, ray, reflection,
-    clear: inside && !blocked, awaiting, locked: trialActive});
-  by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Free exploration';
-  const outcome = blocked ? 'Obstructed' : !inside ? 'Mirror out of reach' : 'Visible';
-  const status = awaiting ? 'Will the target appear in the mirror?' :
+  window.opticsBench.draw({source, target, mirror, plane, obstacles, ray, reflection,
+    clear: inside && !blocked, awaiting, locked: trialActive, scene:selectedSite, decor:sites[selectedSite].decor});
+  by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Explore the setup';
+  const status = awaiting ? activeMission.question :
     firstHit !== null ? 'Coverage obstructed' : !inside ? 'Mirror misses the sightline' :
     blocked ? 'Coverage obstructed' : 'Target covered';
   if (by('coverage').textContent !== status) by('coverage').textContent = status;
   by('coverage').dataset.outcome = awaiting ? 'predict' : inside && !blocked ? 'clear' : 'blocked';
-  by('coverage-detail').textContent = awaiting ? 'The layout is locked. Rotate the view if you like, then pick an answer to reveal the ray.' :
-    firstHit !== null ? 'The obstacle stops the ray before it reaches the mirror.' :
+  by('coverage-detail').textContent = awaiting ? 'Choose an answer, then select Check answer to reveal the ray.' :
+    firstHit !== null ? first.label + ' stops the ray before it reaches the mirror.' :
     !inside ? 'The reflection point lies outside the mirror span.' :
-    blocked ? 'The obstacle stops the ray after it leaves the mirror.' :
+    blocked ? second.label + ' stops the reflected ray before it reaches the target.' :
     'The reflection point falls on the mirror and both path segments are clear.';
-  updateComparison(layoutValues(), firstHit !== null ? 'Obstructed' : outcome);
-  for (const key of Object.keys(defaults)) by(key + '-value').value = by(key).value;
-  if (!trialActive) by('bench-case').value = Object.entries(practiceCases).find(([,values]) =>
-    Object.entries(values).every(([key,value]) => by(key).valueAsNumber === value))?.[0] ?? 'custom';
   if (trialPrediction !== null) {
-    const expected = inside && !blocked ? 'visible' : 'blocked';
+    const expected = referenceAnswer(activeMission, layout);
     const result = by('trial-result');
     result.textContent = (trialPrediction === expected ? 'Correct. ' : 'Your prediction: ' + trialPrediction + '. ') +
-      'Reference outcome: ' + expected + '.';
-    by('trial-actions').hidden = true;
-    by('generate-trial').textContent = 'Try another layout';
-    by('generate-trial').hidden = false;
+      'Verified answer: ' + expected + '.' + (repair ? ' The scene shows that repair.' : '');
+    by('trial-submit').hidden = true;
+    result.dataset.grade = trialPrediction === expected ? 'correct' : 'wrong';
+    for (const button of by('trial-actions').children) {
+      const choice = button.dataset.trialAnswer;
+      button.disabled = true;
+      button.dataset.grade = choice === expected ? 'correct' : choice === trialPrediction ? 'wrong' : '';
+    }
     result.hidden = false;
   }
 }
@@ -312,53 +394,348 @@ function bindCases() {
 
 window.addEventListener('hashchange', route);
 route();
-for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
-by('generate-trial').addEventListener('click', () => {
-  if (!trialActive) savedLayout = layoutValues();
-  setTrial(true);
-  const camera = 100 + Math.floor(Math.random() * 101);
-  // Keep the reflection within the mirror; place the obstacle on or away from the incoming ray.
-  const bounce = camera + (555 - camera) * 219 / 414;
-  by('camera').value = camera;
-  by('target').value = defaults.target;
-  by('mirror').value = Math.round(bounce) + Math.floor(Math.random() * 49) - 24;
-  by('block').value = Math.random() < 0.5 ? 75 + Math.floor(Math.random() * 21) :
-    Math.round(camera + (bounce - camera) * 100 / 219 - 26);
+function openSimulation(fragment = location.hash.slice(1), inLab = false) {
+  const [page, site, level, number] = fragment.split('/');
+  if (!inLab && by('sim-viewport').parentElement !== by('sim-workspace')) {
+    by('sim-workspace').prepend(by('sim-viewport'));
+  }
+  if (page !== 'simulator' || site === 'benchmark') {
+    window.setupBuilder.activate(false);
+    return;
+  }
+  const index = Number(number) - 1;
+  const isCase = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
+    Number.isInteger(index) && index >= 0 && index < missions[level].length;
+  const isSandbox = site === 'sandbox';
+  window.setupBuilder.activate(isSandbox);
+  activeCasePath = isCase ? [site,level,number].join('/') : null;
+  const labLink = by('case-lab-link');
+  labLink.hidden = !isCase;
+  if (isCase) labLink.href = '#lab/' + activeCasePath;
+  by('sim-gallery').hidden = isCase || isSandbox;
+  by('sim-workspace').hidden = !isCase && !isSandbox;
+  if (!isCase && !isSandbox) return;
+  selectedSite = isCase ? site : 'dock';
+  by('bench-site-name').textContent = isCase ? sites[site].name : 'Explore the setup';
+  mission = isCase ? sceneFor(level, index) : null;
+  setTrial(isCase);
+  by('sim-workspace').classList.toggle('builder-workspace',isSandbox);
+  by('sim-workspace').querySelector('.bench-inspector').hidden = isSandbox;
+  by('bench-help').textContent = isSandbox ?
+    'Drag equipment to move it. Focus the scene and use arrow keys to nudge the selection. Hold Shift for larger steps.' :
+    'Drag to pan. Turn on Orbit drag to rotate. Use + and − to zoom.';
+  if (isCase) practiceLayout = mission.layout;
+  window.opticsBench.framePlan();
+  if (!isCase) return;
+  by('mission-context').textContent = mission.name + ' · ' + level + ' · Case ' + number;
+  const answers = by('trial-actions');
+  answers.replaceChildren();
+  for (const choice of mission.choices ?? mission.actions.map(action => action.label)) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = choice;
+    button.dataset.trialAnswer = choice;
+    button.setAttribute('aria-pressed','false');
+    button.addEventListener('click', () => {
+      for (const option of answers.children) option.setAttribute('aria-pressed', String(option === button));
+      by('trial-submit').disabled = false;
+    });
+    answers.append(button);
+  }
+  const savedChoice = humanAnswers.get(activeCasePath);
+  if (savedChoice) {
+    trialPrediction = savedChoice;
+    for (const option of answers.children) {
+      option.setAttribute('aria-pressed', String(option.dataset.trialAnswer === savedChoice));
+    }
+  }
   simulate();
-  document.querySelector('[data-trial-answer]').focus();
-});
-for (const button of document.querySelectorAll('[data-trial-answer]')) {
-  button.addEventListener('click', () => {
-    trialPrediction = button.dataset.trialAnswer;
-    for (const answer of document.querySelectorAll('[data-trial-answer]')) answer.disabled = true;
-    simulate();
+  if (!inLab) {
+    window.scrollTo(0, 0);
     by('coverage').focus({preventScroll:true});
-  });
+  }
 }
-by('exit-trial').addEventListener('click', () => {
-  setTrial(false);
-  applyLayout(savedLayout ?? defaults);
-  by('generate-trial').focus({preventScroll:true});
+
+by('trial-submit').addEventListener('click', () => {
+  trialPrediction = by('trial-actions').querySelector('[aria-pressed="true"]')?.dataset.trialAnswer;
+  if (!trialPrediction) return;
+  if (activeCasePath) humanAnswers.set(activeCasePath, trialPrediction);
+  simulate();
+  window.opticsBench.revealOrbit();
+  by('coverage').focus({preventScroll:true});
 });
-by('reset').addEventListener('click', () => {
-  setTrial(false);
-  applyLayout(defaults);
-});
-by('save-baseline').addEventListener('click', () => {
-  baseline = {layout:layoutValues(), outcome:currentBenchOutcome};
-  by('save-baseline').textContent = 'Replace saved setup';
-  updateComparison(baseline.layout, baseline.outcome);
-});
-by('restore-baseline').addEventListener('click', () => {
-  if (!baseline) return;
-  applyLayout(baseline.layout);
-  by('save-baseline').focus({preventScroll:true});
-});
-by('bench-case').addEventListener('change', event => {
-  const values = practiceCases[event.target.value];
-  if (values) applyLayout(values);
-});
+
+function pilotPrediction(row, scene) {
+  const letter = row.predicted.trim().toUpperCase();
+  return (/^[A-Z]$/.test(letter) ? scene.options[letter.charCodeAt(0)-65] : null) ?? 'Invalid response';
+}
+
+function pilotModelName(model) {
+  if (model.name === 'gpt-6-luna') return 'GPT-6 Luna';
+  if (model.name === 'Codex CLI') return 'OpenAI model (CLI pilot)';
+  return model.name;
+}
+
+function renderScorecard(pilot, scene, choice, practice, card = by('lab-models'), pairedChoice) {
+  card.replaceChildren();
+  const title = document.createElement('h3');
+  title.textContent = 'Case scorecard';
+  card.append(title);
+
+  function addRow(parent, label, answer, grade) {
+    const row = document.createElement('div');
+    row.className = 'lab-score-row';
+    const name = document.createElement('span');
+    name.textContent = label;
+    const response = document.createElement('span');
+    response.textContent = answer;
+    const status = document.createElement('strong');
+    status.className = 'lab-score-outcome';
+    if (grade !== undefined) {
+      status.dataset.grade = grade ? 'correct' : 'wrong';
+      status.textContent = grade ? '1/1 Correct' : '0/1 Incorrect';
+    }
+    row.append(name,response,status);
+    parent.append(row);
+  }
+
+  addRow(card,'Verified answer',scene.answer);
+  addRow(card,'Your answer',choice,choice === scene.answer);
+  const pairedScene = !practice && state.cases.find(item => item.pair === scene.pair && item.id !== scene.id);
+  if (pairedScene && pairedChoice !== undefined) {
+    const correct = choice === scene.answer && pairedChoice === pairedScene.answer;
+    addRow(card,'Your pair score',correct ? 'Both scenes correct' : 'At least one scene incorrect',correct);
+  }
+  const models = pilot?.models ?? [{name:'OpenAI model',provider:'openai',rows:[]},
+    {name:'Gemini 3 Flash Preview',provider:'gemini',rows:[]}];
+  for (const [index,model] of models.entries()) {
+    const brand = model.provider ?? (index === 0 ? 'openai' : 'gemini');
+    const group = document.createElement('section');
+    group.className = 'case-model';
+    const heading = document.createElement('h4');
+    heading.className = 'lab-score-name';
+    const mark = document.createElement('img');
+    mark.src = 'logo-' + brand + '.svg';
+    mark.alt = '';
+    mark.width = mark.height = 16;
+    mark.className = 'lab-brand lab-brand-' + brand;
+    heading.append(mark, pilotModelName(model));
+    group.append(heading);
+    const rows = practice ? [] : model.rows.filter(row => row.case === scene.id);
+    if (!rows.length) addRow(group,'Result','No recorded answer');
+    for (const row of rows) {
+      const answer = pilotPrediction(row,scene);
+      const label = row.mode === 'vision' ? 'With image' : 'Question only';
+      addRow(group,label,answer,answer === scene.answer);
+      const counterpart = pairedScene && model.rows.find(item => item.case === pairedScene.id && item.mode === row.mode);
+      if (counterpart) {
+        const correct = answer === scene.answer && pilotPrediction(counterpart,pairedScene) === pairedScene.answer;
+        const pairScore = document.createElement('p');
+        pairScore.className = 'case-pair-score';
+        pairScore.textContent = label + ' pair score · ' + (correct ? '1/1' : '0/1');
+        group.append(pairScore);
+      }
+    }
+    card.append(group);
+  }
+  if (practice || !pilot || card.id === 'case-scorecard') return;
+
+  const totals = document.createElement('div');
+  totals.className = 'lab-pilot-totals';
+  const heading = document.createElement('h3');
+  heading.textContent = 'Recorded pilot totals';
+  totals.append(heading);
+  for (const model of models) {
+    const line = document.createElement('p');
+    const measures = [];
+    for (const [mode,label] of [['vision','Vision'],['question-only','Question only']]) {
+      const scored = model.rows.filter(row => row.mode === mode).flatMap(row => {
+        const item = state.cases.find(c => c.id === row.case);
+        return item ? [{pair:item.pair, correct:pilotPrediction(row,item) === item.answer}] : [];
+      });
+      const pairs = new Map();
+      for (const item of scored) {
+        if (!pairs.has(item.pair)) pairs.set(item.pair,[]);
+        pairs.get(item.pair).push(item.correct);
+      }
+      const complete = [...pairs.values()].filter(members => members.length === 2);
+      measures.push(label + ' ' + scored.filter(item => item.correct).length + '/' + scored.length +
+        ' · pairs ' + complete.filter(members => members.every(Boolean)).length + '/' + complete.length);
+    }
+    line.textContent = pilotModelName(model) +
+      ' — ' + measures.join(' | ');
+    totals.append(line);
+  }
+  card.append(totals);
+  const members = state.cases.filter(item => item.pair === scene.pair);
+  const comparison = document.createElement('details');
+  comparison.className = 'lab-pair-evidence';
+  const summary = document.createElement('summary');
+  summary.textContent = 'Inspect both diagrams and model answers';
+  comparison.append(summary);
+  for (const member of members) {
+    const figure = document.createElement('figure');
+    const image = document.createElement('img');
+    image.src = member.image;
+    image.alt = 'Exact benchmark diagram ' + member.id;
+    const caption = document.createElement('figcaption');
+    const answers = models.flatMap(model => {
+      const row = model.rows.find(r => r.case === member.id && r.mode === 'vision');
+      return row ? [pilotModelName(model) + ': ' + pilotPrediction(row,member)] : [];
+    });
+    caption.textContent = member.id + ' · Verified: ' + member.answer + (answers.length ? ' · ' + answers.join(' · ') : '');
+    figure.append(image,caption);
+    comparison.append(figure);
+  }
+  card.append(comparison);
+}
+
+function buildLab(pilot) {
+  const covered = new Set(pilot?.models.flatMap(model => model.rows.map(row => row.case)) ?? []);
+  if (covered.size) {
+    const picker = by('lab-picker');
+    picker.replaceChildren();
+    for (const item of state.cases.filter(item => covered.has(item.id))) {
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = item.id + ' · Scene ' + (item.id.endsWith('-0') ? 'A' : 'B');
+      picker.append(option);
+    }
+  }
+  function renderLab() {
+    const [page,site,level,number] = location.hash.slice(1).split('/');
+    if (page !== 'lab') return;
+    const index = Number(number) - 1;
+    const practice = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
+      Number.isInteger(index) && index >= 0 && index < missions[level].length;
+    const casePath = practice ? [site,level,number].join('/') : null;
+    const benchmarkId = site === 'benchmark' ? level : null;
+    let scene = state.cases.find(item => item.id === (benchmarkId ?? by('lab-picker').value));
+    const preview = by('lab-preview');
+    preview.hidden = !practice;
+    by('lab-image').hidden = practice;
+    by('lab-picker').hidden = practice || Boolean(benchmarkId);
+    by('lab-picker-label').hidden = practice || Boolean(benchmarkId);
+    by('lab-back').hidden = !practice && !benchmarkId;
+    by('lab-benchmark-link').hidden = !practice;
+    by('lab-intro').textContent = practice ?
+      'Check your answer against the simulated sightline.' :
+      'Answer the question, then compare your result with the recorded model answers.';
+    by('lab-scope').textContent = practice ? 'Practice case. No model results have been recorded for this scene.' :
+      covered.size ? 'Recorded pilot covers ' + covered.size + ' scenes. The full benchmark run is incomplete.' : 'No verified pilot results are available.';
+    if (practice) {
+      const scenario = sceneFor(level,index,site);
+      scene = {id:casePath, question:scenario.question, options:scenario.choices ?? scenario.actions.map(action => action.label),
+        answer:referenceAnswer(scenario,scenario.layout)};
+      openSimulation('simulator/' + casePath,true);
+      preview.append(by('sim-viewport'));
+      by('lab-back').href = '#simulator/' + casePath;
+      by('lab-case').textContent = scenario.name + ' · ' + level + ' · Case ' + number;
+    } else if (scene) {
+      if (benchmarkId) by('lab-back').href = '#simulator/benchmark/' + scene.id;
+      by('lab-image').src = scene.image;
+      by('lab-case').textContent = scene.id + ' · Frozen benchmark v4';
+    }
+    if (!scene) return;
+    by('lab-question').textContent = scene.question;
+    by('lab-verdict').hidden = true;
+    by('lab-models').hidden = true;
+    const options = by('lab-choices');
+    options.replaceChildren();
+    for (const choice of scene.options) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = choice;
+      button.addEventListener('click', () => {
+        if (casePath) {
+          humanAnswers.set(casePath, choice);
+          trialPrediction = choice;
+          simulate();
+        }
+        const verdict = by('lab-verdict');
+        verdict.dataset.grade = choice === scene.answer ? 'correct' : 'wrong';
+        verdict.textContent = (choice === scene.answer ? 'Correct. ' : 'Your answer: ' + choice + '. ') +
+          'Verified answer: ' + scene.answer + '.';
+        verdict.hidden = false;
+        for (const option of options.children) {
+          option.disabled = true;
+          option.dataset.grade = option.textContent === scene.answer ? 'correct' : option === button ? 'wrong' : '';
+        }
+        const other = state.cases.find(item => item.pair === scene.pair && item.id !== scene.id);
+        renderScorecard(pilot,scene,choice,practice,by('lab-models'),
+          benchmarkId && other ? state.findings[state.mode].get(other.id) : undefined);
+        by('lab-models').hidden = false;
+      });
+      options.append(button);
+    }
+    const saved = casePath ? humanAnswers.get(casePath) : benchmarkId ? state.findings[state.mode].get(scene.id) : undefined;
+    if (saved) [...options.children].find(button => button.textContent === saved)?.click();
+  }
+  window.addEventListener('hashchange', renderLab);
+  by('lab-picker').addEventListener('change', renderLab);
+  renderLab();
+}
+
+function buildSimulationGallery() {
+  const titles = {easy:'Check visibility', medium:'Find the first obstruction', hard:'Restore coverage'};
+  for (const [site, location] of Object.entries(sites)) {
+    const group = document.createElement('section');
+    const heading = document.createElement('h2');
+    heading.textContent = location.name;
+    const cards = document.createElement('div');
+    cards.className = 'sim-post-grid';
+    selectedSite = site;
+    for (const [level, cases] of Object.entries(missions)) {
+      for (const index of cases.keys()) {
+        const scenario = sceneFor(level, index);
+        const trace = traceBench(scenario.layout, scenario.blocks, scenario.obstacle);
+        const link = document.createElement('a');
+        link.className = 'sim-post';
+        link.dataset.practiceLevel = level;
+        link.href = '#simulator/' + site + '/' + level + '/' + (index + 1);
+        link.append(window.opticsBench.preview(trace, site, location.decor));
+        const caption = document.createElement('div');
+        const tag = document.createElement('span');
+        tag.textContent = level + ' · Case ' + (index + 1);
+        const title = document.createElement('strong');
+        title.textContent = titles[level];
+        caption.append(tag, title);
+        link.append(caption);
+        cards.append(link);
+      }
+    }
+    group.dataset.practiceSite = site;
+    group.append(heading,cards);
+    by('sim-posts').append(group);
+    const landingGroup = group.cloneNode(true);
+    for (const [index, canvas] of [...landingGroup.querySelectorAll('canvas')].entries()) {
+      canvas.getContext('2d').drawImage(cards.children[index].firstElementChild, 0, 0);
+    }
+    by('landing-sim-posts').append(landingGroup);
+  }
+  selectedSite = 'dock';
+}
+function filterPractice() {
+  let count = 0;
+  for (const group of by('sim-posts').children) {
+    let visible = 0;
+    for (const card of group.querySelectorAll('[data-practice-level]')) {
+      card.hidden = (by('practice-site').value !== 'all' && by('practice-site').value !== group.dataset.practiceSite) ||
+        (by('practice-level').value !== 'all' && by('practice-level').value !== card.dataset.practiceLevel);
+      if (!card.hidden) visible++;
+    }
+    group.hidden = visible === 0;
+    count += visible;
+  }
+  by('practice-count').textContent = count + (count === 1 ? ' case' : ' cases');
+}
+by('practice-site').addEventListener('change',filterPractice);
+by('practice-level').addEventListener('change',filterPractice);
+window.setupBuilder.bind(traceOptics);
 window.opticsBench.bind(simulate);
+buildSimulationGallery();
+openSimulation();
+window.addEventListener('hashchange', () => openSimulation());
 simulate();
 
 fetch('cases.json').then(response => {
@@ -382,8 +759,43 @@ fetch('cases.json').then(response => {
     by('landing-' + id + '-caption').textContent = 'Scene ' + id.toUpperCase() + ' · ' + pair[i].answer;
   }
   bindCases();
+  for (const [type,label] of [['visibility','Check visibility'],['blocker','Find the first obstruction'],['repair','Restore coverage']]) {
+    const item = cases.find(candidate => candidate.type === type);
+    const link = document.createElement('a');
+    link.className = 'sim-post featured-case';
+    link.href = '#simulator/benchmark/' + item.id;
+    const image = document.createElement('img');
+    image.src = item.image;
+    image.alt = '';
+    const caption = document.createElement('div');
+    const title = document.createElement('strong');
+    title.textContent = label;
+    const detail = document.createElement('p');
+    detail.textContent = judgeQuestions[type][0];
+    const badge = document.createElement('span');
+    badge.className = 'featured-results';
+    badge.textContent = 'Scored benchmark pair';
+    caption.append(title,detail,badge);
+    link.append(image,caption);
+    by('sim-featured').append(link);
+    by('landing-featured').append(link.cloneNode(true));
+  }
+  openBenchmarkCase();
   showCase();
   void loadReports(digest);
+  void Promise.all([digest, fetch('lab-pilot.json').then(response => response.json())])
+    .then(([hash, pilot]) => {
+      recordedPilot = hash && hash === pilot.dataset ? pilot : null;
+      buildLab(recordedPilot);
+      showCase();
+      const coverage = recordedPilot ? new Set(recordedPilot.models.flatMap(model => model.rows.map(row => row.case))) : new Set();
+      for (const link of document.querySelectorAll('.featured-case')) {
+        const badge = link.querySelector('.featured-results');
+        badge.textContent = coverage.has(link.hash.split('/').at(-1)) ? 'Model results available' : 'No recorded model answers';
+      }
+      if (coverage.size) by('benchmark-pilot-count').textContent = coverage.size + ' scenes with recorded pilot answers';
+    })
+    .catch(() => buildLab(null));
 }).catch(() => {
   by('prompt').textContent = 'The synthetic dataset could not be loaded.';
 });
@@ -491,7 +903,7 @@ async function loadReports(digest) {
       const hex = await digest;
       if (!hex || hex !== report.dataset) throw new Error('Reports belong to another dataset');
     }
-    const status = report.reports.length ? report.reports.length + ' recorded model configurations on this dataset.' : 'Model evaluation pending. Scores appear here after the frozen dataset is run.';
+    const status = report.reports.length ? report.reports.length + ' recorded model configurations on this dataset.' : 'No complete benchmark runs yet.';
     by('report-status').textContent = status;
     by('score-table').hidden = !report.reports.length;
     for (const run of report.reports) {
