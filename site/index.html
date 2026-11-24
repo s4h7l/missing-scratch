@@ -73,12 +73,12 @@
 <div class="simulator-heading">
 <h1 class="page-title">Inspection simulator</h1><a class="secondary" href="#overview">← Back to overview</a>
 </div>
-<section class="sim-sites" aria-label="Choose an inspection site">
-<button type="button" data-site="dock" aria-pressed="true"><strong>Loading dock</strong><span>Incoming freight</span></button>
-<button type="button" data-site="warehouse" aria-pressed="false"><strong>Warehouse aisle</strong><span>Storage and traffic</span></button>
-<button type="button" data-site="cell" aria-pressed="false"><strong>Inspection cell</strong><span>Production line</span></button>
-</section>
-<div class="workspace"><div class="panel viewport"><div class="bar"><div><i></i> <span id="bench-site-name">Loading dock</span></div><button id="bench-fullscreen" type="button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="fullscreen-label">Expand fullscreen</span></button></div>
+<div id="sim-gallery">
+<p class="lead">Choose a case to open its inspection scene.</p>
+<div id="sim-posts"></div>
+<a class="secondary" href="#simulator/sandbox">Open the free-explore bench</a>
+</div>
+<div class="workspace" id="sim-workspace" hidden><div class="panel viewport"><div class="bar"><div><i></i> <span id="bench-site-name">Loading dock</span></div><button id="bench-fullscreen" type="button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="fullscreen-label">Expand fullscreen</span></button></div>
 <div class="sim-view"><span class="bench-view-tag" id="bench-view-tag">3D view</span><svg id="layout" viewBox="0 0 760 410" role="img" tabindex="0" aria-label="Optical bench" aria-describedby="bench-help">
 <defs>
 <linearGradient id="bench-rail" x2="100%" y2="100%"><stop stop-color="#566275"/><stop offset="1" stop-color="#1d2736"/></linearGradient>
@@ -105,12 +105,8 @@
 <aside class="panel inspector bench-inspector">
 <div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p><span class="control-label">Inspection station</span></div>
 <h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
-<div class="mission-picker">
-<label for="mission-level">Challenge difficulty</label>
-<select id="mission-level"><option value="easy">Easy · Visibility</option><option value="medium">Medium · First obstruction</option><option value="hard">Hard · Restore coverage</option></select>
 <p id="mission-context" class="detail" hidden></p>
-</div>
-<div class="tool-row"><button id="generate-trial" class="primary" type="button">Start inspection</button><button id="exit-trial" type="button" hidden>Back to free explore</button></div>
+<a class="secondary sim-return" href="#simulator">Back to case gallery</a>
 <div id="trial-actions" class="mission-answers" role="group" aria-label="Submit your inspection decision" hidden></div>
 <p id="trial-result" class="finding" role="status" hidden></p>
 <div id="layout-controls">

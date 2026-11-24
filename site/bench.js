@@ -67,7 +67,14 @@
       element('ellipse',{cx:lx,cy:ly,rx:11,ry:7,fill:'#142333',stroke:'#a4bed6','stroke-width':2},group);
       element('ellipse',{cx:lx,cy:ly,rx:5,ry:3,fill:'#6bcdef'},group);
     }
-    if (view.tilt > 0 && id.startsWith('block')) {
+    if (view.tilt > 0 && id.startsWith('block-')) {
+      for (const fraction of [.18,.45,.72]) {
+        const [x1,y1] = point([x,v],height*fraction);
+        const [x2,y2] = point([u,v],height*fraction);
+        element('line',{x1,y1,x2,y2,stroke:'#b2c0cd','stroke-width':3},group);
+      }
+    }
+    if (view.tilt > 0 && id === 'block') {
       const packages = [[a, b, c, d], [[x+3,y+4],[u-3,y+4],[u-3,v-4],[x+3,v-4]]];
       polygon(packages[0], '#523922', group, height-8);
       polygon(packages[1], palette[0], group, height);
@@ -274,7 +281,7 @@
     if (event.key === 'Escape' && page.classList.contains('bench-fallback-full')) void closeFullscreen();
   });
   addEventListener('hashchange',() => {
-    if (location.hash !== '#simulator' && open()) void closeFullscreen();
+    if (open()) void closeFullscreen();
   });
 
   function framePlan() {
@@ -299,5 +306,46 @@
     orbitFrame = requestAnimationFrame(step);
   }
 
-  window.opticsBench = {draw, bind, framePlan, revealOrbit};
+  function preview(trace, scene, decor) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 384;
+    canvas.setAttribute('aria-hidden','true');
+    const ctx = canvas.getContext('2d');
+    const backdrop = ctx.createLinearGradient(0, 0, 600, 384);
+    backdrop.addColorStop(0, '#243847');
+    backdrop.addColorStop(1, '#0c1824');
+    ctx.fillStyle = backdrop;
+    ctx.fillRect(0, 0, 600, 384);
+    const project = (x,y,z=0) => [42 + .69*x + .16*y, 64 + .53*y - .12*x - .8*z];
+    const face = (points,color) => {
+      ctx.beginPath();
+      for(const [x,y,z] of points) ctx.lineTo(...project(x,y,z));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    };
+    const box = ([x,y,u,v],h,[top,front,side]) => {
+      face([[x,v,0],[u,v,0],[u,v,h],[x,v,h]],front);
+      face([[u,y,0],[u,v,0],[u,v,h],[u,y,h]],side);
+      face([[x,y,h],[u,y,h],[u,v,h],[x,v,h]],top);
+    };
+    const floors = {dock:'#617063',warehouse:'#516c82',cell:'#6b6578'};
+    box([12,50,670,355],4,[floors[scene],'#182932','#293c4a']);
+    for (const stripe of decor) box(stripe,3,['#9b8969','#786344','#574733']);
+    const [cx,cy] = trace.source;
+    const [tx,ty] = trace.target;
+    const parts = [
+      [[cx-20,cy-14,cx+20,cy+14],36,['#c8e5f4','#3a7898','#214e65']],
+      [[tx-18,ty-14,tx+18,ty+14],22,['#dcee9b','#72924d','#495c2e']],
+      [[trace.mirror-89,trace.plane,trace.mirror+89,trace.plane+11],45,['#d2fffb','#559e9b','#346a78']],
+      ...trace.obstacles.map(({box:bounds},index)=>[bounds,48+index*5,index ?
+        ['#9eaeb4','#556e7d','#384a5b'] : ['#dca774','#926541','#66452f']]),
+    ];
+    parts.sort((a,b)=>project(a[0][2],a[0][3])[1]-project(b[0][2],b[0][3])[1]);
+    for(const part of parts) box(...part);
+    return canvas;
+  }
+
+  window.opticsBench = {draw, bind, framePlan, revealOrbit, preview};
 })();

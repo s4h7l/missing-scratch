@@ -30,7 +30,7 @@ python3 -m scratch.verify_release
 docker compose up --build
 ```
 
-Open [the local playground](http://127.0.0.1:8000/#inspection). Predict both scenes, reveal the verified ray, or open the simulator and choose a loading dock, warehouse aisle, or inspection cell. Each site offers visibility, first-obstruction, and repair practice. The simulator reveals a laser-style ray that stops at the first obstruction. Its equipment is illustrated and its practice cases are separate from benchmark evaluation. The frozen `datasets/v4/` directory is the source for comparable model runs.
+Open [the local playground](http://127.0.0.1:8000/#inspection). Predict both scenes, reveal the verified ray, or open the simulator and choose a loading dock, warehouse aisle, or inspection cell. Each site offers visibility, first-obstruction, and repair practice. Every case has its own direct link, such as the [first loading-dock case](http://127.0.0.1:8000/#simulator/dock/easy/1). The simulator reveals a laser-style ray that stops at the first obstruction. Its equipment is illustrated and its practice cases are separate from benchmark evaluation. The frozen `datasets/v4/` directory is the source for comparable model runs.
 
 For generation and tests without Docker:
 

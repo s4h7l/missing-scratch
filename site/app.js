@@ -4,7 +4,7 @@ const pages = [...document.querySelectorAll('[data-page]')];
 let currentPage;
 
 function route() {
-  const slug = location.hash.slice(1);
+  const [slug] = location.hash.slice(1).split('/');
   const page = pages.find(item => item.dataset.page === slug) || pages[0];
   for (const item of pages) item.hidden = item !== page;
   for (const link of document.querySelectorAll('nav a')) {
@@ -196,7 +196,7 @@ const sites = {
   cell: {name:'Inspection cell', shift:-18, target:'inspection marker', decor:[[95,233,155,284],[594,185,636,230]]},
 };
 let selectedSite = 'dock';
-const nextMission = new Map();
+
 
 function sceneFor(level, index) {
   const location = sites[selectedSite];
@@ -212,7 +212,7 @@ function sceneFor(level, index) {
 }
 
 let trialPrediction = null;
-let savedLayout;
+
 let baseline;
 let currentBenchOutcome;
 const practiceCases = {
@@ -250,11 +250,7 @@ function setTrial(active) {
   trialPrediction = null;
   by('trial-actions').hidden = !active;
   by('mission-context').hidden = !active;
-  by('mission-level').disabled = active;
-  by('exit-trial').hidden = !active;
   by('layout-controls').hidden = active;
-  by('generate-trial').hidden = active;
-  by('generate-trial').textContent = 'Start inspection';
   by('trial-result').hidden = true;
   for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
   for (const key of Object.keys(defaults)) by(key).disabled = active;
@@ -326,8 +322,6 @@ function simulate() {
     result.textContent = (trialPrediction === expected ? 'Correct. ' : 'Your prediction: ' + trialPrediction + '. ') +
       'Verified answer: ' + expected + '.' + (repair ? ' The scene shows that repair.' : '');
     by('trial-actions').hidden = true;
-    by('generate-trial').textContent = 'Try another layout';
-    by('generate-trial').hidden = false;
     result.hidden = false;
   }
 }
@@ -390,33 +384,26 @@ function bindCases() {
 window.addEventListener('hashchange', route);
 route();
 for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
-const siteButtons = [...document.querySelectorAll('[data-site]')];
-for (const button of siteButtons) button.addEventListener('click', () => {
-  if (selectedSite === button.dataset.site) return;
-  selectedSite = button.dataset.site;
-  for (const item of siteButtons) item.setAttribute('aria-pressed', String(item === button));
-  by('bench-site-name').textContent = sites[selectedSite].name;
-  setTrial(false);
-  savedLayout = undefined;
-  baseline = undefined;
-  by('comparison-readout').hidden = true;
-  by('comparison-change').hidden = true;
-  by('save-baseline').textContent = 'Save setup';
-  by('restore-baseline').disabled = true;
+function openSimulation() {
+  const [page, site, level, number] = location.hash.slice(1).split('/');
+  if (page !== 'simulator') return;
+  const index = Number(number) - 1;
+  const isCase = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
+    Number.isInteger(index) && index >= 0 && index < missions[level].length;
+  const isSandbox = site === 'sandbox';
+  by('sim-gallery').hidden = isCase || isSandbox;
+  by('sim-workspace').hidden = !isCase && !isSandbox;
+  if (!isCase && !isSandbox) return;
+  selectedSite = isCase ? site : 'dock';
+  by('bench-site-name').textContent = isCase ? sites[site].name : 'Free exploration';
+  mission = isCase ? sceneFor(level, index) : null;
+  setTrial(isCase);
   window.opticsBench.framePlan();
-  applyLayout(sceneFor('easy', 0).layout);
-});
-by('generate-trial').addEventListener('click', () => {
-  if (!trialActive) savedLayout = layoutValues();
-  const level = by('mission-level').value;
-  const pool = missions[level];
-  const group = selectedSite + '/' + level;
-  const count = nextMission.get(group) ?? 0;
-  const index = count % pool.length;
-  nextMission.set(group, count + 1);
-  mission = sceneFor(level, index);
-  window.opticsBench.framePlan();
-  by('mission-context').textContent = mission.name + ' · Case ' + (index + 1) + ' of ' + pool.length;
+  if (!isCase) {
+    applyLayout(defaults);
+    return;
+  }
+  by('mission-context').textContent = mission.name + ' · ' + level + ' · Case ' + number;
   const answers = by('trial-actions');
   answers.replaceChildren();
   for (const choice of mission.choices ?? mission.actions.map(action => action.label)) {
@@ -432,15 +419,43 @@ by('generate-trial').addEventListener('click', () => {
     });
     answers.append(button);
   }
-  setTrial(true);
   applyLayout(mission.layout);
-  answers.firstElementChild.focus();
-});
-by('exit-trial').addEventListener('click', () => {
-  setTrial(false);
-  applyLayout(savedLayout ?? defaults);
-  by('generate-trial').focus({preventScroll:true});
-});
+  window.scrollTo(0, 0);
+  by('coverage').focus({preventScroll:true});
+}
+
+function buildSimulationGallery() {
+  const titles = {easy:'Check visibility', medium:'Find the first obstruction', hard:'Restore coverage'};
+  for (const [site, location] of Object.entries(sites)) {
+    const group = document.createElement('section');
+    const heading = document.createElement('h2');
+    heading.textContent = location.name;
+    const cards = document.createElement('div');
+    cards.className = 'sim-post-grid';
+    selectedSite = site;
+    for (const [level, cases] of Object.entries(missions)) {
+      for (const index of cases.keys()) {
+        const scenario = sceneFor(level, index);
+        const trace = traceBench(scenario.layout, scenario.blocks, scenario.obstacle);
+        const link = document.createElement('a');
+        link.className = 'sim-post';
+        link.href = '#simulator/' + site + '/' + level + '/' + (index + 1);
+        link.append(window.opticsBench.preview(trace, site, location.decor));
+        const caption = document.createElement('div');
+        const tag = document.createElement('span');
+        tag.textContent = level + ' · Case ' + (index + 1);
+        const title = document.createElement('strong');
+        title.textContent = titles[level];
+        caption.append(tag, title);
+        link.append(caption);
+        cards.append(link);
+      }
+    }
+    group.append(heading,cards);
+    by('sim-posts').append(group);
+  }
+  selectedSite = 'dock';
+}
 by('reset').addEventListener('click', () => {
   setTrial(false);
   applyLayout(defaults);
@@ -460,6 +475,9 @@ by('bench-case').addEventListener('change', event => {
   if (values) applyLayout(values);
 });
 window.opticsBench.bind(simulate);
+buildSimulationGallery();
+openSimulation();
+window.addEventListener('hashchange', openSimulation);
 simulate();
 
 fetch('cases.json').then(response => {
