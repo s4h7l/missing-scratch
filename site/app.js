@@ -161,6 +161,36 @@ function segmentEntry([x, y], [u, v], [left, top, right, bottom]) {
 
 const defaults = { camera: 135, mirror: 335, block: 225, target: 555 };
 let trialActive = false;
+const missions = {
+  easy: [
+    {name:'Dock inspection', layout:{...defaults}, obstacle:'Pallet A', blocks:[],
+      question:'Can the mirror camera inspect the marked carton?', choices:['Visible','Hidden']},
+    {name:'Dock inspection', layout:{...defaults, block:85}, obstacle:'Pallet A', blocks:[],
+      question:'Can the mirror camera inspect the marked carton?', choices:['Visible','Hidden']},
+  ],
+  medium: [
+    {name:'Warehouse aisle', layout:{...defaults}, obstacle:'Pallet A', blocks:[
+      {label:'Rack B', box:[415,174,465,218]}, {label:'Rack C', box:[87,241,141,272]}],
+      question:'Which obstacle stops the reflected path first?', choices:['Pallet A','Rack B','Rack C']},
+    {name:'Warehouse aisle', layout:{...defaults, block:85}, obstacle:'Pallet A', blocks:[
+      {label:'Rack B', box:[415,174,465,218]}, {label:'Rack C', box:[87,241,141,272]}],
+      question:'Which obstacle stops the reflected path first?', choices:['Pallet A','Rack B','Rack C']},
+  ],
+  hard: [
+    {name:'Inspection cell', layout:{...defaults, mirror:270}, obstacle:'Crate A', blocks:[
+      {label:'Rack B', box:[188,256,242,279]}, {label:'Rack C', box:[543,171,592,211]}],
+      question:'Which single change restores coverage of the inspection marker?',
+      actions:[{label:'Move crate A to staging', block:75}, {label:'Move rack B to staging', remove:'Rack B'},
+        {label:'Slide the mirror right', mirror:390}]},
+    {name:'Inspection cell', layout:{...defaults, block:80, mirror:230}, obstacle:'Crate A', blocks:[
+      {label:'Rack B', box:[188,256,242,279]}, {label:'Rack C', box:[543,171,592,211]}],
+      question:'Which single change restores coverage of the inspection marker?',
+      actions:[{label:'Move crate A to staging', block:75}, {label:'Move rack B to staging', remove:'Rack B'},
+        {label:'Slide the mirror right', mirror:390}]},
+  ],
+};
+let mission = null;
+const nextMission = {easy:0, medium:0, hard:0};
 let trialPrediction = null;
 let savedLayout;
 let baseline;
@@ -199,6 +229,8 @@ function setTrial(active) {
   trialActive = active;
   trialPrediction = null;
   by('trial-actions').hidden = !active;
+  by('mission-context').hidden = !active;
+  by('mission-level').disabled = active;
   by('exit-trial').hidden = !active;
   by('layout-controls').hidden = active;
   by('generate-trial').hidden = active;
@@ -207,47 +239,72 @@ function setTrial(active) {
   for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
   for (const key of Object.keys(defaults)) by(key).disabled = active;
 }
-function simulate() {
-  const camera = by('camera').valueAsNumber;
-  const mirror = by('mirror').valueAsNumber;
-  const block = by('block').valueAsNumber;
+function traceBench(layout, blocks, obstacleName) {
+  const {camera, mirror, block, target:targetX} = layout;
   const source = [camera, 95];
-  const target = [by('target').valueAsNumber, 119];
+  const target = [targetX, 119];
   const plane = 314;
-  const reflection = [camera + (target[0] - camera) * (plane - source[1]) / (2 * plane - source[1] - target[1]), plane];
+  const reflection = [camera + (targetX - camera) * (plane - source[1]) /
+    (2 * plane - source[1] - target[1]), plane];
   const inside = Math.abs(reflection[0] - mirror) <= 89;
   const obstacle = [block, 174, block + 52, 216];
-  const firstHit = segmentEntry(source, reflection, obstacle);
-  const secondHit = inside ? segmentEntry(reflection, target, obstacle) : null;
-  const blocked = inside && (firstHit !== null || secondHit !== null);
+  const obstacles = [{label:obstacleName, box:obstacle}, ...blocks];
+  function closest(a, b) {
+    let first = null;
+    for (const {label, box} of obstacles) {
+      const entry = segmentEntry(a, b, box);
+      if (entry !== null && (!first || entry < first.entry)) first = {label, entry};
+    }
+    return first;
+  }
+  const first = closest(source, reflection);
+  const second = inside ? closest(reflection, target) : null;
+  return {source, target, mirror, plane, reflection, inside, obstacles, first, second,
+    clear:inside && !first && !second};
+}
+
+function simulate() {
+  const activeMission = trialActive ? mission : null;
+  const layout = layoutValues();
+  const planned = activeMission?.actions?.filter(action =>
+    traceBench({...layout, ...action}, activeMission.blocks.filter(item => item.label !== action.remove),
+      activeMission.obstacle).clear);
+  const repair = trialPrediction === null ? null : planned?.[0];
+  const {source, target, mirror, plane, reflection, inside, obstacles, first, second, clear} =
+    traceBench({...layout, ...repair}, (activeMission?.blocks ?? []).filter(item => item.label !== repair?.remove),
+      activeMission?.obstacle ?? 'Obstacle');
+  const firstHit = first?.entry ?? null;
+  const secondHit = second?.entry ?? null;
+  const blocked = inside && !clear;
   const awaiting = trialActive && trialPrediction === null;
   const stopAt = (a, b, t) => a.map((value, axis) => value + (b[axis] - value) * t);
   const ray = firstHit !== null ? [source, stopAt(source, reflection, firstHit)] :
     !inside ? [source, reflection] : [source, reflection,
       secondHit === null ? target : stopAt(reflection, target, secondHit)];
-  window.opticsBench.draw({source, target, mirror, plane, obstacle, ray, reflection,
+  window.opticsBench.draw({source, target, mirror, plane, obstacles, ray, reflection,
     clear: inside && !blocked, awaiting, locked: trialActive});
   by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Free exploration';
   const outcome = blocked ? 'Obstructed' : !inside ? 'Mirror out of reach' : 'Visible';
-  const status = awaiting ? 'Will the target appear in the mirror?' :
+  const status = awaiting ? activeMission.question :
     firstHit !== null ? 'Coverage obstructed' : !inside ? 'Mirror misses the sightline' :
     blocked ? 'Coverage obstructed' : 'Target covered';
   if (by('coverage').textContent !== status) by('coverage').textContent = status;
   by('coverage').dataset.outcome = awaiting ? 'predict' : inside && !blocked ? 'clear' : 'blocked';
   by('coverage-detail').textContent = awaiting ? 'The layout is locked. Rotate the view if you like, then pick an answer to reveal the ray.' :
-    firstHit !== null ? 'The obstacle stops the ray before it reaches the mirror.' :
+    firstHit !== null ? first.label + ' stops the ray before it reaches the mirror.' :
     !inside ? 'The reflection point lies outside the mirror span.' :
-    blocked ? 'The obstacle stops the ray after it leaves the mirror.' :
+    blocked ? second.label + ' stops the reflected ray before it reaches the target.' :
     'The reflection point falls on the mirror and both path segments are clear.';
   updateComparison(layoutValues(), firstHit !== null ? 'Obstructed' : outcome);
   for (const key of Object.keys(defaults)) by(key + '-value').value = by(key).value;
   if (!trialActive) by('bench-case').value = Object.entries(practiceCases).find(([,values]) =>
     Object.entries(values).every(([key,value]) => by(key).valueAsNumber === value))?.[0] ?? 'custom';
   if (trialPrediction !== null) {
-    const expected = inside && !blocked ? 'visible' : 'blocked';
+    const expected = repair?.label ?? (activeMission?.choices.includes('Visible') ?
+      (clear ? 'Visible' : 'Hidden') : (first ?? second)?.label);
     const result = by('trial-result');
     result.textContent = (trialPrediction === expected ? 'Correct. ' : 'Your prediction: ' + trialPrediction + '. ') +
-      'Reference outcome: ' + expected + '.';
+      'Verified answer: ' + expected + '.' + (repair ? ' The scene shows that repair.' : '');
     by('trial-actions').hidden = true;
     by('generate-trial').textContent = 'Try another layout';
     by('generate-trial').hidden = false;
@@ -315,26 +372,29 @@ route();
 for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
 by('generate-trial').addEventListener('click', () => {
   if (!trialActive) savedLayout = layoutValues();
+  const level = by('mission-level').value;
+  const pool = missions[level];
+  const index = nextMission[level]++ % pool.length;
+  mission = pool[index];
+  by('mission-context').textContent = mission.name + ' · Case ' + (index + 1) + ' of ' + pool.length;
+  const answers = by('trial-actions');
+  answers.replaceChildren();
+  for (const choice of mission.choices ?? mission.actions.map(action => action.label)) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = choice;
+    button.dataset.trialAnswer = choice;
+    button.addEventListener('click', () => {
+      trialPrediction = choice;
+      simulate();
+      by('coverage').focus({preventScroll:true});
+    });
+    answers.append(button);
+  }
   setTrial(true);
-  const camera = 100 + Math.floor(Math.random() * 101);
-  // Keep the reflection within the mirror; place the obstacle on or away from the incoming ray.
-  const bounce = camera + (555 - camera) * 219 / 414;
-  by('camera').value = camera;
-  by('target').value = defaults.target;
-  by('mirror').value = Math.round(bounce) + Math.floor(Math.random() * 49) - 24;
-  by('block').value = Math.random() < 0.5 ? 75 + Math.floor(Math.random() * 21) :
-    Math.round(camera + (bounce - camera) * 100 / 219 - 26);
-  simulate();
-  document.querySelector('[data-trial-answer]').focus();
+  applyLayout(mission.layout);
+  answers.firstElementChild.focus();
 });
-for (const button of document.querySelectorAll('[data-trial-answer]')) {
-  button.addEventListener('click', () => {
-    trialPrediction = button.dataset.trialAnswer;
-    for (const answer of document.querySelectorAll('[data-trial-answer]')) answer.disabled = true;
-    simulate();
-    by('coverage').focus({preventScroll:true});
-  });
-}
 by('exit-trial').addEventListener('click', () => {
   setTrial(false);
   applyLayout(savedLayout ?? defaults);

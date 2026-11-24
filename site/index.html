@@ -18,7 +18,7 @@
 <p class="product-label">Missing Scratch</p>
 <h1>See the <em>blind spot.</em></h1>
 <p class="lead">Can a vision model tell when moving one obstacle hides the target?</p>
-<div class="actions"><a class="primary" href="#simulator">Open optical bench ↗</a><a class="secondary" href="#inspection">Try a scored pair</a></div>
+<div class="actions"><a class="primary" href="#simulator">Run an inspection challenge</a><a class="secondary" href="#inspection">Try a benchmark pair</a></div>
 </div>
 <div class="preview-stage" id="motion">
 <div class="panel replay-panel">
@@ -39,7 +39,7 @@
 <a class="text-link" href="#inspection">Inspect the full dataset ↗</a></section>
 <section class="story reveal"><div class="story-head"><p class="eyebrow">Task types</p><h2>Three inspection tasks</h2></div>
 <div class="feature-grid"><article class="panel feature"><span class="tile-icon">01</span><h3>Visibility</h3><p>Can the camera see the target through the mirror?</p></article><article class="panel feature"><span class="tile-icon">02</span><h3>Obstruction</h3><p>Which obstacle does the ideal reflected path meet first?</p></article><article class="panel feature"><span class="tile-icon">03</span><h3>Repair</h3><p>Which placement change restores the sightline?</p></article></div>
-<a class="text-link" href="#simulator">Open the full bench ↗</a></section>
+<a class="text-link" href="#simulator">Open the simulator</a></section>
 </section>
 
 <section data-page="inspection" class="page" hidden>
@@ -99,10 +99,15 @@
 <p class="detail" id="bench-help">Drag an object to move it or drag empty space to pan. Turn on Orbit drag to rotate and tilt. Arrow keys pan; + and − zoom.</p>
 </div></div>
 <aside class="panel inspector bench-inspector">
-<div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p><span class="control-label">Control centre</span></div>
+<div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p><span class="control-label">Inspection station</span></div>
 <h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
+<div class="mission-picker">
+<label for="mission-level">Challenge difficulty</label>
+<select id="mission-level"><option value="easy">Easy · Loading dock</option><option value="medium">Medium · Warehouse aisle</option><option value="hard">Hard · Inspection cell</option></select>
+<p id="mission-context" class="detail" hidden></p>
+</div>
 <div class="tool-row"><button id="generate-trial" class="primary" type="button">Start prediction challenge</button><button id="exit-trial" type="button" hidden>Back to free explore</button></div>
-<div id="trial-actions" class="tool-row" role="group" aria-label="Predict target visibility" hidden><button type="button" data-trial-answer="visible">Visible through the mirror</button><button type="button" data-trial-answer="blocked">Hidden from the camera</button></div>
+<div id="trial-actions" class="mission-answers" role="group" aria-label="Submit your inspection decision" hidden></div>
 <p id="trial-result" class="finding" role="status" hidden></p>
 <div id="layout-controls">
 <section class="comparison-panel" aria-labelledby="comparison-title">
@@ -120,7 +125,7 @@
 <label class="slider">Obstacle position <output id="block-value"></output><input id="block" type="range" min="70" max="555" value="225"></label>
 <label class="slider">Target position <output id="target-value"></output><input id="target" type="range" min="480" max="630" value="555"></label>
 <button id="reset" type="button">Reset object positions</button></div>
-<p class="detail bench-scope">This sandbox uses a top-down reflection model. Challenge results are practice feedback and are excluded from benchmark scores.</p></aside></div></section>
+<p class="detail bench-scope">The 3D view shows simulated equipment. The ray follows a single-mirror floor plan. Practice scores stay separate from the frozen benchmark.</p></aside></div></section>
 
 <section data-page="benchmark" class="page" hidden>
 <p class="eyebrow">Model evaluation</p><h1 class="page-title">Benchmark</h1>

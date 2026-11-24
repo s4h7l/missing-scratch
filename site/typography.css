@@ -21,10 +21,10 @@ p { line-height: 1.6; }
 .header-action:hover { background: #1b5b54; }
 
 .landing .hero h1 {
-  font-size: clamp(2.9rem, 7vw, 5.85rem);
+  font-size: clamp(2.6rem, 5.6vw, 4.9rem);
   font-weight: 560;
   line-height: 1.04;
-  letter-spacing: -.055em;
+  letter-spacing: -.036em;
 }
 .landing .hero h1 em { color: var(--blue); }
 .page-title { font-size: clamp(2.15rem, 4.5vw, 4rem); font-weight: 570; line-height: 1.12; letter-spacing: -.045em; }
@@ -54,7 +54,7 @@ button, select, .primary, .secondary { font-weight: 580; }
 .detail, .hint, .feature p { color: var(--muted); font-size: .9375rem; line-height: 1.55; }
 .simulator-heading .page-title { font-size: clamp(1.7rem, 3vw, 2.45rem); font-weight: 590; }
 .simulator-heading .secondary, .bench-nav label, .bench-buttons button, #bench-view { font-size: var(--small); }
-.bench-buttons button { min-height: 42px; }
+.bench-buttons button { min-height: 44px; }
 .bench-buttons button[aria-pressed=true], .choices button[aria-pressed=true] { border-color: #6e9c96; background: #e8f3f1; color: #174a45; }
 .bar, .bench-legend, .monitor-title { font-family: inherit; font-size: var(--small); font-weight: 580; letter-spacing: .015em; }
 .bar span { color: #c7d5e1; }
@@ -69,9 +69,9 @@ thead th { color: var(--muted); font-weight: 620; }
 tbody th, .status, .text-link { font-weight: 600; }
 
 @media (max-width: 520px) {
-  .landing .hero h1 { font-size: clamp(2.55rem, 9.3vw, 3.7rem); }
+  .landing .hero h1 { font-size: clamp(2.3rem, 8vw, 3.2rem); }
   .case-nav { gap: 6px; }
-  .case-nav button { font-size: .85rem; min-height: 42px; }
+  .case-nav button { font-size: .85rem; min-height: 44px; }
   .simulator-heading .secondary { font-size: .875rem; }
 }
 
@@ -144,3 +144,19 @@ tbody th, .status, .text-link { font-weight: 600; }
 #comparison-readout dd { margin:3px 0 0; font-size:.94rem; color:var(--heading); font-weight:610; }
 #comparison-change { font-size:.875rem; color:var(--muted); }
 #comparison-change[data-changed=true] { font-weight:620; color:#175749; }
+
+/* Inspection controls remain readable beside the dark scene. */
+.mission-picker { margin: 1rem 0 .8rem; display: grid; gap: .4rem; }
+.mission-picker label { font-size: .9rem; font-weight: 600; color: var(--heading); }
+.mission-picker select { min-height: 44px; width: 100%; font-size: 1rem; }
+.mission-picker p { margin: 0; }
+.mission-answers:not([hidden]) { display: grid; gap: .55rem; margin-top: .9rem; }
+.mission-answers button { min-height: 44px; text-align: left; line-height: 1.35; }
+.bench-inspector #coverage { font-size: clamp(1.35rem, 2vw, 1.85rem); line-height: 1.22; letter-spacing: -.025em; }
+.bench-inspector .detail { font-size: .94rem; line-height: 1.55; }
+.bench-label { paint-order: stroke; stroke: #14232c; stroke-width: 4px; stroke-linejoin: round; }
+.bench-laser-core { filter: drop-shadow(0 0 4px #c3fff1); }
+.bench-laser-pulse { stroke-dasharray: 4 96; animation: laser-trace 2.2s linear infinite; }
+@keyframes laser-trace { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .bench-laser-pulse { animation: none; display: none; } }
+:where(button, a, select, input):focus-visible { outline: 3px solid #237b98; outline-offset: 3px; }

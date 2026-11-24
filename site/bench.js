@@ -59,6 +59,22 @@
     topFace.setAttribute('stroke','#ffffff');
     topFace.setAttribute('stroke-opacity','.26');
     const [mx,my] = point([(x+u)/2,(y+v)/2],height);
+    if (view.tilt > 0 && id === 'camera') {
+      const [lx,ly] = point([(x+u)/2,v],22);
+      element('ellipse',{cx:lx,cy:ly,rx:11,ry:7,fill:'#142333',stroke:'#a4bed6','stroke-width':2},group);
+      element('ellipse',{cx:lx,cy:ly,rx:5,ry:3,fill:'#6bcdef'},group);
+    }
+    if (view.tilt > 0 && id.startsWith('block')) {
+      const packages = [[a, b, c, d], [[x+3,y+4],[u-3,y+4],[u-3,v-4],[x+3,v-4]]];
+      polygon(packages[0], '#523922', group, height-8);
+      polygon(packages[1], palette[0], group, height);
+      for (const fraction of [.33,.66]) {
+        const stripX = x + (u-x)*fraction;
+        const [sx,sy] = point([stripX,y+4],height);
+        const [ex,ey] = point([stripX,v-4],height);
+        element('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:'#f3dfbc','stroke-width':2,'stroke-opacity':.75},group);
+      }
+    }
     if (id === 'camera' || id === 'target') {
       element('circle',{cx:mx,cy:my,r:5,fill:'#101b2b',stroke:'#e1f2ff','stroke-width':1.4},group);
     }
@@ -70,7 +86,7 @@
     element('text',{x:tx,y:ty-9,'text-anchor':'middle','class':'bench-label'},group).textContent = label;
   }
 
-  function draw({source,target,mirror,plane,obstacle,ray,reflection,clear,awaiting,locked}) {
+  function draw({source,target,mirror,plane,obstacles,ray,reflection,clear,awaiting,locked}) {
     floor.replaceChildren();
     objects.replaceChildren();
     path.replaceChildren();
@@ -101,7 +117,8 @@
     const models = [
       ['camera','Camera',[cx-22,cy-16,cx+22,cy+16],34,['#91c8fc','#3875a6','#245881']],
       ['target','Target',[tx-16,ty-14,tx+16,ty+14],13,['#daf099','#7d9d42','#547330']],
-      ['block','Obstacle',obstacle,48,['#f8bd86','#b36939','#8e482b']],
+      ...obstacles.map(({label,box},i) => [i === 0 ? 'block' : 'block-' + i, label, box, i === 0 ? 48 : 58,
+        i === 0 ? ['#dfaa72','#a67346','#784c32'] : ['#9aa9b1','#596e7b','#3c4f5c']]),
       ['mirror','Mirror',[mirror-89,plane,mirror+89,plane+12],54,['#c6ffff','#63aab8','#428596']]
     ];
     models.sort((a,b) => {
@@ -110,14 +127,16 @@
     });
     for (const [id,label,box,height,palette] of models) solid(id,label,box,height,palette,locked);
     if (awaiting) return;
-    const points = ray.map(p => point(p,9));
+    const points = ray.map(p => point(p,22));
     const outline = points.map(p=>p.join(',')).join(' ');
     element('polyline',{points:outline,fill:'none',stroke:clear?'#a8ffe7':'#ffbf88','stroke-opacity':.18,
       'stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'},path);
     element('polyline',{points:outline,fill:'none',stroke:clear?'#a8ffe7':'#ffbf88',
-      'stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'},path);
+      class:'bench-laser-core','stroke-width':2.5,'stroke-linecap':'round','stroke-linejoin':'round'},path);
+    element('polyline',{points:outline,fill:'none',stroke:'#ffffff',pathLength:100,
+      class:'bench-laser-pulse','stroke-width':2,'stroke-linecap':'round'},path);
     if (ray.length === 3) {
-      const [cx,cy] = point(reflection,9);
+      const [cx,cy] = point(reflection,22);
       element('circle',{cx,cy,r:6,fill:'#f2fbff',stroke:'#1b5e57','stroke-width':2},path);
     }
     const [x,y] = points.at(-1);
