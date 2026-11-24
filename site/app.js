@@ -190,6 +190,8 @@ const missions = {
   ],
 };
 let mission = null;
+let activeCasePath = null;
+const humanAnswers = new Map();
 const sites = {
   dock: {name:'Loading dock', shift:0, target:'marked carton', decor:[[508,236,622,283]]},
   warehouse: {name:'Warehouse aisle', shift:18, target:'end-of-aisle label', decor:[[25,110,60,284],[621,149,648,270]]},
@@ -198,8 +200,8 @@ const sites = {
 let selectedSite = 'dock';
 
 
-function sceneFor(level, index) {
-  const location = sites[selectedSite];
+function sceneFor(level, index, site = selectedSite) {
+  const location = sites[site];
   const template = missions[level][index];
   const shift = location.shift;
   const offset = layout => Object.fromEntries(Object.entries(layout).map(([key,value]) => [key,value + shift]));
@@ -281,12 +283,22 @@ function traceBench(layout, blocks, obstacleName) {
     clear:inside && !first && !second};
 }
 
+function validRepairs(scenario, layout) {
+  return scenario.actions?.filter(action =>
+    traceBench({...layout, ...action}, scenario.blocks.filter(item => item.label !== action.remove),
+      scenario.obstacle).clear);
+}
+
+function referenceAnswer(scenario, layout) {
+  if (scenario.actions) return validRepairs(scenario, layout)?.[0]?.label;
+  const trace = traceBench(layout, scenario.blocks, scenario.obstacle);
+  return scenario.choices.includes('Visible') ? (trace.clear ? 'Visible' : 'Hidden') : (trace.first ?? trace.second)?.label;
+}
+
 function simulate() {
   const activeMission = trialActive ? mission : null;
   const layout = layoutValues();
-  const planned = activeMission?.actions?.filter(action =>
-    traceBench({...layout, ...action}, activeMission.blocks.filter(item => item.label !== action.remove),
-      activeMission.obstacle).clear);
+  const planned = activeMission ? validRepairs(activeMission, layout) : null;
   const repair = trialPrediction === null ? null : planned?.[0];
   const {source, target, mirror, plane, reflection, inside, obstacles, first, second, clear} =
     traceBench({...layout, ...repair}, (activeMission?.blocks ?? []).filter(item => item.label !== repair?.remove),
@@ -318,8 +330,7 @@ function simulate() {
   if (!trialActive) by('bench-case').value = Object.entries(practiceCases).find(([,values]) =>
     Object.entries(values).every(([key,value]) => by(key).valueAsNumber === value))?.[0] ?? 'custom';
   if (trialPrediction !== null) {
-    const expected = repair?.label ?? (activeMission?.choices.includes('Visible') ?
-      (clear ? 'Visible' : 'Hidden') : (first ?? second)?.label);
+    const expected = referenceAnswer(activeMission, layout);
     const result = by('trial-result');
     result.textContent = (trialPrediction === expected ? 'Correct. ' : 'Your prediction: ' + trialPrediction + '. ') +
       'Verified answer: ' + expected + '.' + (repair ? ' The scene shows that repair.' : '');
@@ -399,6 +410,10 @@ function openSimulation() {
   const isCase = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
     Number.isInteger(index) && index >= 0 && index < missions[level].length;
   const isSandbox = site === 'sandbox';
+  activeCasePath = isCase ? [site,level,number].join('/') : null;
+  const labLink = by('case-lab-link');
+  labLink.hidden = !isCase;
+  if (isCase) labLink.href = '#lab/' + activeCasePath;
   by('sim-gallery').hidden = isCase || isSandbox;
   by('sim-workspace').hidden = !isCase && !isSandbox;
   if (!isCase && !isSandbox) return;
@@ -426,6 +441,13 @@ function openSimulation() {
     });
     answers.append(button);
   }
+  const savedChoice = humanAnswers.get(activeCasePath);
+  if (savedChoice) {
+    trialPrediction = savedChoice;
+    for (const option of answers.children) {
+      option.setAttribute('aria-pressed', String(option.dataset.trialAnswer === savedChoice));
+    }
+  }
   applyLayout(mission.layout);
   window.scrollTo(0, 0);
   by('coverage').focus({preventScroll:true});
@@ -434,6 +456,7 @@ function openSimulation() {
 by('trial-submit').addEventListener('click', () => {
   trialPrediction = by('trial-actions').querySelector('[aria-pressed="true"]')?.dataset.trialAnswer;
   if (!trialPrediction) return;
+  if (activeCasePath) humanAnswers.set(activeCasePath, trialPrediction);
   simulate();
   window.opticsBench.revealOrbit();
   by('coverage').focus({preventScroll:true});
@@ -441,10 +464,38 @@ by('trial-submit').addEventListener('click', () => {
 
 function buildLab(pilot) {
   function renderLab() {
-    const scene = state.cases.find(item => item.id === by('lab-picker').value);
+    const [page,site,level,number] = location.hash.slice(1).split('/');
+    if (page !== 'lab') return;
+    const index = Number(number) - 1;
+    const practice = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
+      Number.isInteger(index) && index >= 0 && index < missions[level].length;
+    const casePath = practice ? [site,level,number].join('/') : null;
+    let scene = state.cases.find(item => item.id === by('lab-picker').value);
+    const preview = by('lab-preview');
+    preview.hidden = !practice;
+    by('lab-image').hidden = practice;
+    by('lab-picker').hidden = practice;
+    by('lab-picker-label').hidden = practice;
+    by('lab-back').hidden = !practice;
+    by('lab-benchmark-link').hidden = !practice;
+    by('lab-intro').textContent = practice ?
+      'Review your decision and the verified answer for this simulator case.' :
+      'Answer the exact benchmark question, then compare with the recorded Codex CLI and Gemini pilot responses.';
+    by('lab-scope').textContent = practice ? 'Practice case. Human feedback uses the same geometry as the simulator.' :
+      'One matched-pair pilot. Full benchmark scores are pending.';
+    if (practice) {
+      const scenario = sceneFor(level,index,site);
+      const trace = traceBench(scenario.layout,scenario.blocks,scenario.obstacle);
+      scene = {id:casePath, question:scenario.question, options:scenario.choices ?? scenario.actions.map(action => action.label),
+        answer:referenceAnswer(scenario,scenario.layout)};
+      preview.replaceChildren(window.opticsBench.preview(trace,site,sites[site].decor,true));
+      by('lab-back').href = '#simulator/' + casePath;
+      by('lab-case').textContent = scenario.name + ' · ' + level + ' · Case ' + number;
+    } else if (scene) {
+      by('lab-image').src = scene.image;
+      by('lab-case').textContent = scene.id + ' · Frozen benchmark v4';
+    }
     if (!scene) return;
-    by('lab-image').src = scene.image;
-    by('lab-case').textContent = scene.id + ' · Frozen benchmark v4';
     by('lab-question').textContent = scene.question;
     by('lab-verdict').hidden = true;
     by('lab-models').hidden = true;
@@ -455,6 +506,7 @@ function buildLab(pilot) {
       button.type = 'button';
       button.textContent = choice;
       button.addEventListener('click', () => {
+        if (casePath) humanAnswers.set(casePath, choice);
         const verdict = by('lab-verdict');
         verdict.dataset.grade = choice === scene.answer ? 'correct' : 'wrong';
         verdict.textContent = (choice === scene.answer ? 'Correct. ' : 'Your answer: ' + choice + '. ') +
@@ -466,7 +518,8 @@ function buildLab(pilot) {
         }
         const models = by('lab-models');
         models.replaceChildren();
-        if (!pilot) models.textContent = 'Verified model pilot unavailable.';
+        if (practice) models.textContent = 'No model results recorded for this exact simulator case.';
+        else if (!pilot) models.textContent = 'Verified model pilot unavailable.';
         for (const model of pilot?.models ?? []) {
           for (const row of model.rows.filter(item => item.case === scene.id)) {
             const letter = row.predicted.trim().toUpperCase();
@@ -482,7 +535,10 @@ function buildLab(pilot) {
       });
       options.append(button);
     }
+    const saved = casePath ? humanAnswers.get(casePath) : undefined;
+    if (saved) [...options.children].find(button => button.textContent === saved)?.click();
   }
+  window.addEventListener('hashchange', renderLab);
   by('lab-picker').addEventListener('change', renderLab);
   renderLab();
 }

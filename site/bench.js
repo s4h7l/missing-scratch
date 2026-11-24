@@ -362,7 +362,7 @@
     orbitFrame = requestAnimationFrame(step);
   }
 
-  function preview(trace, scene, decor) {
+  function preview(trace, scene, decor, showLabels = false) {
     const canvas = document.createElement('canvas');
     canvas.width = 600;
     canvas.height = 384;
@@ -400,6 +400,20 @@
     ];
     parts.sort((a,b)=>project(a[0][2],a[0][3])[1]-project(b[0][2],b[0][3])[1]);
     for(const part of parts) box(...part);
+    if (showLabels) {
+      const labels = [['Camera',cx,cy,36],['Target',tx,ty,22],['Mirror',trace.mirror,trace.plane,45],
+        ...trace.obstacles.map(({label,box:[x,y,u,v]},i)=>[label,(x+u)/2,(y+v)/2,48+i*5])];
+      ctx.font = '600 15px system-ui';
+      ctx.textAlign = 'center';
+      ctx.lineWidth = 4;
+      for (const [label,x,y,z] of labels) {
+        const [px,py] = project(x,y,z);
+        ctx.strokeStyle = '#13222d';
+        ctx.strokeText(label,px,py-10);
+        ctx.fillStyle = '#fff';
+        ctx.fillText(label,px,py-10);
+      }
+    }
     return canvas;
   }
 

@@ -76,7 +76,7 @@
 
 <section data-page="simulator" id="simulator-page" class="page" hidden>
 <div class="simulator-heading">
-<h1 class="page-title">Inspection simulator</h1><a class="secondary" href="#overview">← Back to overview</a>
+<h1 class="page-title">Inspection simulator</h1><div class="sim-case-links"><a class="primary" id="case-lab-link" href="#lab" hidden>Open Lab</a><a class="secondary" href="#overview">← Back to overview</a></div>
 </div>
 <div id="sim-gallery">
 <p class="lead">Choose a case to open its inspection scene.</p>
@@ -111,7 +111,7 @@
 <div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p><span class="control-label">Inspection station</span></div>
 <h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
 <p id="mission-context" class="detail" hidden></p>
-<div class="sim-case-links"><a class="secondary sim-return" href="#simulator">All cases</a><a class="secondary" href="#lab">Model comparison lab</a></div>
+<div class="sim-case-links"><a class="secondary sim-return" href="#simulator">All cases</a></div>
 <div id="trial-actions" class="mission-answers" role="group" aria-label="Submit your inspection decision" hidden></div>
 <button id="trial-submit" class="primary" type="button" hidden disabled>Check answer</button><p id="trial-result" class="finding" role="status" hidden></p>
 <div id="layout-controls">
@@ -134,17 +134,17 @@
 
 <section data-page="lab" class="page lab-page" hidden>
 <h1 class="page-title">Model comparison lab</h1>
-<p class="lead">Answer the exact benchmark question, then compare with the recorded Codex CLI and Gemini pilot responses.</p>
+<p id="lab-intro" class="lead">Answer the exact benchmark question, then compare with the recorded Codex CLI and Gemini pilot responses.</p>
 <div class="lab-layout">
-<figure><img id="lab-image" alt="Exact benchmark diagram"><figcaption id="lab-case"></figcaption></figure>
+<figure><div id="lab-preview" hidden></div><img id="lab-image" alt="Exact benchmark diagram"><figcaption id="lab-case"></figcaption></figure>
 <div class="lab-controls">
-<label for="lab-picker">Benchmark scene</label>
+<a id="lab-back" class="secondary" href="#simulator" hidden>Back to this simulator case</a><label id="lab-picker-label" for="lab-picker">Benchmark scene</label>
 <select id="lab-picker"><option value="0000-0">Scene A · 0000-0</option><option value="0000-1">Scene B · 0000-1</option></select>
 <h2 id="lab-question"></h2>
 <div id="lab-choices" class="mission-answers"></div>
 <p id="lab-verdict" class="finding" role="status" hidden></p>
 <div id="lab-models" hidden></div>
-<p class="detail">One matched-pair pilot. Full benchmark scores are pending.</p>
+<p id="lab-scope" class="detail"></p><a id="lab-benchmark-link" class="text-link" href="#lab" hidden>See the recorded Codex CLI and Gemini pilot</a>
 </div>
 </div>
 </section>

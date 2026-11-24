@@ -206,3 +206,7 @@ tbody th, .status, .text-link { font-weight: 600; }
 @media(max-width:860px) {
   #sim-workspace:not([hidden]), .lab-layout { grid-template-columns:minmax(0,1fr); }
 }
+
+#case-lab-link[hidden], #lab-back[hidden], #lab-image[hidden], #lab-picker[hidden] { display:none; }
+#lab-preview canvas { width:100%; height:auto; display:block; }
+#lab-back { margin-bottom: .9rem; }
