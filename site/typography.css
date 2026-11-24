@@ -160,3 +160,33 @@ tbody th, .status, .text-link { font-weight: 600; }
 @keyframes laser-trace { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 @media (prefers-reduced-motion: reduce) { .bench-laser-pulse { animation: none; display: none; } }
 :where(button, a, select, input):focus-visible { outline: 3px solid #237b98; outline-offset: 3px; }
+
+.sim-sites {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.sim-sites button {
+  display: grid;
+  gap: .18rem;
+  min-height: 72px;
+  padding: 12px 16px;
+  text-align: left;
+  border: 1px solid #cdd9da;
+  border-radius: 13px;
+  background: #fff;
+  color: var(--heading);
+}
+.sim-sites button[aria-pressed="true"] {
+  background: #e8f4ee;
+  border-color: #39705b;
+  box-shadow: inset 3px 0 #39705b;
+}
+.sim-sites span { font-size: .875rem; color: var(--muted); }
+.sim-sites strong { font-size: 1rem; line-height: 1.25; }
+.simulator-heading { gap: 12px; }
+@media (max-width: 560px) {
+  .sim-sites { grid-template-columns: 1fr; }
+  .sim-sites button { min-height: 50px; grid-template-columns: 1fr auto; align-items: center; }
+}

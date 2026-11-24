@@ -165,14 +165,14 @@ const missions = {
   easy: [
     {name:'Dock inspection', layout:{...defaults}, obstacle:'Pallet A', blocks:[],
       question:'Can the mirror camera inspect the marked carton?', choices:['Visible','Hidden']},
-    {name:'Dock inspection', layout:{...defaults, block:85}, obstacle:'Pallet A', blocks:[],
+    {name:'Dock inspection', layout:{...defaults, block:92}, obstacle:'Pallet A', blocks:[],
       question:'Can the mirror camera inspect the marked carton?', choices:['Visible','Hidden']},
   ],
   medium: [
     {name:'Warehouse aisle', layout:{...defaults}, obstacle:'Pallet A', blocks:[
       {label:'Rack B', box:[415,174,465,218]}, {label:'Rack C', box:[87,241,141,272]}],
       question:'Which obstacle stops the reflected path first?', choices:['Pallet A','Rack B','Rack C']},
-    {name:'Warehouse aisle', layout:{...defaults, block:85}, obstacle:'Pallet A', blocks:[
+    {name:'Warehouse aisle', layout:{...defaults, block:92}, obstacle:'Pallet A', blocks:[
       {label:'Rack B', box:[415,174,465,218]}, {label:'Rack C', box:[87,241,141,272]}],
       question:'Which obstacle stops the reflected path first?', choices:['Pallet A','Rack B','Rack C']},
   ],
@@ -180,17 +180,37 @@ const missions = {
     {name:'Inspection cell', layout:{...defaults, mirror:270}, obstacle:'Crate A', blocks:[
       {label:'Rack B', box:[188,256,242,279]}, {label:'Rack C', box:[543,171,592,211]}],
       question:'Which single change restores coverage of the inspection marker?',
-      actions:[{label:'Move crate A to staging', block:75}, {label:'Move rack B to staging', remove:'Rack B'},
+      actions:[{label:'Move crate A to staging', block:90}, {label:'Move rack B to staging', remove:'Rack B'},
         {label:'Slide the mirror right', mirror:390}]},
-    {name:'Inspection cell', layout:{...defaults, block:80, mirror:230}, obstacle:'Crate A', blocks:[
+    {name:'Inspection cell', layout:{...defaults, block:92, mirror:230}, obstacle:'Crate A', blocks:[
       {label:'Rack B', box:[188,256,242,279]}, {label:'Rack C', box:[543,171,592,211]}],
       question:'Which single change restores coverage of the inspection marker?',
-      actions:[{label:'Move crate A to staging', block:75}, {label:'Move rack B to staging', remove:'Rack B'},
+      actions:[{label:'Move crate A to staging', block:90}, {label:'Move rack B to staging', remove:'Rack B'},
         {label:'Slide the mirror right', mirror:390}]},
   ],
 };
 let mission = null;
-const nextMission = {easy:0, medium:0, hard:0};
+const sites = {
+  dock: {name:'Loading dock', shift:0, target:'marked carton', decor:[[508,236,622,283]]},
+  warehouse: {name:'Warehouse aisle', shift:18, target:'end-of-aisle label', decor:[[25,110,60,284],[621,149,648,270]]},
+  cell: {name:'Inspection cell', shift:-18, target:'inspection marker', decor:[[95,233,155,284],[594,185,636,230]]},
+};
+let selectedSite = 'dock';
+const nextMission = new Map();
+
+function sceneFor(level, index) {
+  const location = sites[selectedSite];
+  const template = missions[level][index];
+  const shift = location.shift;
+  const offset = layout => Object.fromEntries(Object.entries(layout).map(([key,value]) => [key,value + shift]));
+  return {...template, name:location.name, layout:offset(template.layout),
+    question:template.question.replace(/marked carton|inspection marker/,location.target),
+    blocks:template.blocks.map(({label,box}) => ({label,box:box.map((value,axis) => value + (axis % 2 ? 0 : shift))})),
+    actions:template.actions?.map(({block,mirror,...action}) =>
+      ({...action,...(block === undefined ? {} : {block:block+shift}),...(mirror === undefined ? {} : {mirror:mirror+shift})})),
+  };
+}
+
 let trialPrediction = null;
 let savedLayout;
 let baseline;
@@ -234,7 +254,7 @@ function setTrial(active) {
   by('exit-trial').hidden = !active;
   by('layout-controls').hidden = active;
   by('generate-trial').hidden = active;
-  by('generate-trial').textContent = 'Start prediction challenge';
+  by('generate-trial').textContent = 'Start inspection';
   by('trial-result').hidden = true;
   for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
   for (const key of Object.keys(defaults)) by(key).disabled = active;
@@ -282,7 +302,7 @@ function simulate() {
     !inside ? [source, reflection] : [source, reflection,
       secondHit === null ? target : stopAt(reflection, target, secondHit)];
   window.opticsBench.draw({source, target, mirror, plane, obstacles, ray, reflection,
-    clear: inside && !blocked, awaiting, locked: trialActive});
+    clear: inside && !blocked, awaiting, locked: trialActive, scene:selectedSite, decor:sites[selectedSite].decor});
   by('bench-step').textContent = awaiting ? 'Step 1 of 2 · Predict' : trialActive ? 'Step 2 of 2 · Reveal' : 'Free exploration';
   const outcome = blocked ? 'Obstructed' : !inside ? 'Mirror out of reach' : 'Visible';
   const status = awaiting ? activeMission.question :
@@ -370,12 +390,32 @@ function bindCases() {
 window.addEventListener('hashchange', route);
 route();
 for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
+const siteButtons = [...document.querySelectorAll('[data-site]')];
+for (const button of siteButtons) button.addEventListener('click', () => {
+  if (selectedSite === button.dataset.site) return;
+  selectedSite = button.dataset.site;
+  for (const item of siteButtons) item.setAttribute('aria-pressed', String(item === button));
+  by('bench-site-name').textContent = sites[selectedSite].name;
+  setTrial(false);
+  savedLayout = undefined;
+  baseline = undefined;
+  by('comparison-readout').hidden = true;
+  by('comparison-change').hidden = true;
+  by('save-baseline').textContent = 'Save setup';
+  by('restore-baseline').disabled = true;
+  window.opticsBench.framePlan();
+  applyLayout(sceneFor('easy', 0).layout);
+});
 by('generate-trial').addEventListener('click', () => {
   if (!trialActive) savedLayout = layoutValues();
   const level = by('mission-level').value;
   const pool = missions[level];
-  const index = nextMission[level]++ % pool.length;
-  mission = pool[index];
+  const group = selectedSite + '/' + level;
+  const count = nextMission.get(group) ?? 0;
+  const index = count % pool.length;
+  nextMission.set(group, count + 1);
+  mission = sceneFor(level, index);
+  window.opticsBench.framePlan();
   by('mission-context').textContent = mission.name + ' · Case ' + (index + 1) + ' of ' + pool.length;
   const answers = by('trial-actions');
   answers.replaceChildren();
@@ -387,6 +427,7 @@ by('generate-trial').addEventListener('click', () => {
     button.addEventListener('click', () => {
       trialPrediction = choice;
       simulate();
+      window.opticsBench.revealOrbit();
       by('coverage').focus({preventScroll:true});
     });
     answers.append(button);

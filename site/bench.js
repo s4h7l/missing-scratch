@@ -17,6 +17,9 @@
   let drag;
   let orbitMode = false;
   let lastTilt = initial.tilt;
+  let refreshView;
+  let orbitFrame;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
   function point([x,y], height = 0) {
     const angle = radians(view.heading);
@@ -86,7 +89,7 @@
     element('text',{x:tx,y:ty-9,'text-anchor':'middle','class':'bench-label'},group).textContent = label;
   }
 
-  function draw({source,target,mirror,plane,obstacles,ray,reflection,clear,awaiting,locked}) {
+  function draw({source,target,mirror,plane,obstacles,ray,reflection,clear,awaiting,locked,scene,decor}) {
     floor.replaceChildren();
     objects.replaceChildren();
     path.replaceChildren();
@@ -97,7 +100,8 @@
     const rim = polygon(rail,'none',floor);
     rim.setAttribute('stroke','#708598');
     rim.setAttribute('stroke-opacity','.55');
-    const surface = polygon(deck,'url(#bench-surface)',floor);
+    const surfaces = {dock:'#334338',warehouse:'#293b4d',cell:'#403b46'};
+    const surface = polygon(deck,surfaces[scene],floor);
     surface.setAttribute('stroke','#75bda8');
     surface.setAttribute('stroke-opacity','.52');
     surface.setAttribute('stroke-width','2');
@@ -113,6 +117,12 @@
     }
     for (let x=25;x<=650;x+=25) gridLine([x,55],[x,354]);
     for (let y=55;y<=354;y+=25) gridLine([20,y],[657,y]);
+    for (const [x,y,u,v] of decor) {
+      polygon([[x,y],[u,y],[u,v],[x,v]], '#111e2a', floor);
+      for (let strip=x+5;strip<u-2;strip+=8) {
+        polygon([[strip,y],[strip+2,y],[strip+2,v],[strip,v]], '#917c59', floor);
+      }
+    }
     const [cx,cy] = source, [tx,ty] = target;
     const models = [
       ['camera','Camera',[cx-22,cy-16,cx+22,cy+16],34,['#91c8fc','#3875a6','#245881']],
@@ -156,6 +166,7 @@
       zoomOut.disabled = view.zoom <= .65;
       update();
     }
+    refreshView = refresh;
     function zoom(factor) {
       view.zoom = clamp(view.zoom * factor,.65,2.4);
       refresh();
@@ -164,6 +175,7 @@
       .matrixTransform(svg.getScreenCTM().inverse());
     svg.addEventListener('pointerdown',event => {
       if (!event.isPrimary || event.button !== 0) return;
+      cancelAnimationFrame(orbitFrame);
       const group = event.target.closest('[data-bench-object]');
       const slider = group ? document.getElementById(group.dataset.benchObject) : null;
       const mode = orbitMode || event.shiftKey ? 'orbit' : slider && !slider.disabled ? 'object' : 'pan';
@@ -265,5 +277,27 @@
     if (location.hash !== '#simulator' && open()) void closeFullscreen();
   });
 
-  window.opticsBench = {draw, bind};
+  function framePlan() {
+    cancelAnimationFrame(orbitFrame);
+    Object.assign(view, initial, {heading:0, tilt:0});
+    refreshView();
+  }
+
+  function revealOrbit() {
+    cancelAnimationFrame(orbitFrame);
+    if (reducedMotion.matches || view.tilt > 0) return;
+    const start = performance.now();
+    const heading = view.heading;
+    function step(now) {
+      const progress = clamp((now - start) / 620, 0, 1);
+      const eased = 1 - (1 - progress) ** 3;
+      view.heading = wrap(heading - 24 * eased);
+      view.tilt = initial.tilt * eased;
+      refreshView();
+      if (progress < 1) orbitFrame = requestAnimationFrame(step);
+    }
+    orbitFrame = requestAnimationFrame(step);
+  }
+
+  window.opticsBench = {draw, bind, framePlan, revealOrbit};
 })();
