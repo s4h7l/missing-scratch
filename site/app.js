@@ -1,7 +1,8 @@
 const by = id => document.getElementById(id);
-const state = { cases: [], items: [], index: 0, selection: null, mode: 'instant', findings: {instant: new Map(), paired: new Map()}, showRay: true };
+const state = { cases: [], items: [], index: 0, selection: null, mode: 'paired', findings: {instant: new Map(), paired: new Map()}, showRay: true };
 const pages = [...document.querySelectorAll('[data-page]')];
 let currentPage;
+let recordedPilot;
 
 function route() {
   const [base,section] = location.hash.slice(1).split('/');
@@ -123,6 +124,7 @@ function showCase() {
   by('toggle-ray').textContent = 'Hide ray path';
   by('result').textContent = '';
   by('answer-feedback').hidden = recorded === undefined;
+  by('case-scorecard').hidden = true;
   by('answer-feedback').dataset.outcome = revealed ? (recorded === item.answer ? 'correct' : 'incorrect') : 'pending';
   by('trace').hidden = true;
   by('ray').setAttribute('hidden', '');
@@ -151,6 +153,14 @@ function showCase() {
   by('ray').firstElementChild.setAttribute('points',
     [trace.camera, trace.bounce, trace.target].map(([x, y]) => (40 + x * 6) + ',' + (212 - y * 6)).join(' '));
   by('ray').removeAttribute('hidden');
+  const inline = by('case-scorecard');
+  if (recordedPilot?.models.some(model => model.rows.some(row => row.case === item.id))) {
+    renderScorecard(recordedPilot, item, recorded, false, inline, pairedFinding);
+    inline.hidden = false;
+  } else if (recordedPilot) {
+    inline.textContent = 'No recorded model answers for this case.';
+    inline.hidden = false;
+  }
 }
 
 function move(step) {
@@ -272,7 +282,7 @@ function setTrial(active) {
   by('trial-submit').hidden = !active;
   by('trial-submit').disabled = true;
   by('mission-context').hidden = !active;
-  by('layout-controls').hidden = active;
+  by('scene-setup').hidden = active;
   by('trial-result').hidden = true;
   for (const button of document.querySelectorAll('[data-trial-answer]')) button.disabled = false;
   for (const key of Object.keys(defaults)) by(key).disabled = active;
@@ -496,61 +506,69 @@ function pilotModelName(model) {
   return model.name;
 }
 
-function renderScorecard(pilot, scene, choice, practice) {
-  const card = by('lab-models');
+function renderScorecard(pilot, scene, choice, practice, card = by('lab-models'), pairedChoice) {
   card.replaceChildren();
   const title = document.createElement('h3');
   title.textContent = 'Case scorecard';
   card.append(title);
 
-  function addRow(label, answer, grade, brand, mode) {
+  function addRow(parent, label, answer, grade) {
     const row = document.createElement('div');
     row.className = 'lab-score-row';
     const name = document.createElement('span');
-    name.className = 'lab-score-name';
-    if (brand) {
-      const mark = document.createElement('img');
-      mark.src = 'logo-' + brand + '.svg';
-      mark.alt = '';
-      mark.width = mark.height = 16;
-      mark.className = 'lab-brand lab-brand-' + brand;
-      name.append(mark);
-    }
-    const wording = document.createElement('span');
-    wording.className = 'lab-score-label';
-    wording.textContent = label;
-    if (mode) {
-      const qualifier = document.createElement('span');
-      qualifier.className = 'lab-score-mode';
-      qualifier.textContent = mode;
-      wording.append(qualifier);
-    }
-    name.append(wording);
+    name.textContent = label;
     const response = document.createElement('span');
     response.textContent = answer;
     const status = document.createElement('strong');
     status.className = 'lab-score-outcome';
-    if (grade !== undefined) status.dataset.grade = grade ? 'correct' : 'wrong';
-    status.textContent = grade === undefined ? '—' : grade ? '1/1 · Correct' : '0/1 · Incorrect';
+    if (grade !== undefined) {
+      status.dataset.grade = grade ? 'correct' : 'wrong';
+      status.textContent = grade ? '1/1 Correct' : '0/1 Incorrect';
+    }
     row.append(name,response,status);
-    card.append(row);
+    parent.append(row);
   }
 
-  addRow('Verified answer',scene.answer);
-  addRow('Your answer',choice,choice === scene.answer);
+  addRow(card,'Verified answer',scene.answer);
+  addRow(card,'Your answer',choice,choice === scene.answer);
+  const pairedScene = !practice && state.cases.find(item => item.pair === scene.pair && item.id !== scene.id);
+  if (pairedScene && pairedChoice !== undefined) {
+    const correct = choice === scene.answer && pairedChoice === pairedScene.answer;
+    addRow(card,'Your pair score',correct ? 'Both scenes correct' : 'At least one scene incorrect',correct);
+  }
   const models = pilot?.models ?? [{name:'OpenAI model',provider:'openai',rows:[]},
     {name:'Gemini 3 Flash Preview',provider:'gemini',rows:[]}];
   for (const [index,model] of models.entries()) {
     const brand = model.provider ?? (index === 0 ? 'openai' : 'gemini');
-    const name = pilotModelName(model);
+    const group = document.createElement('section');
+    group.className = 'case-model';
+    const heading = document.createElement('h4');
+    heading.className = 'lab-score-name';
+    const mark = document.createElement('img');
+    mark.src = 'logo-' + brand + '.svg';
+    mark.alt = '';
+    mark.width = mark.height = 16;
+    mark.className = 'lab-brand lab-brand-' + brand;
+    heading.append(mark, pilotModelName(model));
+    group.append(heading);
     const rows = practice ? [] : model.rows.filter(row => row.case === scene.id);
-    if (!rows.length) addRow(name, 'No recorded answer', undefined, brand);
+    if (!rows.length) addRow(group,'Result','No recorded answer');
     for (const row of rows) {
       const answer = pilotPrediction(row,scene);
-      addRow(name, answer, answer === scene.answer, brand, row.mode === 'vision' ? 'With image' : 'Question only');
+      const label = row.mode === 'vision' ? 'With image' : 'Question only';
+      addRow(group,label,answer,answer === scene.answer);
+      const counterpart = pairedScene && model.rows.find(item => item.case === pairedScene.id && item.mode === row.mode);
+      if (counterpart) {
+        const correct = answer === scene.answer && pilotPrediction(counterpart,pairedScene) === pairedScene.answer;
+        const pairScore = document.createElement('p');
+        pairScore.className = 'case-pair-score';
+        pairScore.textContent = label + ' pair score · ' + (correct ? '1/1' : '0/1');
+        group.append(pairScore);
+      }
     }
+    card.append(group);
   }
-  if (practice || !pilot) return;
+  if (practice || !pilot || card.id === 'case-scorecard') return;
 
   const totals = document.createElement('div');
   totals.className = 'lab-pilot-totals';
@@ -603,6 +621,17 @@ function renderScorecard(pilot, scene, choice, practice) {
 }
 
 function buildLab(pilot) {
+  const covered = new Set(pilot?.models.flatMap(model => model.rows.map(row => row.case)) ?? []);
+  if (covered.size) {
+    const picker = by('lab-picker');
+    picker.replaceChildren();
+    for (const item of state.cases.filter(item => covered.has(item.id))) {
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = item.id + ' · Scene ' + (item.id.endsWith('-0') ? 'A' : 'B');
+      picker.append(option);
+    }
+  }
   function renderLab() {
     const [page,site,level,number] = location.hash.slice(1).split('/');
     if (page !== 'lab') return;
@@ -623,7 +652,7 @@ function buildLab(pilot) {
       'Check your answer against the simulated sightline.' :
       'Answer the question, then compare your result with the recorded model answers.';
     by('lab-scope').textContent = practice ? 'Practice case. No model results have been recorded for this scene.' :
-      'Pilot results cover two scenes. The full benchmark run is incomplete.';
+      covered.size ? 'Recorded pilot covers ' + covered.size + ' scenes. The full benchmark run is incomplete.' : 'No verified pilot results are available.';
     if (practice) {
       const scenario = sceneFor(level,index,site);
       scene = {id:casePath, question:scenario.question, options:scenario.choices ?? scenario.actions.map(action => action.label),
@@ -662,7 +691,9 @@ function buildLab(pilot) {
           option.disabled = true;
           option.dataset.grade = option.textContent === scene.answer ? 'correct' : option === button ? 'wrong' : '';
         }
-        renderScorecard(pilot,scene,choice,practice);
+        const other = state.cases.find(item => item.pair === scene.pair && item.id !== scene.id);
+        renderScorecard(pilot,scene,choice,practice,by('lab-models'),
+          benchmarkId && other ? state.findings[state.mode].get(other.id) : undefined);
         by('lab-models').hidden = false;
       });
       options.append(button);
@@ -768,9 +799,12 @@ fetch('cases.json').then(response => {
     const caption = document.createElement('div');
     const title = document.createElement('strong');
     title.textContent = label;
-    const detail = document.createElement('span');
-    detail.textContent = 'Scored benchmark pair';
-    caption.append(title,detail);
+    const detail = document.createElement('p');
+    detail.textContent = judgeQuestions[type][0];
+    const badge = document.createElement('span');
+    badge.className = 'featured-results';
+    badge.textContent = 'Scored benchmark pair';
+    caption.append(title,detail,badge);
     link.append(image,caption);
     by('sim-featured').append(link);
     by('landing-featured').append(link.cloneNode(true));
@@ -779,7 +813,17 @@ fetch('cases.json').then(response => {
   showCase();
   void loadReports(digest);
   void Promise.all([digest, fetch('lab-pilot.json').then(response => response.json())])
-    .then(([hash, pilot]) => buildLab(hash && hash === pilot.dataset ? pilot : null))
+    .then(([hash, pilot]) => {
+      recordedPilot = hash && hash === pilot.dataset ? pilot : null;
+      buildLab(recordedPilot);
+      showCase();
+      const coverage = recordedPilot ? new Set(recordedPilot.models.flatMap(model => model.rows.map(row => row.case))) : new Set();
+      for (const link of document.querySelectorAll('.featured-case')) {
+        const badge = link.querySelector('.featured-results');
+        badge.textContent = coverage.has(link.hash.split('/').at(-1)) ? 'Model results available' : 'No recorded model answers';
+      }
+      if (coverage.size) by('benchmark-pilot-count').textContent = coverage.size + ' scenes with recorded pilot answers';
+    })
     .catch(() => buildLab(null));
 }).catch(() => {
   by('prompt').textContent = 'The synthetic dataset could not be loaded.';

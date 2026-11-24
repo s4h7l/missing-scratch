@@ -25,6 +25,26 @@
           "case": "0000-1",
           "mode": "question-only",
           "predicted": "A"
+        },
+        {
+          "case": "0003-0",
+          "mode": "vision",
+          "predicted": "B"
+        },
+        {
+          "case": "0003-0",
+          "mode": "question-only",
+          "predicted": "A"
+        },
+        {
+          "case": "0003-1",
+          "mode": "vision",
+          "predicted": "A"
+        },
+        {
+          "case": "0003-1",
+          "mode": "question-only",
+          "predicted": "A"
         }
       ]
     },

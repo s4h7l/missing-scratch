@@ -32,28 +32,28 @@
 <p id="motion-note" class="detail">Drag the obstacle to see where coverage changes. Only the two saved benchmark scenes are scored.</p>
 </div>
 </div></div>
-<div class="landing-stats reveal"><div><strong id="landing-scenes">—</strong><span>generated scenes</span></div><div><strong id="landing-pairs">—</strong><span>matched pairs</span></div><div><strong>3</strong><span>inspection tasks</span></div><div><strong>2</strong><span>geometry methods</span></div></div>
+<section class="landing-cases" aria-labelledby="landing-cases-title">
+<h2 id="landing-cases-title">Choose an inspection case</h2>
+<p class="lead">Start with a scored pair or explore a 3D practice case.</p>
+<div id="landing-featured" class="sim-post-grid"></div><details class="practice-library"><summary>Explore all practice simulations</summary><div id="landing-sim-posts"></div></details>
+</section><div class="landing-stats reveal"><div><strong id="landing-scenes">—</strong><span>generated scenes</span></div><div><strong id="landing-pairs">—</strong><span>matched pairs</span></div><div><strong>3</strong><span>inspection tasks</span></div><div><strong>2</strong><span>geometry methods</span></div></div>
 <section id="experiment" class="story reveal"><div class="story-head"><p class="eyebrow">The experiment</p><h2>One change. Two answers.</h2><p>Moving one obstacle flips the answer. Both scenes must be correct to earn pair credit.</p></div>
 <div class="pair-grid"><figure class="sample"><img id="landing-a" alt="Synthetic scene A"><figcaption id="landing-a-caption">Scene A</figcaption></figure><figure class="sample"><img id="landing-b" alt="Synthetic scene B"><figcaption id="landing-b-caption">Scene B</figcaption></figure></div>
 <a class="text-link" href="#simulator/benchmark/0000-0">Try this pair</a></section>
 <section class="story reveal"><div class="story-head"><h2>Three inspection tasks</h2></div>
 <div class="feature-grid"><article class="panel feature"><h3>Visibility</h3><p>Can the camera see the target through the mirror?</p></article><article class="panel feature"><h3>Obstruction</h3><p>Which obstacle stops the reflected path first?</p></article><article class="panel feature"><h3>Repair</h3><p>Which placement change restores the sightline?</p></article></div>
 <a class="text-link" href="#simulator">Open the simulator</a></section>
-<section class="landing-cases" aria-labelledby="landing-cases-title">
-<h2 id="landing-cases-title">Choose an inspection case</h2>
-<p class="lead">Start with a scored pair or explore a 3D practice case.</p>
-<div id="landing-featured" class="sim-post-grid"></div><details class="practice-library"><summary>Explore all practice simulations</summary><div id="landing-sim-posts"></div></details>
-</section>
+
 </section>
 
 <section data-page="inspection" class="page" hidden>
 <div class="simulator-heading"><h1 class="page-title">Scored benchmark</h1><div class="sim-case-links"><a id="benchmark-case-lab" class="primary" href="#lab" hidden>Open Lab</a><a class="secondary" href="#simulator">Back to gallery</a></div></div>
 <p class="lead">Pick an answer to see what the camera can actually see, and why.</p>
 <div class="inspection-modes" role="group" aria-label="Feedback mode">
-<button type="button" data-feedback-mode="instant" aria-pressed="true">Instant feedback</button>
-<button type="button" data-feedback-mode="paired" aria-pressed="false">Predict both scenes</button>
+<button type="button" data-feedback-mode="instant" aria-pressed="false">Instant feedback</button>
+<button type="button" data-feedback-mode="paired" aria-pressed="true">Predict both scenes</button>
 </div>
-<p id="feedback-instructions" class="detail">Choose one answer. The correct option and ray path appear immediately.</p>
+<p id="feedback-instructions" class="detail">Lock an answer for each scene to see the rays and compare scores.</p>
 <div class="inspection-progress"><span id="inspection-progress-text">Loading cases…</span><progress id="inspection-progress" value="0" max="1" aria-label="Questions answered"></progress></div>
 <div class="workspace">
 <div class="panel viewport"><div class="bar"><div><i></i> Synthetic scene</div><span id="caseId">Loading…</span></div>
@@ -63,13 +63,13 @@
 <aside class="panel inspector"><label for="kind" class="eyebrow">Task type</label>
 <select id="kind"><option value="all">All scenarios</option><option value="visibility">Coverage check</option><option value="blocker">Obstruction diagnosis</option><option value="repair">Placement adjustment</option></select>
 <p id="meta" class="eyebrow muted"></p><h2 id="prompt" tabindex="-1">Loading scenes…</h2>
-<p id="question-guide" class="detail"></p><details class="exact-prompt"><summary>Exact benchmark question</summary><p id="exact-question"></p></details>
-<div id="choices" class="choices" aria-label="Inspection finding"></div><button id="record" class="primary" disabled hidden>Lock prediction</button>
+
+<div id="choices" class="choices" aria-label="Inspection finding"></div><button id="record" class="primary" disabled hidden>Lock prediction</button><p id="question-guide" class="detail"></p><details class="exact-prompt"><summary>Exact benchmark question</summary><p id="exact-question"></p></details>
 <div id="answer-feedback" class="answer-feedback" hidden>
 <p id="result" role="status" class="finding" tabindex="-1"></p>
 <p id="trace" class="detail" hidden></p>
 <button id="continue-inspection" type="button" class="primary" hidden>Next question →</button></div>
-<div class="tool-row"><button id="toggle-ray" disabled>Hide ray path</button><button id="pair" disabled>Open paired scene ↗</button></div>
+<div id="case-scorecard" hidden></div><div class="tool-row"><button id="toggle-ray" disabled>Hide ray path</button><button id="pair" disabled>Open paired scene ↗</button></div>
 <p class="detail">Findings are kept for this browser tab. The separate blind review packet has no answer reveal.</p>
 </aside></div></section>
 
@@ -105,15 +105,7 @@
 <label>Heading <output id="bench-heading-value"></output><input id="bench-heading" type="range" min="0" max="359" value="330"></label>
 <label>Tilt <output id="bench-tilt-value"></output><input id="bench-tilt" type="range" min="0" max="75" value="42"></label>
 <p class="detail" id="bench-help">Drag empty space to pan. Use Orbit drag to rotate. In free exploration, you can also drag equipment.</p>
-</div></div>
-<aside class="panel inspector bench-inspector">
-<div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p></div>
-<h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
-<p id="mission-context" class="detail" hidden></p>
-<div class="sim-case-links"><a class="secondary sim-return" href="#simulator">All cases</a></div>
-<div id="trial-actions" class="mission-answers" role="group" aria-label="Submit your inspection decision" hidden></div>
-<button id="trial-submit" class="primary" type="button" hidden disabled>Check answer</button><p id="trial-result" class="finding" role="status" hidden></p>
-<div id="layout-controls">
+</div><details class="scene-setup" id="scene-setup"><summary>Adjust equipment and compare setups</summary><div id="layout-controls">
 <section class="comparison-panel" aria-labelledby="comparison-title">
 <h3 id="comparison-title">Compare setups</h3>
 <p class="detail" id="comparison-help">Save this setup, then move an object to see what changed.</p>
@@ -129,6 +121,14 @@
 <label class="slider">Obstacle position <output id="block-value"></output><input id="block" type="range" min="70" max="555" value="225"></label>
 <label class="slider">Target position <output id="target-value"></output><input id="target" type="range" min="480" max="630" value="555"></label>
 <button id="reset" type="button">Reset object positions</button></div>
+</details></div>
+<aside class="panel inspector bench-inspector">
+<div class="control-heading"><p id="bench-step" class="eyebrow">Free exploration</p></div>
+<h2 id="coverage" aria-live="polite" tabindex="-1">Calculating coverage</h2><p id="coverage-detail" class="detail"></p>
+<p id="mission-context" class="detail" hidden></p>
+<div class="sim-case-links"><a class="secondary sim-return" href="#simulator">All cases</a></div>
+<div id="trial-actions" class="mission-answers" role="group" aria-label="Submit your inspection decision" hidden></div>
+<button id="trial-submit" class="primary" type="button" hidden disabled>Check answer</button><p id="trial-result" class="finding" role="status" hidden></p>
 <p class="detail bench-scope">This simulation uses a single mirror. Practice answers are excluded from benchmark scores.</p></aside></div></section>
 
 <section data-page="lab" class="page lab-page" hidden>
@@ -151,7 +151,8 @@
 <p class="eyebrow">Model evaluation</p><h1 class="page-title">Benchmark</h1>
 <p class="lead">Compare model accuracy with the scene image and with the question alone.</p>
 <div class="stats"><div class="panel"><strong id="scene-count">—</strong><span>Synthetic scenes</span></div><div class="panel"><strong id="pair-count">—</strong><span>Matched pairs</span></div><div class="panel"><strong>3</strong><span>Inspection tasks</span></div></div>
-<div class="panel table-panel"><h2>Recorded model reports</h2>
+<section class="panel evidence-proof"><div><h2>Recorded model pilot</h2><p id="benchmark-pilot-count">Recorded answers from the opening pair</p><p>These pilot responses cover a subset of the 200 scenes.</p></div><a class="secondary" href="#lab">Compare pilot answers</a></section>
+<div class="panel table-panel"><h2>Full benchmark results</h2>
 <p id="report-status" class="detail" role="status">Checking for reports…</p><div id="report-loading" class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
 <div class="scroll" id="score-table" hidden><table><thead><tr><th>Model</th><th>Vision</th><th>Question only</th><th>Vision · both correct</th><th>Question only · both correct</th></tr></thead><tbody id="model-rows"></tbody></table></div>
 <div id="report-details" class="report-details"></div>
@@ -183,9 +184,9 @@
 <a class="text-link" href="fictional-video-check.json" download>Download the render check</a>
 </article>
 <div class="evidence-rows">
-<article class="panel evidence-row"><div><h2>Blind human review</h2><p>A 72-case packet uses the exact model inputs under anonymous IDs. Agreement has not been measured.</p></div><span class="status pending">Agreement pending</span></article>
+<article class="panel evidence-row"><div><h2>Blind human review</h2><p>72 cases ready for independent review. No reviewer agreement has been recorded.</p><a class="text-link" href="https://github.com/ashrathdevx/missing-scratch/blob/main/evidence/RUNBOOK.md#collect-the-evidence">Review protocol</a></div><span class="status pending">Agreement pending</span></article>
 <article class="panel evidence-row"><div><h2>Model comparison</h2><p>The Lab contains answers from one pilot pair. Full-dataset scores are pending.</p><a class="text-link" href="#lab">Open the pilot comparison</a></div><span class="status pending">Pilot recorded</span></article>
-<article class="panel evidence-row"><div><h2>Physical spot checks</h2><p>The blocked and visible tabletop setups are ready to photograph. No camera observations have been recorded.</p></div><span class="status pending">Capture pending</span></article>
+<article class="panel evidence-row"><div><h2>Physical spot checks</h2><p>Two tabletop layouts are ready to photograph. No physical camera frames have been recorded.</p><a class="text-link" href="https://github.com/ashrathdevx/missing-scratch/blob/main/evidence/DEMO.md">Capture protocol</a></div><span class="status pending">Capture pending</span></article>
 </div>
 </section>
 </main><footer><span>Missing Scratch</span><span>Camera coverage benchmark</span></footer>
