@@ -403,8 +403,11 @@ function bindCases() {
 window.addEventListener('hashchange', route);
 route();
 for (const key of Object.keys(defaults)) by(key).addEventListener('input', simulate);
-function openSimulation() {
-  const [page, site, level, number] = location.hash.slice(1).split('/');
+function openSimulation(fragment = location.hash.slice(1), inLab = false) {
+  const [page, site, level, number] = fragment.split('/');
+  if (!inLab && by('sim-viewport').parentElement !== by('sim-workspace')) {
+    by('sim-workspace').prepend(by('sim-viewport'));
+  }
   if (page !== 'simulator') return;
   const index = Number(number) - 1;
   const isCase = Object.hasOwn(sites, site) && Object.hasOwn(missions, level) &&
@@ -449,8 +452,10 @@ function openSimulation() {
     }
   }
   applyLayout(mission.layout);
-  window.scrollTo(0, 0);
-  by('coverage').focus({preventScroll:true});
+  if (!inLab) {
+    window.scrollTo(0, 0);
+    by('coverage').focus({preventScroll:true});
+  }
 }
 
 by('trial-submit').addEventListener('click', () => {
@@ -461,6 +466,86 @@ by('trial-submit').addEventListener('click', () => {
   window.opticsBench.revealOrbit();
   by('coverage').focus({preventScroll:true});
 });
+
+function pilotPrediction(row, scene) {
+  const letter = row.predicted.trim().toUpperCase();
+  return (/^[A-Z]$/.test(letter) ? scene.options[letter.charCodeAt(0)-65] : null) ?? 'Invalid response';
+}
+
+function renderScorecard(pilot, scene, choice, practice) {
+  const card = by('lab-models');
+  card.replaceChildren();
+  const title = document.createElement('h3');
+  title.textContent = 'Case scorecard';
+  card.append(title);
+
+  function addRow(label, answer, grade, brand) {
+    const row = document.createElement('div');
+    row.className = 'lab-score-row';
+    const name = document.createElement('span');
+    name.className = 'lab-score-name';
+    if (brand) {
+      const mark = document.createElement('img');
+      mark.src = 'logo-' + brand + '.svg';
+      mark.alt = '';
+      mark.className = 'lab-brand lab-brand-' + brand;
+      name.append(mark);
+    }
+    name.append(label);
+    const response = document.createElement('span');
+    response.textContent = answer;
+    const status = document.createElement('strong');
+    status.className = 'lab-score-outcome';
+    if (grade !== undefined) status.dataset.grade = grade ? 'correct' : 'wrong';
+    status.textContent = grade === undefined ? '—' : grade ? '1/1 · Correct' : '0/1 · Incorrect';
+    row.append(name,response,status);
+    card.append(row);
+  }
+
+  addRow('Verified answer',scene.answer);
+  addRow('You',choice,choice === scene.answer);
+  const models = pilot?.models ?? [{name:'OpenAI model',provider:'openai',rows:[]},
+    {name:'Gemini 3 Flash Preview',provider:'gemini',rows:[]}];
+  for (const [index,model] of models.entries()) {
+    const brand = model.provider ?? (index === 0 ? 'openai' : 'gemini');
+    const name = brand === 'openai' && !model.provider ? 'OpenAI model (CLI pilot)' : model.name;
+    const rows = practice ? [] : model.rows.filter(row => row.case === scene.id);
+    if (!rows.length) addRow(name, 'No result for this case', undefined, brand);
+    for (const row of rows) {
+      const answer = pilotPrediction(row,scene);
+      addRow(name + ' · ' + (row.mode === 'vision' ? 'Vision' : 'Question only'), answer, answer === scene.answer, brand);
+    }
+  }
+  if (practice || !pilot) return;
+
+  const totals = document.createElement('div');
+  totals.className = 'lab-pilot-totals';
+  const heading = document.createElement('h3');
+  heading.textContent = 'Recorded pilot totals';
+  totals.append(heading);
+  for (const model of models) {
+    const line = document.createElement('p');
+    const measures = [];
+    for (const [mode,label] of [['vision','Vision'],['question-only','Question only']]) {
+      const scored = model.rows.filter(row => row.mode === mode).flatMap(row => {
+        const item = state.cases.find(c => c.id === row.case);
+        return item ? [{pair:item.pair, correct:pilotPrediction(row,item) === item.answer}] : [];
+      });
+      const pairs = new Map();
+      for (const item of scored) {
+        if (!pairs.has(item.pair)) pairs.set(item.pair,[]);
+        pairs.get(item.pair).push(item.correct);
+      }
+      const complete = [...pairs.values()].filter(members => members.length === 2);
+      measures.push(label + ' ' + scored.filter(item => item.correct).length + '/' + scored.length +
+        ' · pairs ' + complete.filter(members => members.every(Boolean)).length + '/' + complete.length);
+    }
+    line.textContent = (model.provider ? model.name : model.name === 'Codex CLI' ? 'OpenAI model (CLI pilot)' : model.name) +
+      ' — ' + measures.join(' | ');
+    totals.append(line);
+  }
+  card.append(totals);
+}
 
 function buildLab(pilot) {
   function renderLab() {
@@ -480,15 +565,15 @@ function buildLab(pilot) {
     by('lab-benchmark-link').hidden = !practice;
     by('lab-intro').textContent = practice ?
       'Review your decision and the verified answer for this simulator case.' :
-      'Answer the exact benchmark question, then compare with the recorded Codex CLI and Gemini pilot responses.';
+      'Answer the exact benchmark question, then compare with the recorded OpenAI and Gemini model responses.';
     by('lab-scope').textContent = practice ? 'Practice case. Human feedback uses the same geometry as the simulator.' :
       'One matched-pair pilot. Full benchmark scores are pending.';
     if (practice) {
       const scenario = sceneFor(level,index,site);
-      const trace = traceBench(scenario.layout,scenario.blocks,scenario.obstacle);
       scene = {id:casePath, question:scenario.question, options:scenario.choices ?? scenario.actions.map(action => action.label),
         answer:referenceAnswer(scenario,scenario.layout)};
-      preview.replaceChildren(window.opticsBench.preview(trace,site,sites[site].decor,true));
+      openSimulation('simulator/' + casePath,true);
+      preview.append(by('sim-viewport'));
       by('lab-back').href = '#simulator/' + casePath;
       by('lab-case').textContent = scenario.name + ' · ' + level + ' · Case ' + number;
     } else if (scene) {
@@ -506,7 +591,11 @@ function buildLab(pilot) {
       button.type = 'button';
       button.textContent = choice;
       button.addEventListener('click', () => {
-        if (casePath) humanAnswers.set(casePath, choice);
+        if (casePath) {
+          humanAnswers.set(casePath, choice);
+          trialPrediction = choice;
+          simulate();
+        }
         const verdict = by('lab-verdict');
         verdict.dataset.grade = choice === scene.answer ? 'correct' : 'wrong';
         verdict.textContent = (choice === scene.answer ? 'Correct. ' : 'Your answer: ' + choice + '. ') +
@@ -516,22 +605,8 @@ function buildLab(pilot) {
           option.disabled = true;
           option.dataset.grade = option.textContent === scene.answer ? 'correct' : option === button ? 'wrong' : '';
         }
-        const models = by('lab-models');
-        models.replaceChildren();
-        if (practice) models.textContent = 'No model results recorded for this exact simulator case.';
-        else if (!pilot) models.textContent = 'Verified model pilot unavailable.';
-        for (const model of pilot?.models ?? []) {
-          for (const row of model.rows.filter(item => item.case === scene.id)) {
-            const letter = row.predicted.trim().toUpperCase();
-            const prediction = (/^[A-Z]$/.test(letter) ? scene.options[letter.charCodeAt(0)-65] : null) ?? 'Invalid response';
-            const item = document.createElement('p');
-            item.dataset.grade = prediction === scene.answer ? 'correct' : 'wrong';
-            item.textContent = model.name + ' · ' + row.mode + ' · ' + prediction +
-              (prediction === scene.answer ? ' · Correct' : ' · Incorrect');
-            models.append(item);
-          }
-        }
-        models.hidden = false;
+        renderScorecard(pilot,scene,choice,practice);
+        by('lab-models').hidden = false;
       });
       options.append(button);
     }
@@ -601,7 +676,7 @@ by('bench-case').addEventListener('change', event => {
 window.opticsBench.bind(simulate);
 buildSimulationGallery();
 openSimulation();
-window.addEventListener('hashchange', openSimulation);
+window.addEventListener('hashchange', () => openSimulation());
 simulate();
 
 fetch('cases.json').then(response => {

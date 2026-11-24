@@ -83,7 +83,7 @@
 <div id="sim-posts"></div>
 <a class="secondary" href="#simulator/sandbox">Open the free-explore bench</a>
 </div>
-<div class="workspace" id="sim-workspace" hidden><div class="panel viewport"><div class="bar"><div><i></i> <span id="bench-site-name">Loading dock</span></div><button id="bench-fullscreen" type="button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="fullscreen-label">Expand fullscreen</span></button></div>
+<div class="workspace" id="sim-workspace" hidden><div class="panel viewport" id="sim-viewport"><div class="bar"><div><i></i> <span id="bench-site-name">Loading dock</span></div><button id="bench-fullscreen" type="button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="fullscreen-label">Expand fullscreen</span></button></div>
 <div class="sim-view"><span class="bench-view-tag" id="bench-view-tag">3D view</span><svg id="layout" viewBox="0 0 760 410" role="img" tabindex="0" aria-label="Optical bench" aria-describedby="bench-help">
 <defs>
 <linearGradient id="bench-rail" x2="100%" y2="100%"><stop stop-color="#566275"/><stop offset="1" stop-color="#1d2736"/></linearGradient>
@@ -134,7 +134,7 @@
 
 <section data-page="lab" class="page lab-page" hidden>
 <h1 class="page-title">Model comparison lab</h1>
-<p id="lab-intro" class="lead">Answer the exact benchmark question, then compare with the recorded Codex CLI and Gemini pilot responses.</p>
+<p id="lab-intro" class="lead">Answer the exact benchmark question, then compare with the recorded OpenAI and Gemini model responses.</p>
 <div class="lab-layout">
 <figure><div id="lab-preview" hidden></div><img id="lab-image" alt="Exact benchmark diagram"><figcaption id="lab-case"></figcaption></figure>
 <div class="lab-controls">
@@ -144,7 +144,7 @@
 <div id="lab-choices" class="mission-answers"></div>
 <p id="lab-verdict" class="finding" role="status" hidden></p>
 <div id="lab-models" hidden></div>
-<p id="lab-scope" class="detail"></p><a id="lab-benchmark-link" class="text-link" href="#lab" hidden>See the recorded Codex CLI and Gemini pilot</a>
+<p id="lab-scope" class="detail"></p><a id="lab-benchmark-link" class="text-link" href="#lab" hidden>See the recorded model pilot</a>
 </div>
 </div>
 </section>
